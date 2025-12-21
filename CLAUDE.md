@@ -2,37 +2,38 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
+## Overview
 
-Claude Code plugin marketplace with reusable skills and hooks for workflow automation.
+Plugin marketplace for Claude Code skills and hooks.
 
 ## Commands
 
 ```bash
-npm run docs:dev      # Run docs locally (http://localhost:5173)
-npm run docs:build    # Build docs for production
-npm run docs:preview  # Preview production build
+npm run docs:dev      # Dev server at localhost:5173
+npm run docs:build    # Production build
+npm run docs:preview  # Preview build
 ```
 
-## Adding a New Plugin
+## Architecture
 
-1. Create `plugins/<name>/.claude-plugin/plugin.json` with name, version, description, skills path, hooks path
-2. Add skills in `plugins/<name>/skills/<skill>/SKILL.md` (use `templates/SKILL-TEMPLATE.md` as reference)
-3. Add hooks in `plugins/<name>/hooks/hooks.json`
-4. Register plugin in `.claude-plugin/marketplace.json` under the `plugins` array
+- `.claude-plugin/marketplace.json` - Plugin registry
+- `plugins/<name>/.claude-plugin/plugin.json` - Plugin manifest
+- `plugins/<name>/skills/<skill>/SKILL.md` - Skill definitions
+- `plugins/<name>/hooks/hooks.json` - Hook configurations
+- `templates/SKILL-TEMPLATE.md` - Skill authoring template
 
-## Plugin Conventions
+## Creating Plugins
 
-**Paths:** Use `${CLAUDE_PLUGIN_ROOT}` variable in hooks.json for portable paths
+1. Create `plugins/<name>/.claude-plugin/plugin.json`
+2. Add skills in `skills/<skill>/SKILL.md` (see `templates/SKILL-TEMPLATE.md`)
+3. Add hooks in `hooks/hooks.json` with Python scripts
+4. Register in `.claude-plugin/marketplace.json`
 
-**Skills:** SKILL.md files with YAML frontmatter (name, description) followed by procedure steps
+Use `${CLAUDE_PLUGIN_ROOT}` for paths in hooks.json.
 
-**Hooks:** Python scripts with JSON I/O. Available hook events:
-- `Stop` - Triggers when Claude attempts to stop (can block with exit code 2)
-- `PostToolUse` - Triggers after tool execution, matcher pattern filters by tool name
+## Hook Events
 
-**Debugging hooks:** Set `CLAUDE_HOOK_DEBUG=1` to write logs to `.claude/hook-debug.log`
+- `Stop` - Before session ends (exit 2 to block)
+- `PostToolUse` - After tool execution (matcher: regex for tool names)
 
-## License
-
-Public domain (Unlicense)
+Debug: `CLAUDE_HOOK_DEBUG=1` → `.claude/hook-debug.log`
