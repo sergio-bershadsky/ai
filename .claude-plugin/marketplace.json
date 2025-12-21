@@ -1,0 +1,21 @@
+{
+  "name": "bershadsky-claude-tools",
+  "owner": {
+    "name": "Sergey Bershadsky",
+    "email": "sergey@bershadsky.me"
+  },
+  "metadata": {
+    "description": "Personal Claude Code skills and hooks for workflow automation",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "git",
+      "source": "./plugins/git",
+      "description": "Git workflow automation: conventional commits, auto-staging, uncommitted changes protection",
+      "version": "1.0.0",
+      "keywords": ["git", "commit", "workflow"],
+      "category": "productivity"
+    }
+  ]
+}
