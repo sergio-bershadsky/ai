@@ -6,7 +6,7 @@ Personal Claude Code plugin marketplace for workflow automation.
 
 ```bash
 # Add marketplace
-/plugin marketplace add bershadsky/ai
+/plugin marketplace add sergio-bershadsky/ai
 
 # Install git plugin
 /plugin install git@bershadsky-claude-tools

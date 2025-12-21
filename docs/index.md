@@ -11,7 +11,7 @@ hero:
       link: /installation
     - theme: alt
       text: View on GitHub
-      link: https://github.com/bershadsky/ai
+      link: https://github.com/sergio-bershadsky/ai
 
 features:
   - title: One Command Install
@@ -26,7 +26,7 @@ features:
 
 ```bash
 # Add marketplace
-/plugin marketplace add bershadsky/ai
+/plugin marketplace add sergio-bershadsky/ai
 
 # Install plugin
 /plugin install git@bershadsky-claude-tools

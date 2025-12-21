@@ -30,7 +30,7 @@ export default defineConfig({
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/bershadsky/ai' }
+      { icon: 'github', link: 'https://github.com/sergio-bershadsky/ai' }
     ]
   }
 })

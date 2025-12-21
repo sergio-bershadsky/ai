@@ -3,7 +3,7 @@
 ## Add Marketplace
 
 ```bash
-/plugin marketplace add bershadsky/ai
+/plugin marketplace add sergio-bershadsky/ai
 ```
 
 ## Install Plugins
@@ -42,7 +42,7 @@
 If you prefer manual setup:
 
 ```bash
-git clone https://github.com/bershadsky/ai.git ~/claude-shared
+git clone https://github.com/sergio-bershadsky/ai.git ~/claude-shared
 ```
 
 Then symlink skills and reference hooks manually.
