@@ -1,0 +1,7 @@
+# Exclude sensitive files
+*.log
+*.jsonl
+credentials*
+auth*
+token*
+secret*

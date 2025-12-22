@@ -8,6 +8,7 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Git Plugin', link: '/git/' },
+      { text: 'Settings Sync', link: '/settings-sync/' },
     ],
 
     sidebar: [
@@ -25,6 +26,12 @@ export default defineConfig({
           { text: 'commit', link: '/git/commit' },
           { text: 'auto-stage', link: '/git/auto-stage' },
           { text: 'pre-stop-commit', link: '/git/pre-stop-commit' },
+        ]
+      },
+      {
+        text: 'Settings Sync Plugin',
+        items: [
+          { text: 'Overview', link: '/settings-sync/' },
         ]
       }
     ],

@@ -16,6 +16,14 @@
       "version": "1.0.0",
       "keywords": ["git", "commit", "workflow"],
       "category": "productivity"
+    },
+    {
+      "name": "settings-sync",
+      "source": "./plugins/settings-sync",
+      "description": "Sync Claude settings across ephemeral VMs via Git backup",
+      "version": "1.0.0",
+      "keywords": ["settings", "sync", "backup", "vm"],
+      "category": "productivity"
     }
   ]
 }

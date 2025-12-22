@@ -18,8 +18,8 @@ features:
     details: /plugin install git@bershadsky-claude-tools
   - title: Git Workflow
     details: Conventional commits, auto-staging, uncommitted changes protection
-  - title: Auto Updates
-    details: Pull latest changes, all projects updated
+  - title: Settings Sync
+    details: Backup and restore Claude settings across ephemeral VMs
 ---
 
 ## Quick Start
@@ -37,3 +37,4 @@ features:
 | Plugin | Skills | Hooks |
 |--------|--------|-------|
 | [git](/git/) | commit | auto-stage, pre-stop-commit |
+| [settings-sync](/settings-sync/) | — | backup-settings |

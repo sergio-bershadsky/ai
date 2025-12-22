@@ -1,0 +1,11 @@
+{
+  "name": "settings-sync",
+  "version": "1.0.0",
+  "description": "Sync Claude settings across ephemeral VMs via Git backup",
+  "author": {
+    "name": "Sergey Bershadsky"
+  },
+  "license": "Unlicense",
+  "keywords": ["settings", "sync", "backup", "vm", "ephemeral"],
+  "hooks": "./hooks/hooks.json"
+}

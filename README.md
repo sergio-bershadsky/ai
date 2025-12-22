@@ -22,6 +22,15 @@ Done. The plugin includes:
 | Plugin | Skills | Hooks |
 |--------|--------|-------|
 | git | commit | auto-stage, pre-stop-commit |
+| settings-sync | — | backup-settings |
+
+### Bootstrap for Ephemeral VMs
+
+Restore Claude settings on a new VM:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sergio-bershadsky/ai/main/plugins/settings-sync/scripts/bootstrap.sh | bash
+```
 
 ## Documentation
 
