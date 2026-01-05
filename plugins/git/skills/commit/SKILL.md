@@ -1,6 +1,7 @@
 ---
 name: commit
-description: Create a git commit after completing a task. Use this skill after finishing a logical unit of work to commit changes with a detailed conventional commit message. Always confirms with user before applying the commit. Never pushes to remote.
+description: |
+  This skill should be used when the user asks to commit changes, wants help writing commit messages, or has finished a task and needs to save their work. Triggers include: "commit this", "commit changes", "save my changes", "write a commit", "help me commit", "create a commit", "conventional commit", "/commit". Always confirms with user before committing. Never pushes to remote.
 ---
 
 # Commit Skill

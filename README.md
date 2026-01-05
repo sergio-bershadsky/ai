@@ -14,6 +14,7 @@ Personal Claude Code plugin marketplace for workflow automation.
 
 Done. The plugin includes:
 - `/commit` skill — conventional commits with confirmation
+- `/version` skill — bump semantic version with git tag
 - `auto-stage` hook — auto-stage files after edits
 - `pre-stop-commit` hook — block exit if uncommitted changes
 
@@ -21,7 +22,7 @@ Done. The plugin includes:
 
 | Plugin | Skills | Hooks |
 |--------|--------|-------|
-| git | commit | auto-stage, pre-stop-commit |
+| git | commit, version | auto-stage, pre-stop-commit |
 | settings-sync | — | backup-settings |
 
 ### Bootstrap for Ephemeral VMs

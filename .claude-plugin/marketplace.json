@@ -1,17 +1,17 @@
 {
   "name": "bershadsky-claude-tools",
-  "owner": {
+  "version": "1.0.0",
+  "description": "Personal Claude Code skills and hooks for workflow automation",
+  "author": {
     "name": "Sergey Bershadsky",
-    "email": "sergey@bershadsky.me"
+    "email": "sergio@bershadsky.dev",
+    "url": "https://github.com/sergio-bershadsky"
   },
-  "metadata": {
-    "description": "Personal Claude Code skills and hooks for workflow automation",
-    "version": "1.0.0"
-  },
+  "repository": "https://github.com/sergio-bershadsky/ai",
   "plugins": [
     {
       "name": "git",
-      "source": "./plugins/git",
+      "path": "./plugins/git",
       "description": "Git workflow automation: conventional commits, auto-staging, uncommitted changes protection",
       "version": "1.0.0",
       "keywords": ["git", "commit", "workflow"],
@@ -19,11 +19,19 @@
     },
     {
       "name": "settings-sync",
-      "source": "./plugins/settings-sync",
+      "path": "./plugins/settings-sync",
       "description": "Sync Claude settings across ephemeral VMs via Git backup",
       "version": "1.0.0",
       "keywords": ["settings", "sync", "backup", "vm"],
       "category": "productivity"
+    },
+    {
+      "name": "frappe-dev",
+      "path": "./plugins/frappe-dev",
+      "description": "Professional Frappe Framework v15 development toolkit with multi-layer architecture patterns, DocType scaffolding, REST API v2, and testing",
+      "version": "1.0.0",
+      "keywords": ["frappe", "erpnext", "python", "framework", "v15", "doctype", "api"],
+      "category": "development"
     }
   ]
 }

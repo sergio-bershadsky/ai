@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "Git workflow automation: conventional commits, auto-staging, uncommitted changes protection",
   "author": {
-    "name": "Sergey Bershadsky"
+    "name": "Sergey Bershadsky",
+    "url": "https://github.com/sergio-bershadsky"
   },
   "license": "Unlicense",
-  "keywords": ["git", "commit", "workflow", "automation"],
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  "repository": "https://github.com/sergio-bershadsky/ai",
+  "homepage": "https://github.com/sergio-bershadsky/ai/tree/main/plugins/git",
+  "keywords": ["git", "commit", "workflow", "automation"]
 }

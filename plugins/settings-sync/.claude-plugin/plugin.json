@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "Sync Claude settings across ephemeral VMs via Git backup",
   "author": {
-    "name": "Sergey Bershadsky"
+    "name": "Sergey Bershadsky",
+    "url": "https://github.com/sergio-bershadsky"
   },
   "license": "Unlicense",
-  "keywords": ["settings", "sync", "backup", "vm", "ephemeral"],
-  "hooks": "./hooks/hooks.json"
+  "repository": "https://github.com/sergio-bershadsky/ai",
+  "homepage": "https://github.com/sergio-bershadsky/ai/tree/main/plugins/settings-sync",
+  "keywords": ["settings", "sync", "backup", "vm", "ephemeral"]
 }

@@ -13,6 +13,7 @@ Git workflow automation.
 | Name | Description |
 |------|-------------|
 | [commit](/git/commit) | Create conventional commits with user confirmation |
+| [version](/git/version) | Bump semantic version with git tag |
 
 ## Hooks
 

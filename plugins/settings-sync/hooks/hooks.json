@@ -1,16 +1,14 @@
 {
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": ".*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/backup-settings.py\"",
-            "timeout": 10000
-          }
-        ]
-      }
-    ]
-  }
+  "Stop": [
+    {
+      "matcher": ".*",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/backup-settings.py\"",
+          "timeout": 10000
+        }
+      ]
+    }
+  ]
 }
