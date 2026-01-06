@@ -35,26 +35,26 @@ The `frappe-dev` plugin provides a comprehensive set of skills for building prod
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    API / Controller Layer                    │
-│              (HTTP handling, routing, auth)                  │
+│                    API / Controller Layer                   │
+│              (HTTP handling, routing, auth)                 │
 └─────────────────────────────┬───────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                      Service Layer                           │
-│         (Business logic, validation, orchestration)          │
+│                      Service Layer                          │
+│         (Business logic, validation, orchestration)         │
 └─────────────────────────────┬───────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Repository Layer                          │
-│              (Data access, queries, ORM)                     │
+│                    Repository Layer                         │
+│              (Data access, queries, ORM)                    │
 └─────────────────────────────┬───────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                       Database                               │
-│                    (MariaDB/MySQL)                           │
+│                       Database                              │
+│              (PostgreSQL or MariaDB/MySQL)                  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
