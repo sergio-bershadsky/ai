@@ -1,0 +1,13 @@
+{
+  "name": "marketplace-validator",
+  "version": "1.0.0",
+  "description": "Validates marketplace.json schema after every edit in this repository",
+  "author": {
+    "name": "Sergey Bershadsky",
+    "url": "https://github.com/sergio-bershadsky"
+  },
+  "license": "Unlicense",
+  "repository": "https://github.com/sergio-bershadsky/ai",
+  "homepage": "https://github.com/sergio-bershadsky/ai/tree/main/plugins/marketplace-validator",
+  "keywords": ["marketplace", "validation", "schema"]
+}

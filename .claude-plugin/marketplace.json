@@ -1,36 +1,40 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "bershadsky-claude-tools",
   "version": "1.0.0",
   "description": "Personal Claude Code skills and hooks for workflow automation",
-  "author": {
+  "owner": {
     "name": "Sergey Bershadsky",
-    "email": "sergio@bershadsky.dev",
-    "url": "https://github.com/sergio-bershadsky"
+    "email": "sergio@bershadsky.dev"
   },
   "repository": "https://github.com/sergio-bershadsky/ai",
   "plugins": [
     {
       "name": "git",
-      "path": "./plugins/git",
+      "source": "./plugins/git",
       "description": "Git workflow automation: conventional commits, auto-staging, uncommitted changes protection",
       "version": "1.0.0",
-      "keywords": ["git", "commit", "workflow"],
       "category": "productivity"
     },
     {
       "name": "settings-sync",
-      "path": "./plugins/settings-sync",
+      "source": "./plugins/settings-sync",
       "description": "Sync Claude settings across ephemeral VMs via Git backup",
       "version": "1.0.0",
-      "keywords": ["settings", "sync", "backup", "vm"],
       "category": "productivity"
     },
     {
       "name": "frappe-dev",
-      "path": "./plugins/frappe-dev",
+      "source": "./plugins/frappe-dev",
       "description": "Professional Frappe Framework v15 development toolkit with multi-layer architecture patterns, DocType scaffolding, REST API v2, and testing",
       "version": "1.0.0",
-      "keywords": ["frappe", "erpnext", "python", "framework", "v15", "doctype", "api"],
+      "category": "development"
+    },
+    {
+      "name": "marketplace-validator",
+      "source": "./plugins/marketplace-validator",
+      "description": "Validates marketplace.json schema after every edit in this repository",
+      "version": "1.0.0",
       "category": "development"
     }
   ]
