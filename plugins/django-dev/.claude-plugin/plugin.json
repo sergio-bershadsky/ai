@@ -1,0 +1,13 @@
+{
+  "name": "django-dev",
+  "version": "1.0.0",
+  "description": "Opinionated Django development toolkit with Ninja API, Unfold admin, pytest, and Dynaconf patterns",
+  "author": {
+    "name": "Sergey Bershadsky",
+    "url": "https://github.com/sergio-bershadsky"
+  },
+  "license": "Unlicense",
+  "repository": "https://github.com/sergio-bershadsky/ai",
+  "homepage": "https://github.com/sergio-bershadsky/ai/tree/main/plugins/django-dev",
+  "keywords": ["django", "ninja", "unfold", "pytest", "dynaconf", "development"]
+}

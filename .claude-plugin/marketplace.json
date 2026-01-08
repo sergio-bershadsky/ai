@@ -36,6 +36,13 @@
       "description": "Validates marketplace.json schema after every edit in this repository",
       "version": "1.0.0",
       "category": "development"
+    },
+    {
+      "name": "django-dev",
+      "source": "./plugins/django-dev",
+      "description": "Opinionated Django development toolkit with Ninja API, Unfold admin, pytest, Dynaconf, uv, and Docker patterns",
+      "version": "1.0.0",
+      "category": "development"
     }
   ]
 }
