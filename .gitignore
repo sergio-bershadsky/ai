@@ -5,3 +5,5 @@ docs/.vitepress/dist/
 .DS_Store
 .idea/
 .claude/
+__pycache__/
+*.pyc
