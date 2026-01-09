@@ -244,32 +244,31 @@ class BaseModel(BaseUUID, BaseTimeStamped, BaseSoftDelete):
 
 All classes follow strict member ordering:
 
-1. **`class Meta`** - Always first (if present)
-2. **Properties** (`@property`) - In alphabetical order
-3. **Class/private members** - `_private` and `__dunder__` in alpha order
-4. **Regular methods** - In alphabetical order
+1. **`class Meta`** - ALWAYS FIRST in the class
+2. **Fields** - Class attributes (model fields)
+3. **Managers** - `objects = Manager()`
+4. **Properties** (`@property`) - Alphabetical order
+5. **Private/dunder methods** (`_method`, `__str__`) - Alphabetical order
+6. **Public methods** - Alphabetical order
 
 ```python
 class User(BaseModel):
     """User account model."""
-    # Fields first
-    email = models.EmailField(unique=True)
-    name = models.CharField(max_length=255)
-    is_active = models.BooleanField(default=True)
 
-    # Manager
-    objects = UserManager()
-
-    # 1. Meta class first
+    # 1. class Meta - ALWAYS FIRST
     class Meta:
         db_table = "users"
         ordering = ["-created_at"]
 
-    # 2. Dunder methods
-    def __str__(self) -> str:
-        return self.email
+    # 2. Fields
+    email = models.EmailField(unique=True)
+    name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
 
-    # 3. Properties (alphabetical)
+    # 3. Manager
+    objects = UserManager()
+
+    # 4. Properties (alphabetical)
     @property
     def display_name(self) -> str:
         return self.name or self.email.split("@")[0]
@@ -278,14 +277,20 @@ class User(BaseModel):
     def is_verified(self) -> bool:
         return self.email_verified_at is not None
 
-    # 4. Private methods (alphabetical)
+    # 5. Private/dunder methods (alphabetical)
+    def __repr__(self) -> str:
+        return f"<User {self.email}>"
+
+    def __str__(self) -> str:
+        return self.email
+
     def _calculate_score(self) -> int:
         return len(self.orders.all())
 
     def _validate_status(self) -> bool:
         return self.is_active
 
-    # 5. Public methods (alphabetical)
+    # 6. Public methods (alphabetical)
     def activate(self) -> None:
         self.is_active = True
         self.save(update_fields=["is_active"])
@@ -310,24 +315,30 @@ from ..managers.user import UserManager
 
 class User(BaseModel):
     """User account model."""
-    email = models.EmailField(unique=True)
-    name = models.CharField(max_length=255)
-    is_active = models.BooleanField(default=True)
 
-    objects = UserManager()
-
+    # 1. class Meta - ALWAYS FIRST
     class Meta:
         db_table = "users"
         verbose_name = "User"
         verbose_name_plural = "Users"
         ordering = ["-created_at"]
 
-    def __str__(self) -> str:
-        return self.email
+    # 2. Fields
+    email = models.EmailField(unique=True)
+    name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
 
+    # 3. Manager
+    objects = UserManager()
+
+    # 4. Properties
     @property
     def display_name(self) -> str:
         return self.name or self.email.split("@")[0]
+
+    # 5. Private/dunder methods
+    def __str__(self) -> str:
+        return self.email
 ```
 
 ### Model Package Init

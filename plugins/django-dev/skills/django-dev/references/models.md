@@ -106,15 +106,27 @@ from ..managers.active_user import ActiveUserManager
 
 class ProxyActiveUser(User):
     """Proxy for active users only."""
-    objects = ActiveUserManager()
 
+    # 1. class Meta - ALWAYS FIRST
     class Meta:
         proxy = True
         verbose_name = "Active User"
 
-    def deactivate(self):
+    # 2. Manager
+    objects = ActiveUserManager()
+
+    # 3. Private/dunder methods (alphabetical)
+    def __str__(self) -> str:
+        return f"Active: {self.email}"
+
+    # 4. Public methods (alphabetical)
+    def deactivate(self) -> None:
         self.is_active = False
         self.save(update_fields=["is_active"])
+
+    def send_reminder(self) -> None:
+        # Delegate to service
+        pass
 ```
 
 ## Database Constraints
@@ -127,11 +139,9 @@ from django.db.models import Q, CheckConstraint, UniqueConstraint
 
 
 class Product(BaseModel):
-    name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    sale_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    sku = models.CharField(max_length=50)
+    """Product model with database constraints."""
 
+    # 1. class Meta - ALWAYS FIRST
     class Meta:
         db_table = "products"
         constraints = [
@@ -149,6 +159,12 @@ class Product(BaseModel):
                 name="unique_active_sku",
             ),
         ]
+
+    # 2. Fields
+    name = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    sale_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    sku = models.CharField(max_length=50)
 ```
 
 ## Indexes
@@ -157,10 +173,9 @@ Define indexes for query optimization:
 
 ```python
 class Order(BaseModel):
-    user = models.ForeignKey("User", on_delete=models.PROTECT)
-    status = models.CharField(max_length=20)
-    created_at = models.DateTimeField(auto_now_add=True)
+    """Order model with indexes."""
 
+    # 1. class Meta - ALWAYS FIRST
     class Meta:
         db_table = "orders"
         indexes = [
@@ -172,24 +187,80 @@ class Order(BaseModel):
                 condition=Q(status="pending"),
             ),
         ]
+
+    # 2. Fields
+    user = models.ForeignKey("User", on_delete=models.PROTECT)
+    status = models.CharField(max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True)
 ```
 
-## Model Methods
+## Model Methods & Class Member Ordering
 
-Keep models focused. Complex logic goes in services:
+Keep models focused. Complex logic goes in services. **Always follow strict member ordering:**
+
+1. **`class Meta`** - ALWAYS FIRST in the class
+2. **Fields** - Class attributes (model fields)
+3. **Managers** - `objects = Manager()`
+4. **Properties** (`@property`) - Alphabetical order
+5. **Private/dunder methods** (`_method`, `__str__`) - Alphabetical order
+6. **Public methods** - Alphabetical order
 
 ```python
 class User(BaseModel):
-    email = models.EmailField(unique=True)
+    """User account model."""
 
-    # Simple properties are OK
+    # 1. class Meta - ALWAYS FIRST
+    class Meta:
+        db_table = "users"
+        ordering = ["-created_at"]
+
+    # 2. Fields
+    email = models.EmailField(unique=True)
+    name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+    email_verified_at = models.DateTimeField(null=True, blank=True)
+
+    # 3. Manager
+    objects = UserManager()
+
+    # 4. Properties (alphabetical)
     @property
     def display_name(self) -> str:
         return self.name or self.email.split("@")[0]
 
-    # Simple validation is OK
+    @property
+    def is_verified(self) -> bool:
+        return self.email_verified_at is not None
+
+    # 5. Private/dunder methods (alphabetical)
+    def __repr__(self) -> str:
+        return f"<User {self.email}>"
+
+    def __str__(self) -> str:
+        return self.email
+
+    def _calculate_account_score(self) -> int:
+        return len(self.orders.filter(status="completed"))
+
+    def _validate_email_domain(self) -> bool:
+        return "@" in self.email
+
+    # 6. Public methods (alphabetical)
+    def activate(self) -> None:
+        self.is_active = True
+        self.save(update_fields=["is_active"])
+
     def can_place_order(self) -> bool:
         return self.is_active and not self.is_deleted
+
+    def deactivate(self) -> None:
+        self.is_active = False
+        self.save(update_fields=["is_active"])
+
+    def verify_email(self) -> None:
+        from django.utils import timezone
+        self.email_verified_at = timezone.now()
+        self.save(update_fields=["email_verified_at"])
 
     # Complex logic goes to services
     # DON'T: def send_welcome_email(self): ...

@@ -55,7 +55,7 @@ You are a Django code reviewer specializing in opinionated Django development pa
 - [ ] Proxy models prefixed with `Proxy`
 - [ ] All models inherit from `BaseModel` (UUID + timestamps + soft delete)
 - [ ] Custom managers in `managers/` package
-- [ ] Class member ordering: Meta → __dunder__ → @property → _private → public (all alphabetical)
+- [ ] Class member ordering: Meta (FIRST) → Fields → Managers → @property → _private/__dunder__ → public (all alphabetical)
 
 ### Forms
 - [ ] Each form in its own file in `forms/` package
