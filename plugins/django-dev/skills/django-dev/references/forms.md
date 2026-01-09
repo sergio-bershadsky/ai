@@ -62,6 +62,7 @@ from ..models import User
 class UserForm(BaseModelForm):
     """Form for creating/editing users."""
 
+    # 1. class Meta - ALWAYS FIRST
     class Meta:
         model = User
         fields = ["email", "name", "is_active"]
@@ -70,6 +71,7 @@ class UserForm(BaseModelForm):
             "name": forms.TextInput(attrs={"placeholder": "Full Name"}),
         }
 
+    # 2. Methods
     def clean_email(self):
         email = self.cleaned_data.get("email", "").lower().strip()
 
@@ -87,13 +89,16 @@ class UserForm(BaseModelForm):
 class UserRegistrationForm(BaseModelForm):
     """Form for user registration with password."""
 
-    password = forms.CharField(widget=forms.PasswordInput)
-    password_confirm = forms.CharField(widget=forms.PasswordInput)
-
+    # 1. class Meta - ALWAYS FIRST
     class Meta:
         model = User
         fields = ["email", "name", "password"]
 
+    # 2. Additional fields
+    password = forms.CharField(widget=forms.PasswordInput)
+    password_confirm = forms.CharField(widget=forms.PasswordInput)
+
+    # 3. Methods
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
