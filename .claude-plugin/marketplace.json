@@ -43,6 +43,13 @@
       "description": "Opinionated Django development toolkit with Ninja API, Unfold admin, pytest, Dynaconf, uv, and Docker patterns",
       "version": "1.0.0",
       "category": "development"
+    },
+    {
+      "name": "secondbrain",
+      "source": "./plugins/secondbrain",
+      "description": "Knowledge base scaffolding with microdatabases, VitePress portal, configurable entities (ADRs, Notes, Tasks, Discussions), freshness tracking, and background refinement",
+      "version": "1.0.0",
+      "category": "productivity"
     }
   ]
 }

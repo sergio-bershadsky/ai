@@ -1,0 +1,50 @@
+type: object
+required:
+  - last_number
+  - records
+properties:
+  last_number:
+    type: integer
+    description: Highest ADR number across all categories
+  records:
+    type: array
+    items:
+      type: object
+      required:
+        - number
+        - title
+        - status
+        - created
+        - file
+      properties:
+        number:
+          type: integer
+        title:
+          type: string
+        status:
+          type: string
+          enum:
+            - draft
+            - proposed
+            - admitted
+            - applied
+            - implemented
+            - tested
+            - rejected
+            - canceled
+        category:
+          type: string
+          enum:
+            - infrastructure
+            - feature
+            - process
+        created:
+          type: string
+          format: date
+        updated:
+          type: string
+          format: date
+        file:
+          type: string
+        author:
+          type: string

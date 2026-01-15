@@ -1,0 +1,55 @@
+import { defineConfig } from 'vitepress'
+import { withMermaid } from 'vitepress-plugin-mermaid'
+import taskLists from 'markdown-it-task-lists'
+
+export default withMermaid(defineConfig({
+  title: '{{project_name}}',
+  description: '{{description}}',
+  base: '/',
+
+  markdown: {
+    config: (md) => {
+      md.use(taskLists, { enabled: true, label: false })
+    }
+  },
+
+  themeConfig: {
+    nav: [
+      { text: 'Home', link: '/' },
+{{#each entities}}
+      { text: '{{label}}', link: '/{{slug}}/' },
+{{/each}}
+    ],
+
+    sidebar: {
+{{#each entities}}
+      '/{{slug}}/': [
+        {
+          text: '{{label}}',
+          items: [
+            { text: 'Overview', link: '/{{slug}}/' },
+            { text: 'Template', link: '/{{slug}}/TEMPLATE' }
+          ]
+        }
+      ],
+{{/each}}
+    },
+
+    search: {
+      provider: 'local'
+    },
+
+    socialLinks: [
+      // { icon: 'github', link: 'https://github.com/your-repo' }
+    ]
+  },
+
+  vite: {
+    server: {
+      host: '0.0.0.0',
+      cors: {
+        origin: '*'
+      }
+    }
+  }
+}))

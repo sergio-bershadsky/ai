@@ -1,0 +1,56 @@
+---
+title: {{label}}
+---
+
+# {{label}}
+
+{{description}}
+
+## Overview
+
+<EntityTable
+  :data="{{slug}}Data"
+  :columns="columns"
+  entity-name="{{slug}}"
+/>
+
+<script setup>
+import { data as {{slug}}Data } from '../.vitepress/data/{{slug}}.data'
+
+const columns = [
+{{#each columns}}
+  {
+    key: '{{key}}',
+    label: '{{label}}',
+    sortable: {{sortable}},
+{{#if link}}
+    link: true,
+{{/if}}
+{{#if badge}}
+    badge: true,
+{{/if}}
+{{#if hideOnMobile}}
+    hideOnMobile: true,
+{{/if}}
+  },
+{{/each}}
+]
+</script>
+
+## Create New {{singular}}
+
+```bash
+/secondbrain-{{slug_singular}} {{example_args}}
+```
+
+## Template
+
+See [Template](./TEMPLATE) for the standard {{singular}} format.
+
+## Status Workflow
+
+{{#if status_workflow}}
+```
+{{status_workflow}}
+```
+{{/if}}

@@ -1,0 +1,334 @@
+#!/usr/bin/env python3
+"""
+Secondbrain Tracking Library
+
+Auto-generated CRUD operations for microdatabase entities.
+Project: {{project_name}}
+Generated: {{timestamp}}
+"""
+
+import yaml
+from pathlib import Path
+from datetime import datetime, date
+from typing import Any, Optional, List
+
+try:
+    import jsonschema
+    HAS_JSONSCHEMA = True
+except ImportError:
+    HAS_JSONSCHEMA = False
+
+
+DATA_DIR = Path(__file__).parent.parent / "data"
+CONFIG_PATH = DATA_DIR / "config.yaml"
+
+
+class ValidationError(Exception):
+    """Raised when data fails schema validation."""
+    pass
+
+
+# ============================================================================
+# Core YAML Operations
+# ============================================================================
+
+def _load_yaml(path: Path) -> Any:
+    """Load YAML file."""
+    if not path.exists():
+        return None
+    with open(path, 'r') as f:
+        return yaml.safe_load(f)
+
+
+def _save_yaml(path: Path, data: Any) -> None:
+    """Save data to YAML file with date handling."""
+    def date_representer(dumper, data):
+        return dumper.represent_scalar('tag:yaml.org,2002:str', data.isoformat())
+
+    yaml.add_representer(date, date_representer)
+    yaml.add_representer(datetime, date_representer)
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, 'w') as f:
+        yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+
+
+def _validate(data: Any, schema: dict) -> None:
+    """Validate data against JSON Schema."""
+    if not HAS_JSONSCHEMA:
+        return
+    try:
+        jsonschema.validate(instance=data, schema=schema)
+    except jsonschema.ValidationError as e:
+        raise ValidationError(f"Validation failed: {e.message}")
+
+
+# ============================================================================
+# Config Operations
+# ============================================================================
+
+def load_config() -> dict:
+    """Load configuration."""
+    return _load_yaml(CONFIG_PATH) or {}
+
+
+def save_config(data: dict) -> None:
+    """Save configuration."""
+    _save_yaml(CONFIG_PATH, data)
+
+
+def get_entity_config(entity: str) -> Optional[dict]:
+    """Get entity configuration."""
+    config = load_config()
+    return config.get('entities', {}).get(entity)
+
+
+def is_entity_enabled(entity: str) -> bool:
+    """Check if entity is enabled."""
+    entity_config = get_entity_config(entity)
+    return entity_config.get('enabled', False) if entity_config else False
+
+
+def list_enabled_entities() -> List[str]:
+    """List all enabled entities."""
+    config = load_config()
+    entities = config.get('entities', {})
+    return [name for name, cfg in entities.items() if cfg.get('enabled', False)]
+
+
+# ============================================================================
+# Generic Entity Operations
+# ============================================================================
+
+def load_entity_records(entity: str) -> dict:
+    """Load records for an entity with validation."""
+    entity_dir = DATA_DIR / entity
+    records_path = entity_dir / "records.yaml"
+    schema_path = entity_dir / "schema.yaml"
+
+    if not records_path.exists():
+        return {'records': []}
+
+    data = _load_yaml(records_path)
+    if schema_path.exists():
+        schema = _load_yaml(schema_path)
+        if schema:
+            _validate(data, schema)
+
+    return data or {'records': []}
+
+
+def save_entity_records(entity: str, data: dict) -> None:
+    """Save entity records with validation."""
+    entity_dir = DATA_DIR / entity
+    records_path = entity_dir / "records.yaml"
+    schema_path = entity_dir / "schema.yaml"
+
+    if schema_path.exists():
+        schema = _load_yaml(schema_path)
+        if schema:
+            _validate(data, schema)
+
+    _save_yaml(records_path, data)
+
+
+def add_record(entity: str, record: dict) -> dict:
+    """Add a record to an entity."""
+    data = load_entity_records(entity)
+    if 'records' not in data:
+        data['records'] = []
+    data['records'].append(record)
+    save_entity_records(entity, data)
+    return record
+
+
+def get_record(entity: str, field: str, value: Any) -> Optional[dict]:
+    """Find a record by field value."""
+    data = load_entity_records(entity)
+    for record in data.get('records', []):
+        if record.get(field) == value:
+            return record
+    return None
+
+
+def update_record(entity: str, field: str, value: Any, updates: dict) -> Optional[dict]:
+    """Update a record by field value."""
+    data = load_entity_records(entity)
+    for record in data.get('records', []):
+        if record.get(field) == value:
+            record.update(updates)
+            save_entity_records(entity, data)
+            return record
+    return None
+
+
+def get_next_number(entity: str) -> int:
+    """Get the next sequential number for a numbered entity."""
+    data = load_entity_records(entity)
+    last = data.get('last_number', 0)
+    return last + 1
+
+
+def increment_last_number(entity: str) -> int:
+    """Increment and return the new last number."""
+    data = load_entity_records(entity)
+    data['last_number'] = data.get('last_number', 0) + 1
+    save_entity_records(entity, data)
+    return data['last_number']
+
+
+# ============================================================================
+# Discussion-specific (Monthly Partitions)
+# ============================================================================
+
+def get_discussion_file(year_month: str = None) -> Path:
+    """Get path to discussion file for a given month."""
+    if year_month is None:
+        year_month = date.today().strftime('%Y-%m')
+    return DATA_DIR / "discussions" / f"{year_month}.yaml"
+
+
+def load_discussions(year_month: str = None) -> List[dict]:
+    """Load discussions for a month."""
+    path = get_discussion_file(year_month)
+    schema_path = DATA_DIR / "discussions" / "schema.yaml"
+
+    data = _load_yaml(path) or []
+
+    if schema_path.exists():
+        schema = _load_yaml(schema_path)
+        if schema:
+            _validate(data, schema)
+
+    return data
+
+
+def save_discussions(data: List[dict], year_month: str = None) -> None:
+    """Save discussions for a month."""
+    path = get_discussion_file(year_month)
+    schema_path = DATA_DIR / "discussions" / "schema.yaml"
+
+    if schema_path.exists():
+        schema = _load_yaml(schema_path)
+        if schema:
+            _validate(data, schema)
+
+    _save_yaml(path, data)
+
+
+def add_discussion(member: str, topic: str, file: str, source: str = "manual") -> dict:
+    """Add a discussion to the current month."""
+    discussions = load_discussions()
+    record = {
+        'date': date.today().isoformat(),
+        'member': member,
+        'topic': topic,
+        'file': file,
+        'source': source
+    }
+    discussions.append(record)
+    save_discussions(discussions)
+    return record
+
+
+def list_discussion_months() -> List[str]:
+    """List all months with discussions."""
+    disc_dir = DATA_DIR / "discussions"
+    if not disc_dir.exists():
+        return []
+    return sorted([
+        f.stem for f in disc_dir.glob("*.yaml")
+        if f.stem != "schema"
+    ], reverse=True)
+
+
+# ============================================================================
+# Meta Operations
+# ============================================================================
+
+def update_meta(key: str, value: Any) -> None:
+    """Update meta field in config."""
+    config = load_config()
+    if 'meta' not in config:
+        config['meta'] = {}
+    config['meta'][key] = value
+    save_config(config)
+
+
+def get_last_freshness_check() -> Optional[str]:
+    """Get last freshness check date."""
+    config = load_config()
+    return config.get('meta', {}).get('last_freshness_check')
+
+
+def record_freshness_check() -> None:
+    """Record current date as last freshness check."""
+    update_meta('last_freshness_check', date.today().isoformat())
+
+
+# ============================================================================
+# Freshness Checking
+# ============================================================================
+
+def get_stale_entities(days_threshold: int = None) -> List[dict]:
+    """Get entities that haven't been updated recently."""
+    stale = []
+    config = load_config()
+
+    for entity_name in list_enabled_entities():
+        entity_config = config.get('entities', {}).get(entity_name, {})
+        threshold = days_threshold or entity_config.get('freshness', {}).get('stale_after_days', 30)
+
+        data = load_entity_records(entity_name)
+        records = data.get('records', [])
+
+        if not records:
+            stale.append({
+                'entity': entity_name,
+                'reason': 'No records',
+                'last_activity': None
+            })
+            continue
+
+        # Find most recent record
+        dates = []
+        for r in records:
+            for field in ['updated', 'created', 'date']:
+                if field in r and r[field]:
+                    try:
+                        d = datetime.fromisoformat(r[field]).date() if isinstance(r[field], str) else r[field]
+                        dates.append(d)
+                    except:
+                        pass
+
+        if dates:
+            last = max(dates)
+            days_old = (date.today() - last).days
+            if days_old > threshold:
+                stale.append({
+                    'entity': entity_name,
+                    'reason': f'{days_old} days since last update',
+                    'last_activity': last.isoformat()
+                })
+
+    return stale
+
+
+# ============================================================================
+# CLI
+# ============================================================================
+
+if __name__ == "__main__":
+    print(f"Project: {load_config().get('project', {}).get('name', 'Unknown')}")
+    print(f"Enabled entities: {list_enabled_entities()}")
+
+    for entity in list_enabled_entities():
+        data = load_entity_records(entity)
+        count = len(data.get('records', []))
+        print(f"  - {entity}: {count} records")
+
+    stale = get_stale_entities()
+    if stale:
+        print(f"\nStale entities: {len(stale)}")
+        for s in stale:
+            print(f"  - {s['entity']}: {s['reason']}")

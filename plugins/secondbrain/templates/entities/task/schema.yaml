@@ -1,0 +1,54 @@
+type: object
+required:
+  - last_number
+  - records
+properties:
+  last_number:
+    type: integer
+    description: Highest task number
+  records:
+    type: array
+    items:
+      type: object
+      required:
+        - number
+        - title
+        - status
+        - created
+      properties:
+        number:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+            - todo
+            - in_progress
+            - blocked
+            - done
+            - canceled
+        priority:
+          type: string
+          enum:
+            - low
+            - medium
+            - high
+            - critical
+        created:
+          type: string
+          format: date
+        due_date:
+          type: string
+          format: date
+        completed_date:
+          type: string
+          format: date
+        assignee:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string

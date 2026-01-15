@@ -1,0 +1,36 @@
+type: object
+required:
+  - records
+properties:
+  records:
+    type: array
+    items:
+      type: object
+      required:
+        - id
+        - title
+        - created
+        - file
+      properties:
+        id:
+          type: string
+          description: Date-based ID (YYYY-MM-DD-slug)
+        title:
+          type: string
+        created:
+          type: string
+          format: date
+        updated:
+          type: string
+          format: date
+        file:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum:
+            - active
+            - archived

@@ -1,0 +1,12 @@
+{
+  "name": "secondbrain",
+  "version": "1.0.0",
+  "description": "Flexible knowledge base scaffolding: personal KB, project docs, team collaboration with configurable entities, microdatabases, and VitePress portal",
+  "author": {
+    "name": "Sergey Bershadsky",
+    "email": "sergio@bershadsky.dev"
+  },
+  "license": "Unlicense",
+  "repository": "https://github.com/sergio-bershadsky/ai",
+  "keywords": ["documentation", "knowledge-base", "vitepress", "adr", "notes", "tasks", "discussions", "second-brain"]
+}

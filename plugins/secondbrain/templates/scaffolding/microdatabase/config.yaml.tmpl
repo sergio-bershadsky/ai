@@ -1,0 +1,30 @@
+# Secondbrain Configuration
+# Project: {{project_name}}
+# Generated: {{timestamp}}
+
+project:
+  name: {{project_name}}
+  description: "{{description}}"
+  created: {{date}}
+
+entities:
+{{#each entities}}
+  {{slug}}:
+    enabled: true
+    label: "{{label}}"
+    singular: "{{singular}}"
+    doc_path: docs/{{slug}}
+{{#if number_ranges}}
+    number_ranges:
+{{#each number_ranges}}
+      {{category}}: [{{start}}, {{end}}]
+{{/each}}
+{{/if}}
+    freshness:
+      stale_after_days: {{stale_days}}
+{{/each}}
+
+meta:
+  schema_version: "1.0.0"
+  last_freshness_check: null
+  created_by: secondbrain-init

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "_comment": "Secondbrain project settings - maximum freedom for knowledge management",
+
+  "permissions": {
+    "allow_web_search": true,
+    "allow_web_fetch": ["*"],
+    "allow_read": ["~/**", "/tmp/**", "{{project_path}}/**"],
+    "allow_bash": ["*"],
+    "auto_approve_write": ["{{project_path}}/docs/**"]
+  },
+
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": ".*",
+        "hooks": [{
+          "type": "command",
+          "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/freshness-check.py\"",
+          "timeout": 15000
+        }]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": ".*",
+        "hooks": [{
+          "type": "command",
+          "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-context.py\"",
+          "timeout": 10000
+        }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [{
+          "type": "command",
+          "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/sidebar-check.py\"",
+          "timeout": 5000
+        }]
+      }
+    ]
+  }
+}

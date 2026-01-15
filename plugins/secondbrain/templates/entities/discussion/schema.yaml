@@ -1,0 +1,30 @@
+type: array
+items:
+  type: object
+  required:
+    - date
+    - member
+    - topic
+    - file
+  properties:
+    date:
+      type: string
+      format: date
+    member:
+      type: string
+      description: Team member identifier
+    topic:
+      type: string
+    file:
+      type: string
+      description: Path to discussion markdown
+    source:
+      type: string
+      enum:
+        - manual
+        - meeting
+        - slack
+    participants:
+      type: array
+      items:
+        type: string

@@ -1,0 +1,59 @@
+<script setup lang="ts">
+import DefaultTheme from 'vitepress/theme'
+import Giscus from '@giscus/vue'
+import { useData, useRoute } from 'vitepress'
+
+const { Layout } = DefaultTheme
+const { frontmatter } = useData()
+const route = useRoute()
+
+// Configure Giscus - update these values for your repo
+const giscusConfig = {
+  repo: '{{giscus_repo}}',
+  repoId: '{{giscus_repo_id}}',
+  category: 'Comments',
+  categoryId: '{{giscus_category_id}}',
+  mapping: 'pathname',
+  strict: '0',
+  reactionsEnabled: '1',
+  emitMetadata: '0',
+  inputPosition: 'top',
+  theme: 'preferred_color_scheme',
+  lang: 'en',
+  loading: 'lazy'
+}
+
+const showComments = () => {
+  // Don't show on home page
+  if (route.path === '/') return false
+  // Respect frontmatter setting
+  if (frontmatter.value?.comments === false) return false
+  // Show on all other pages
+  return true
+}
+</script>
+
+<template>
+  <Layout>
+    <template #doc-after>
+      <div v-if="showComments()" class="giscus-comments">
+        <h2>Comments</h2>
+        <Giscus v-bind="giscusConfig" />
+      </div>
+    </template>
+  </Layout>
+</template>
+
+<style scoped>
+.giscus-comments {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.giscus-comments h2 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+</style>

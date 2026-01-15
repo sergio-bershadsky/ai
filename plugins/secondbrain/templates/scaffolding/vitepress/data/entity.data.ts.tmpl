@@ -1,0 +1,43 @@
+import fs from 'fs'
+import path from 'path'
+import yaml from 'js-yaml'
+
+interface {{EntityType}}Record {
+  {{#each fields}}
+  {{name}}: {{type}}
+  {{/each}}
+  url: string
+}
+
+declare const data: {{EntityType}}Record[]
+export { data }
+
+export default {
+  watch: ['../../../.claude/data/{{slug}}/*.yaml'],
+
+  load(): {{EntityType}}Record[] {
+    const dataDir = path.resolve(__dirname, '../../../.claude/data')
+    const recordsPath = path.join(dataDir, '{{slug}}', 'records.yaml')
+
+    if (!fs.existsSync(recordsPath)) {
+      return []
+    }
+
+    try {
+      const content = fs.readFileSync(recordsPath, 'utf-8')
+      const recordsFile = yaml.load(content) as any
+
+      if (!recordsFile?.records) {
+        return []
+      }
+
+      return recordsFile.records.map((record: any) => ({
+        ...record,
+        url: '/' + record.file.replace(/^docs\//, '').replace(/\.md$/, '')
+      }))
+    } catch (error) {
+      console.error('Error loading {{slug}} data:', error)
+      return []
+    }
+  }
+}

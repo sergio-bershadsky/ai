@@ -1,0 +1,59 @@
+---
+layout: home
+
+hero:
+  name: "{{project_name}}"
+  text: "{{description}}"
+  tagline: Your personal knowledge management system
+  actions:
+    - theme: brand
+      text: Get Started
+      link: /{{first_entity}}/
+    - theme: alt
+      text: View on GitHub
+      link: {{github_url}}
+
+features:
+{{#each entities}}
+  - icon: {{icon}}
+    title: {{label}}
+    details: {{description}}
+    link: /{{slug}}/
+{{/each}}
+---
+
+# Welcome to {{project_name}}
+
+This is your personal **second brain** — a searchable, version-controlled knowledge base.
+
+## Quick Start
+
+```bash
+# Add a decision
+/secondbrain-adr infrastructure my-first-decision
+
+# Capture a note
+/secondbrain-note important-thought
+
+# Document a discussion
+/secondbrain-discussion colleague topic-name
+
+# Check what needs attention
+/secondbrain-freshness
+```
+
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| Microdatabases | YAML-based storage with JSON Schema validation |
+| VitePress Portal | Fast, searchable documentation site |
+| Entity Types | ADRs, Discussions, Notes, Tasks, Custom |
+| Automation | Claude hooks for freshness checks and sidebar validation |
+| Maximum Freedom | Pre-configured Claude settings for seamless editing |
+
+## Getting Help
+
+- `/secondbrain-freshness` — See what needs attention
+- `/secondbrain-entity` — Add a custom entity type
+- Check the sidebar for specific entity documentation

@@ -1,0 +1,555 @@
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+
+interface Column {
+  key: string
+  label: string
+  sortable?: boolean
+  filterable?: boolean
+  width?: string
+  link?: boolean
+  hideOnMobile?: boolean
+  badge?: boolean
+  type?: 'text' | 'date' | 'select'
+}
+
+const props = defineProps<{
+  data: any[]
+  columns: Column[]
+  entityName?: string
+  groupBy?: string
+}>()
+
+// Filter state
+const filters = ref<Record<string, string>>({})
+const dateFrom = ref('')
+const dateTo = ref('')
+
+// Sort state
+const sortKey = ref(props.columns[0]?.key || '')
+const sortAsc = ref(false)
+
+// Get filterable columns
+const filterableColumns = computed(() =>
+  props.columns.filter(col => col.filterable !== false && col.sortable)
+)
+
+// Get unique values for select filters
+const getUniqueValues = (key: string) => {
+  const values = new Set<string>()
+  props.data.forEach(item => {
+    if (item[key]) values.add(String(item[key]))
+  })
+  return Array.from(values).sort()
+}
+
+// Filtered data
+const filteredData = computed(() => {
+  let result = [...props.data]
+
+  // Apply select/text filters
+  for (const [key, value] of Object.entries(filters.value)) {
+    if (value) {
+      result = result.filter(item => {
+        const itemValue = String(item[key] || '').toLowerCase()
+        return itemValue.includes(value.toLowerCase())
+      })
+    }
+  }
+
+  // Apply date range filters
+  if (dateFrom.value) {
+    result = result.filter(item => {
+      const date = item.date || item.created || item.date_created
+      return date && date >= dateFrom.value
+    })
+  }
+  if (dateTo.value) {
+    result = result.filter(item => {
+      const date = item.date || item.created || item.date_created
+      return date && date <= dateTo.value
+    })
+  }
+
+  return result
+})
+
+// Sorted data
+const sortedData = computed(() => {
+  if (!sortKey.value) return filteredData.value
+
+  return [...filteredData.value].sort((a, b) => {
+    const aVal = a[sortKey.value] ?? ''
+    const bVal = b[sortKey.value] ?? ''
+
+    let cmp: number
+    if (typeof aVal === 'number' && typeof bVal === 'number') {
+      cmp = aVal - bVal
+    } else {
+      cmp = String(aVal).localeCompare(String(bVal))
+    }
+
+    return sortAsc.value ? cmp : -cmp
+  })
+})
+
+// Grouped data (optional)
+const groupedData = computed(() => {
+  if (!props.groupBy) return null
+
+  const groups: Record<string, { label: string; items: any[] }> = {}
+
+  for (const item of sortedData.value) {
+    const groupKey = item[props.groupBy] || 'Other'
+    if (!groups[groupKey]) {
+      groups[groupKey] = {
+        label: item[`${props.groupBy}Label`] || groupKey,
+        items: []
+      }
+    }
+    groups[groupKey].items.push(item)
+  }
+
+  return groups
+})
+
+// Has date column
+const hasDateColumn = computed(() =>
+  props.columns.some(col => col.type === 'date' || col.key.includes('date') || col.key === 'created')
+)
+
+// Sort handler
+function sort(key: string) {
+  if (sortKey.value === key) {
+    sortAsc.value = !sortAsc.value
+  } else {
+    sortKey.value = key
+    sortAsc.value = true
+  }
+}
+
+// Clear all filters
+function clearFilters() {
+  filters.value = {}
+  dateFrom.value = ''
+  dateTo.value = ''
+}
+
+// Has active filters
+const hasActiveFilters = computed(() =>
+  Object.values(filters.value).some(v => v) || dateFrom.value || dateTo.value
+)
+
+// Get badge class for status/priority
+function getBadgeClass(key: string, value: string): string {
+  if (!value) return ''
+  const normalizedValue = String(value).toLowerCase().replace(/\s+/g, '-')
+  if (key === 'status') return `status-badge status-${normalizedValue}`
+  if (key === 'priority') return `status-badge priority-${normalizedValue}`
+  return ''
+}
+</script>
+
+<template>
+  <div class="entity-table">
+    <!-- Filters -->
+    <div v-if="filterableColumns.length > 0 || hasDateColumn" class="filters">
+      <!-- Select filters -->
+      <div v-for="col in filterableColumns" :key="col.key" class="filter-group">
+        <label :for="`filter-${col.key}`">{{ col.label }}</label>
+        <select
+          :id="`filter-${col.key}`"
+          v-model="filters[col.key]"
+          class="filter-select"
+        >
+          <option value="">All</option>
+          <option
+            v-for="val in getUniqueValues(col.key)"
+            :key="val"
+            :value="val"
+          >
+            {{ val }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Date range filters -->
+      <template v-if="hasDateColumn">
+        <div class="filter-group">
+          <label for="filter-date-from">From</label>
+          <input
+            id="filter-date-from"
+            v-model="dateFrom"
+            type="date"
+            class="filter-date"
+          />
+        </div>
+        <div class="filter-group">
+          <label for="filter-date-to">To</label>
+          <input
+            id="filter-date-to"
+            v-model="dateTo"
+            type="date"
+            class="filter-date"
+          />
+        </div>
+      </template>
+
+      <!-- Clear button -->
+      <button
+        v-if="hasActiveFilters"
+        class="clear-btn"
+        @click="clearFilters"
+      >
+        Clear
+      </button>
+    </div>
+
+    <!-- Grouped display -->
+    <template v-if="groupedData">
+      <div v-for="(group, key) in groupedData" :key="key" class="table-group">
+        <h3 class="group-header">{{ group.label }}</h3>
+        <table>
+          <thead>
+            <tr>
+              <th
+                v-for="col in columns"
+                :key="col.key"
+                :class="{
+                  sortable: col.sortable,
+                  'hide-mobile': col.hideOnMobile,
+                  'sorted': sortKey === col.key
+                }"
+                :style="{ width: col.width }"
+                @click="col.sortable && sort(col.key)"
+              >
+                {{ col.label }}
+                <span v-if="col.sortable && sortKey === col.key" class="sort-indicator">
+                  {{ sortAsc ? '↑' : '↓' }}
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in group.items" :key="item.id || item.number">
+              <td
+                v-for="col in columns"
+                :key="col.key"
+                :class="{ 'hide-mobile': col.hideOnMobile }"
+              >
+                <a v-if="col.link && item.url" :href="item.url">
+                  {{ item[col.key] }}
+                </a>
+                <span
+                  v-else-if="col.badge"
+                  :class="getBadgeClass(col.key, item[col.key])"
+                >
+                  {{ item[col.key] }}
+                </span>
+                <span v-else>{{ item[col.key] }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </template>
+
+    <!-- Non-grouped display -->
+    <template v-else>
+      <table>
+        <thead>
+          <tr>
+            <th
+              v-for="col in columns"
+              :key="col.key"
+              :class="{
+                sortable: col.sortable,
+                'hide-mobile': col.hideOnMobile,
+                'sorted': sortKey === col.key
+              }"
+              :style="{ width: col.width }"
+              @click="col.sortable && sort(col.key)"
+            >
+              {{ col.label }}
+              <span v-if="col.sortable && sortKey === col.key" class="sort-indicator">
+                {{ sortAsc ? '↑' : '↓' }}
+              </span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in sortedData" :key="item.id || item.number">
+            <td
+              v-for="col in columns"
+              :key="col.key"
+              :class="{ 'hide-mobile': col.hideOnMobile }"
+            >
+              <a v-if="col.link && item.url" :href="item.url">
+                {{ item[col.key] }}
+              </a>
+              <span
+                v-else-if="col.badge"
+                :class="getBadgeClass(col.key, item[col.key])"
+              >
+                {{ item[col.key] }}
+              </span>
+              <span v-else>{{ item[col.key] }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
+
+    <!-- Footer -->
+    <div class="footer">
+      {{ sortedData.length }} of {{ data.length }} {{ entityName || 'items' }}
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.entity-table {
+  margin: 1rem 0;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--vp-c-bg-soft);
+  border-radius: 8px;
+  align-items: flex-end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.filter-group label {
+  font-size: 0.75rem;
+  color: var(--vp-c-text-2);
+  font-weight: 500;
+}
+
+.filter-select,
+.filter-date {
+  padding: 0.5rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 4px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  font-size: 0.875rem;
+  min-width: 120px;
+}
+
+.filter-select:focus,
+.filter-date:focus {
+  outline: none;
+  border-color: var(--vp-c-brand-1);
+}
+
+.clear-btn {
+  padding: 0.5rem 1rem;
+  background: var(--vp-c-default-soft);
+  color: var(--vp-c-text-1);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  align-self: flex-end;
+}
+
+.clear-btn:hover {
+  background: var(--vp-c-default-3);
+}
+
+/* Table group */
+.table-group {
+  margin-bottom: 2rem;
+}
+
+.group-header {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--vp-c-brand-1);
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+th {
+  font-weight: 600;
+  background: var(--vp-c-bg-soft);
+  font-size: 0.875rem;
+}
+
+th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+th.sortable:hover {
+  color: var(--vp-c-brand-1);
+}
+
+th.sorted {
+  color: var(--vp-c-brand-1);
+}
+
+.sort-indicator {
+  margin-left: 0.25rem;
+  font-size: 0.75rem;
+}
+
+tbody tr:hover {
+  background: var(--vp-c-bg-soft);
+}
+
+td a {
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+}
+
+td a:hover {
+  text-decoration: underline;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-draft {
+  background: var(--vp-c-default-soft);
+  color: var(--vp-c-text-2);
+}
+
+.status-proposed {
+  background: rgba(59, 130, 246, 0.15);
+  color: rgb(59, 130, 246);
+}
+
+.status-admitted {
+  background: rgba(139, 92, 246, 0.15);
+  color: rgb(139, 92, 246);
+}
+
+.status-applied,
+.status-in-progress,
+.status-in_progress {
+  background: rgba(245, 158, 11, 0.15);
+  color: rgb(245, 158, 11);
+}
+
+.status-implemented,
+.status-done,
+.status-completed {
+  background: rgba(34, 197, 94, 0.15);
+  color: rgb(34, 197, 94);
+}
+
+.status-tested {
+  background: rgba(20, 184, 166, 0.15);
+  color: rgb(20, 184, 166);
+}
+
+.status-rejected {
+  background: rgba(239, 68, 68, 0.15);
+  color: rgb(239, 68, 68);
+}
+
+.status-canceled,
+.status-blocked {
+  background: rgba(249, 115, 22, 0.15);
+  color: rgb(249, 115, 22);
+}
+
+.status-todo {
+  background: var(--vp-c-default-soft);
+  color: var(--vp-c-text-2);
+}
+
+.status-active {
+  background: rgba(34, 197, 94, 0.15);
+  color: rgb(34, 197, 94);
+}
+
+.status-archived {
+  background: var(--vp-c-default-soft);
+  color: var(--vp-c-text-3);
+}
+
+/* Priority badges */
+.priority-low {
+  background: var(--vp-c-default-soft);
+  color: var(--vp-c-text-2);
+}
+
+.priority-medium {
+  background: rgba(59, 130, 246, 0.15);
+  color: rgb(59, 130, 246);
+}
+
+.priority-high {
+  background: rgba(245, 158, 11, 0.15);
+  color: rgb(245, 158, 11);
+}
+
+.priority-critical {
+  background: rgba(239, 68, 68, 0.15);
+  color: rgb(239, 68, 68);
+}
+
+/* Footer */
+.footer {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--vp-c-text-2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .filter-group {
+    width: 100%;
+  }
+
+  .filter-select,
+  .filter-date {
+    width: 100%;
+  }
+
+  th, td {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .hide-mobile {
+    display: none;
+  }
+}
+</style>
