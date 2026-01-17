@@ -10,6 +10,7 @@ export default defineConfig({
       { text: 'Git Plugin', link: '/git/' },
       { text: 'Frappe Dev', link: '/frappe-dev/' },
       { text: 'Settings Sync', link: '/settings-sync/' },
+      { text: 'Replit Prompts', link: '/replit-prompts/' },
     ],
 
     sidebar: [
@@ -45,6 +46,15 @@ export default defineConfig({
         text: 'Settings Sync Plugin',
         items: [
           { text: 'Overview', link: '/settings-sync/' },
+        ]
+      },
+      {
+        text: 'Replit Prompts Plugin',
+        items: [
+          { text: 'Overview', link: '/replit-prompts/' },
+          { text: 'replit-prompt', link: '/replit-prompts/replit-prompt' },
+          { text: 'replit-prd', link: '/replit-prompts/replit-prd' },
+          { text: 'replit-plan', link: '/replit-prompts/replit-plan' },
         ]
       }
     ],

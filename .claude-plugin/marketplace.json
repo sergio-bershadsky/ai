@@ -50,6 +50,13 @@
       "description": "Knowledge base scaffolding with microdatabases, VitePress portal, configurable entities (ADRs, Notes, Tasks, Discussions), freshness tracking, and background refinement",
       "version": "1.0.0",
       "category": "productivity"
+    },
+    {
+      "name": "replit-prompts",
+      "source": "./plugins/replit-prompts",
+      "description": "Generate optimized prompts, PRDs, and task plans for Replit Agent that maximize AI understanding and minimize iterations",
+      "version": "1.0.0",
+      "category": "productivity"
     }
   ]
 }
