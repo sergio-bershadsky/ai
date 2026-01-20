@@ -117,7 +117,13 @@ Add to monthly file `.claude/data/discussions/YYYY-MM.yaml`:
     - Kate Angelopoulos
 ```
 
-### Step 5: Confirm Creation
+### Step 5: Sidebar Note
+
+**DO NOT manually add discussions to VitePress sidebar.**
+
+Discussions are automatically listed via the `EntityTable` component on `docs/discussions/index.md`, which reads from monthly `.claude/data/discussions/YYYY-MM.yaml` files. No sidebar modification needed.
+
+### Step 6: Confirm Creation
 
 ```
 ## Discussion Documented

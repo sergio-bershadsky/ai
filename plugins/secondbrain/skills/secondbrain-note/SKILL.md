@@ -82,7 +82,13 @@ Add entry to `.claude/data/notes/records.yaml`:
   status: active
 ```
 
-### Step 5: Confirm Creation
+### Step 5: Sidebar Note
+
+**DO NOT manually add notes to VitePress sidebar.**
+
+Notes are automatically listed via the `EntityTable` component on `docs/notes/index.md`, which reads from `.claude/data/notes/records.yaml`. No sidebar modification needed.
+
+### Step 6: Confirm Creation
 
 ```
 ## Note Created

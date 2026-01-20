@@ -79,9 +79,11 @@ Add entry to `.claude/data/adrs/records.yaml`:
 
 Update `last_number` if this is the new highest.
 
-### Step 5: Update Sidebar
+### Step 5: Sidebar Note
 
-Add link to `docs/.vitepress/config.ts` under ADRs section.
+**DO NOT manually add ADRs to VitePress sidebar.**
+
+ADRs are automatically listed via the `EntityTable` component on `docs/adrs/index.md`, which reads from `.claude/data/adrs/records.yaml`. No sidebar modification needed.
 
 ### Step 6: Confirm Creation
 

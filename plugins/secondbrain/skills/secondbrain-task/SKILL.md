@@ -91,7 +91,13 @@ Add OAuth2 login flow for the application.
 Implementation notes here...
 ```
 
-### Step 5: Confirm Creation
+### Step 5: Sidebar Note
+
+**DO NOT manually add tasks to VitePress sidebar.**
+
+Tasks are automatically listed via the `EntityTable` component on `docs/tasks/index.md`, which reads from `.claude/data/tasks/records.yaml`. No sidebar modification needed.
+
+### Step 6: Confirm Creation
 
 ```
 ## Task Created
