@@ -32,6 +32,11 @@
             "type": "command",
             "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/sidebar-check.py\"",
             "timeout": 5000
+          },
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/search-index-update.py\"",
+            "timeout": 30000
           }
         ]
       }

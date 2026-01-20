@@ -96,6 +96,39 @@ def count_entity_records(project_root: Path, entity: str, config: dict) -> dict:
     return {"total": total, "active": active}
 
 
+def get_search_status(project_root: Path) -> dict | None:
+    """Get search index status"""
+    search_dir = project_root / ".claude" / "search"
+
+    if not search_dir.exists():
+        return None
+
+    # Check if index has any content
+    index_files = list(search_dir.glob("*"))
+    if not index_files:
+        return None
+
+    # Get index modification time
+    try:
+        # Find the most recently modified file in search dir
+        latest_mtime = max(f.stat().st_mtime for f in index_files if f.is_file())
+        last_indexed = datetime.fromtimestamp(latest_mtime)
+        time_ago = datetime.now() - last_indexed
+
+        if time_ago.days > 0:
+            time_str = f"{time_ago.days}d ago"
+        elif time_ago.seconds > 3600:
+            time_str = f"{time_ago.seconds // 3600}h ago"
+        elif time_ago.seconds > 60:
+            time_str = f"{time_ago.seconds // 60}m ago"
+        else:
+            time_str = "just now"
+
+        return {"status": "ready", "updated": time_str}
+    except Exception:
+        return {"status": "ready", "updated": "unknown"}
+
+
 def get_recent_activity(project_root: Path, config: dict) -> list[str]:
     """Get recent activity summary"""
     activities = []
@@ -202,6 +235,12 @@ def main():
                 lines.append(f"- {entity.title()}: {stats['total']}")
         lines.append("")
 
+    # Search status
+    search_status = get_search_status(project_root)
+    if search_status:
+        lines.append(f"**Search:** Indexed (updated {search_status['updated']})")
+        lines.append("")
+
     # Recent activity
     activities = get_recent_activity(project_root, config)
     if activities:
@@ -209,8 +248,11 @@ def main():
         lines.extend(activities)
         lines.append("")
 
-    # Available skills
-    lines.append("**Available:** `/secondbrain-adr`, `/secondbrain-note`, `/secondbrain-task`, `/secondbrain-discussion`, `/secondbrain-freshness`")
+    # Available skills - include search if initialized
+    if search_status:
+        lines.append("**Available:** `/secondbrain-search`, `/secondbrain-adr`, `/secondbrain-note`, `/secondbrain-task`, `/secondbrain-discussion`, `/secondbrain-freshness`")
+    else:
+        lines.append("**Available:** `/secondbrain-adr`, `/secondbrain-note`, `/secondbrain-task`, `/secondbrain-discussion`, `/secondbrain-freshness`")
 
     print(json.dumps({
         "result": "continue",

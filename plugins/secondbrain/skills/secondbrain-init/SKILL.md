@@ -59,7 +59,44 @@ Which entities would you like to enable?
 Would you like to define a custom entity type? (y/n)
 ```
 
-### Step 3: Configure Maximum Freedom Settings
+### Step 3: Configure Semantic Search
+
+Present search configuration options:
+
+```
+## Search Configuration
+
+Which semantic search would you like to enable?
+
+[ ] qmd (Claude Code search)
+    - CLI-based semantic search for AI
+    - Requires: bun/npm install -g qmd (~1.5GB models)
+    - Best for: Local development, Claude Code integration
+
+[ ] Orama (VitePress browser search)
+    - Client-side semantic search for humans
+    - Adds ~30MB to browser (on-demand model loading)
+    - Best for: Static sites, offline-capable portals
+
+[x] Both (Recommended)
+    - Dual index: qmd for Claude, Orama for browser
+    - Same semantic search quality for AI and humans
+
+[ ] None (Skip search)
+    - Use basic VitePress search (keyword only)
+    - Can add semantic search later with /secondbrain-search-init
+```
+
+**Based on selection:**
+
+| Selection | Actions |
+|-----------|---------|
+| qmd | Create `.claude/search/`, generate `qmd.config.json`, add search hook |
+| Orama | Add Orama deps to `package.json`, generate `SearchBox.vue`, generate build script |
+| Both | All of the above |
+| None | Skip search setup, use VitePress native search |
+
+### Step 5: Configure Maximum Freedom Settings
 
 **CRITICAL**: Always propose creating `.claude/settings.local.json` with maximum permissions:
 
@@ -80,7 +117,7 @@ Would you like to define a custom entity type? (y/n)
 
 Show the settings and ask for confirmation before proceeding.
 
-### Step 4: Generate Scaffolding
+### Step 6: Generate Scaffolding
 
 Create the following structure:
 
@@ -104,10 +141,13 @@ Create the following structure:
 │   │       └── records.yaml
 │   ├── lib/
 │   │   └── tracking.py         # CRUD library with validation
-│   └── hooks/
-│       ├── freshness-check.py
-│       ├── sidebar-check.py
-│       └── session-context.py
+│   ├── hooks/
+│   │   ├── freshness-check.py
+│   │   ├── sidebar-check.py
+│   │   ├── session-context.py
+│   │   └── search-index-update.py  # (if qmd enabled)
+│   └── search/                     # (if qmd enabled)
+│       └── (qmd index files)
 ├── docs/
 │   ├── .vitepress/
 │   │   ├── config.ts           # Navigation, sidebar, plugins
@@ -116,7 +156,8 @@ Create the following structure:
 │   │   │   ├── Layout.vue      # Giscus comments
 │   │   │   ├── custom.css
 │   │   │   └── components/
-│   │   │       └── EntityTable.vue
+│   │   │       ├── EntityTable.vue
+│   │   │       └── SearchBox.vue   # (if Orama enabled)
 │   │   └── data/
 │   │       └── <entity>.data.ts # Per enabled entity
 │   ├── index.md                # Home page
@@ -131,11 +172,12 @@ Create the following structure:
 │   └── tasks/                  # (if enabled)
 │       └── index.md
 ├── package.json                # VitePress dependencies
+├── qmd.config.json             # (if qmd enabled)
 ├── CLAUDE.md                   # Project instructions
 └── .gitignore
 ```
 
-### Step 5: Generate Files
+### Step 7: Generate Files
 
 For each enabled entity, generate from templates in `${CLAUDE_PLUGIN_ROOT}/templates/`:
 
@@ -159,7 +201,14 @@ For each enabled entity, generate from templates in `${CLAUDE_PLUGIN_ROOT}/templ
    - `tracking.py` from `scaffolding/lib/tracking.py.tmpl`
    - Hooks from `hooks/` (copy to project)
 
-### Step 6: Show Summary
+5. **Search (if enabled):**
+   - **qmd:** `qmd.config.json` from `scaffolding/search/qmd.config.json.tmpl`
+   - **qmd:** Copy `search-index-update.py` hook
+   - **Orama:** `SearchBox.vue` from `scaffolding/vitepress/theme/components/SearchBox.vue.tmpl`
+   - **Orama:** `build-search-index.ts` from `scaffolding/vitepress/search/build-search-index.ts.tmpl`
+   - **Orama:** Add dependencies to `package.json`
+
+### Step 8: Show Summary
 
 ```
 ## Secondbrain Created Successfully!
@@ -201,11 +250,13 @@ docs/
 
 ### Available Commands
 
+- /secondbrain-search <query>          — Semantic search (if enabled)
 - /secondbrain-adr <category> <title>  — Create ADR
 - /secondbrain-note <title>            — Create note
 - /secondbrain-discussion <who> <topic> — Document discussion
 - /secondbrain-freshness               — Check what needs attention
 - /secondbrain-entity <name>           — Add custom entity type
+- /secondbrain-search-init             — Enable semantic search later
 ```
 
 ## Template Variables
@@ -246,6 +297,8 @@ For detailed entity schemas and templates:
 
 ### Related Skills
 
+- **secondbrain-search** — Semantic search your knowledge base
+- **secondbrain-search-init** — Enable search on existing project
 - **secondbrain-entity** — Add custom entity types
 - **secondbrain-adr** — Create Architecture Decision Records
 - **secondbrain-note** — Create notes

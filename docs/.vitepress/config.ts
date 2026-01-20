@@ -9,6 +9,7 @@ export default defineConfig({
       { text: 'Home', link: '/' },
       { text: 'Git Plugin', link: '/git/' },
       { text: 'Frappe Dev', link: '/frappe-dev/' },
+      { text: 'Secondbrain', link: '/secondbrain/' },
       { text: 'Settings Sync', link: '/settings-sync/' },
       { text: 'Replit Prompts', link: '/replit-prompts/' },
     ],
@@ -40,6 +41,13 @@ export default defineConfig({
           { text: 'frappe-api', link: '/frappe-dev/frappe-api' },
           { text: 'frappe-service', link: '/frappe-dev/frappe-service' },
           { text: 'frappe-test', link: '/frappe-dev/frappe-test' },
+        ]
+      },
+      {
+        text: 'Secondbrain Plugin',
+        items: [
+          { text: 'Overview', link: '/secondbrain/' },
+          { text: 'Search', link: '/secondbrain/search' },
         ]
       },
       {

@@ -1,0 +1,19 @@
+{
+  "name": "{{project_name}}-secondbrain",
+  "paths": ["docs"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/.vitepress/cache/**",
+    "**/.vitepress/dist/**",
+    "**/TEMPLATE.md"
+  ],
+  "indexDir": ".claude/search",
+  "chunk": {
+    "size": 800,
+    "overlap": 0.15
+  },
+  "metadata": {
+    "extractFrontmatter": true,
+    "includeFileMetadata": true
+  }
+}
