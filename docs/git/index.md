@@ -12,12 +12,5 @@ Git workflow automation.
 
 | Name | Description |
 |------|-------------|
-| [commit](/git/commit) | Create conventional commits with user confirmation |
+| [commit](/git/commit) | Conventional commits with branch protection and semantic correlation |
 | [version](/git/version) | Bump semantic version with git tag |
-
-## Hooks
-
-| Name | Trigger | Description |
-|------|---------|-------------|
-| [auto-stage](/git/auto-stage) | PostToolUse | Auto-stage files after Write/Edit |
-| [pre-stop-commit](/git/pre-stop-commit) | Stop | Block exit if uncommitted changes |

@@ -12,8 +12,8 @@
     {
       "name": "git",
       "source": "./plugins/git",
-      "description": "Git workflow automation: conventional commits, auto-staging, uncommitted changes protection",
-      "version": "1.0.0",
+      "description": "Git workflow automation: conventional commits with branch protection, ticket tracking, semantic correlation, and version bumping",
+      "version": "2.0.0",
       "category": "productivity"
     },
     {

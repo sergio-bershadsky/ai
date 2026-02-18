@@ -28,8 +28,6 @@ export default defineConfig({
           { text: 'Overview', link: '/git/' },
           { text: 'commit', link: '/git/commit' },
           { text: 'version', link: '/git/version' },
-          { text: 'auto-stage', link: '/git/auto-stage' },
-          { text: 'pre-stop-commit', link: '/git/pre-stop-commit' },
         ]
       },
       {

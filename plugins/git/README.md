@@ -1,6 +1,6 @@
 # Git Plugin
 
-Git workflow automation with conventional commits, auto-staging, and uncommitted changes protection.
+Git workflow automation with conventional commits, branch protection, semantic correlation, and version bumping.
 
 ## Installation
 
@@ -11,25 +11,47 @@ claude mcp add-from-marketplace bershadsky-claude-tools/git
 ## Features
 
 - **Conventional Commits** - Structured commit messages with user confirmation
-- **Auto-staging** - Automatically stages files after Write/Edit/Bash operations
-- **Protected Exit** - Prevents session exit with uncommitted changes
+- **Branch Protection** - Warns when committing to default branch, proposes feature branches using repo naming conventions
+- **Ticket Tracking** - Detects project ticket system (GitHub Issues, Jira, Linear), ensures changes are associated with a ticket, proposes creating tickets when missing
+- **Semantic Correlation** - Detects mismatches between branch name and change content
 - **Version Bumping** - Semantic versioning with git tags
 
 ## Skills
 
 ### /commit
 
-Create conventional commits after completing work.
+Create conventional commits with branch safety and semantic awareness.
 
 ```
 /commit
 ```
 
 **Workflow:**
-1. Analyzes staged/unstaged changes
-2. Drafts conventional commit message
-3. Shows diff for review
-4. Commits after user approval
+1. Gathers staged/unstaged changes
+2. Checks if on default branch — warns and proposes feature branch
+3. Detects ticket tracking system — ensures changes have an associated ticket
+4. Validates semantic alignment between branch name and changes
+5. Analyzes changes and drafts conventional commit message
+6. Shows diff for review
+7. Commits after user approval
+8. Verifies with `git log`
+
+**Branch Protection:**
+- Detects default branch (`main`/`master`)
+- Inspects existing branches to detect naming conventions
+- Proposes new branch name following repo patterns, incorporating ticket ID if available
+- User can confirm, suggest alternative, or continue on default
+
+**Ticket Tracking:**
+- Detects GitHub Issues, Jira, or Linear from remote URL and branch patterns
+- Warns if no ticket is associated with the changes
+- Proposes creating a ticket (auto-creates for GitHub via `gh issue create`)
+- Incorporates ticket ID into branch name and commit footer
+
+**Semantic Correlation:**
+- Parses feature branch name into tokens
+- Compares against change nature (file paths, commit type)
+- Warns if changes don't match branch purpose
 
 **Commit Types:** `feat`, `fix`, `docs`, `refactor`, `style`, `test`, `chore`
 
@@ -61,32 +83,6 @@ Bump semantic versions for plugins.
 - Updates `plugin.json` version
 - Updates `marketplace.json` version
 - Creates annotated git tag (`v1.2.3-plugin-name`)
-
-## Hooks
-
-### Auto-Stage (PostToolUse)
-
-Automatically stages modified files after:
-- `Write` - Files written by Claude
-- `Edit` - Files edited by Claude
-- `Bash` - Files modified by shell commands (chmod, mv, cp, etc.)
-
-### Pre-Stop Commit (Stop)
-
-Blocks session exit if uncommitted changes exist:
-- Lists staged, modified, and untracked files
-- Shows diff summary
-- Suggests running `/commit`
-
-**Exit Codes:**
-- `0` - No changes, allow exit
-- `2` - Changes detected, block exit
-
-## Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `CLAUDE_HOOK_DEBUG=1` | Enable debug logging to `.claude/hook-debug.log` |
 
 ## License
 
