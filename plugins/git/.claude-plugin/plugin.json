@@ -1,7 +1,7 @@
 {
   "name": "git",
-  "version": "2.0.0",
-  "description": "Git workflow automation: conventional commits with branch protection, ticket tracking, semantic correlation, and version bumping",
+  "version": "2.1.0",
+  "description": "Git workflow automation: conventional commits with branch protection, ticket tracking, and semantic correlation",
   "author": {
     "name": "Sergey Bershadsky",
     "url": "https://github.com/sergio-bershadsky"

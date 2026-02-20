@@ -1,0 +1,13 @@
+{
+  "name": "version",
+  "version": "1.0.0",
+  "description": "Semantic version bumping for plugins with git tags and commits",
+  "author": {
+    "name": "Sergey Bershadsky",
+    "url": "https://github.com/sergio-bershadsky"
+  },
+  "license": "Unlicense",
+  "repository": "https://github.com/sergio-bershadsky/ai",
+  "homepage": "https://github.com/sergio-bershadsky/ai/tree/main/plugins/version",
+  "keywords": ["version", "semver", "release", "tag"]
+}

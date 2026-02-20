@@ -1,6 +1,6 @@
 # Git Plugin
 
-Git workflow automation with conventional commits, branch protection, semantic correlation, and version bumping.
+Git workflow automation with conventional commits, branch protection, semantic correlation.
 
 ## Installation
 
@@ -14,7 +14,6 @@ claude mcp add-from-marketplace bershadsky-claude-tools/git
 - **Branch Protection** - Warns when committing to default branch, proposes feature branches using repo naming conventions
 - **Ticket Tracking** - Detects project ticket system (GitHub Issues, Jira, Linear), ensures changes are associated with a ticket, proposes creating tickets when missing
 - **Semantic Correlation** - Detects mismatches between branch name and change content
-- **Version Bumping** - Semantic versioning with git tags
 
 ## Skills
 
@@ -59,30 +58,6 @@ Create conventional commits with branch safety and semantic awareness.
 - Never pushes to remote
 - Always requires user confirmation
 - Shows diff before committing
-
-### /version
-
-Bump semantic versions for plugins.
-
-```
-/version [bump-type] [plugin-name]
-```
-
-**Arguments:**
-- `bump-type`: `major`, `minor`, `patch` (default: patch)
-- `plugin-name`: Auto-detects or prompts
-
-**Examples:**
-```
-/version              # Patch bump, auto-detect plugin
-/version minor        # Minor bump
-/version major git    # Major bump for git plugin
-```
-
-**Actions:**
-- Updates `plugin.json` version
-- Updates `marketplace.json` version
-- Creates annotated git tag (`v1.2.3-plugin-name`)
 
 ## License
 

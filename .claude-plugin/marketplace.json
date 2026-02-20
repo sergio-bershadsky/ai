@@ -12,8 +12,15 @@
     {
       "name": "git",
       "source": "./plugins/git",
-      "description": "Git workflow automation: conventional commits with branch protection, ticket tracking, semantic correlation, and version bumping",
-      "version": "2.0.0",
+      "description": "Git workflow automation: conventional commits with branch protection, ticket tracking, and semantic correlation",
+      "version": "2.1.0",
+      "category": "productivity"
+    },
+    {
+      "name": "version",
+      "source": "./plugins/version",
+      "description": "Semantic version bumping for plugins with git tags and commits",
+      "version": "1.0.0",
       "category": "productivity"
     },
     {

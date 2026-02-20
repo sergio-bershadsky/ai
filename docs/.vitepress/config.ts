@@ -8,10 +8,12 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Git Plugin', link: '/git/' },
+      { text: 'Version', link: '/version/' },
       { text: 'Frappe Dev', link: '/frappe-dev/' },
       { text: 'Secondbrain', link: '/secondbrain/' },
       { text: 'Settings Sync', link: '/settings-sync/' },
       { text: 'Replit Prompts', link: '/replit-prompts/' },
+      { text: 'Distribution', link: '/distribution/' },
     ],
 
     sidebar: [
@@ -27,7 +29,13 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/git/' },
           { text: 'commit', link: '/git/commit' },
-          { text: 'version', link: '/git/version' },
+        ]
+      },
+      {
+        text: 'Version Plugin',
+        items: [
+          { text: 'Overview', link: '/version/' },
+          { text: 'version', link: '/version/version' },
         ]
       },
       {
@@ -61,6 +69,12 @@ export default defineConfig({
           { text: 'replit-prompt', link: '/replit-prompts/replit-prompt' },
           { text: 'replit-prd', link: '/replit-prompts/replit-prd' },
           { text: 'replit-plan', link: '/replit-prompts/replit-plan' },
+        ]
+      },
+      {
+        text: 'Content Distribution',
+        items: [
+          { text: 'Правила постинга', link: '/distribution/' },
         ]
       }
     ],

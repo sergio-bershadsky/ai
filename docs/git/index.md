@@ -13,4 +13,3 @@ Git workflow automation.
 | Name | Description |
 |------|-------------|
 | [commit](/git/commit) | Conventional commits with branch protection and semantic correlation |
-| [version](/git/version) | Bump semantic version with git tag |
