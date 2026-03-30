@@ -24,6 +24,39 @@ entities:
       stale_after_days: {{stale_days}}
 {{/each}}
 
+{{#if review_enabled}}
+review:
+  default_reviewer: null
+  thresholds:
+    fresh_days: 30
+    aging_days: 90
+{{/if}}
+
+{{#if team}}
+team:
+{{#each team}}
+  {{alias}}:
+    full_name: "{{full_name}}"
+    patterns:
+{{#each patterns}}
+      - "{{this}}"
+{{/each}}
+{{/each}}
+{{/if}}
+
+{{#if transcription_enabled}}
+integrations:
+  transcription:
+    enabled: true
+    provider: {{transcription_provider}}
+    check_on_session_start: true
+    lookback_days: 7
+{{#if fireflies_enabled}}
+    fireflies:
+      api_key_env: FIREFLIES_API_KEY
+{{/if}}
+{{/if}}
+
 meta:
   schema_version: "1.0.0"
   last_freshness_check: null

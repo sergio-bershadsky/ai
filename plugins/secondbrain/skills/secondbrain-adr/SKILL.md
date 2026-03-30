@@ -16,6 +16,10 @@ Verify ADR entity is enabled in the secondbrain project:
 1. Check for `.claude/data/adrs/records.yaml`
 2. If not found, suggest running `secondbrain-init` with ADRs enabled
 
+## Important Rules
+
+- **Do NOT add ADRs to the left sidebar/navigation.** ADRs are listed automatically via the `EntityTable` component on `docs/adrs/index.md`, which reads from `.claude/data/adrs/records.yaml`. No sidebar modification is needed.
+
 ## Workflow
 
 ### Step 1: Gather Information

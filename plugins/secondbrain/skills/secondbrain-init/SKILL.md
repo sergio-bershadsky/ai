@@ -59,7 +59,40 @@ Which entities would you like to enable?
 Would you like to define a custom entity type? (y/n)
 ```
 
-### Step 3: Configure Semantic Search
+### Step 3: Configure Optional Features
+
+Present optional feature selection:
+
+```
+## Optional Features
+
+[ ] Review Stamps
+    - Track who reviewed which pages and when
+    - ReviewBadge component with staleness coloring (green/yellow/orange)
+    - Adds /secondbrain-review command
+
+[ ] Meeting Transcription
+    - Import meetings from transcription providers (Fireflies.ai)
+    - Auto-generate discussion documents from transcripts
+    - SessionStart hook checks for undocumented meetings
+    - Adds /secondbrain-transcribe command
+    - Requires provider API key (e.g., FIREFLIES_API_KEY)
+```
+
+**If Review Stamps selected:**
+- Ask for default reviewer name (can be left blank for per-review prompting)
+- Add `review` section to config.yaml
+- Scaffold `ReviewBadge.vue` component from `${CLAUDE_PLUGIN_ROOT}/templates/scaffolding/vitepress/theme/components/ReviewBadge.vue.tmpl`
+- Replace `{{fresh_days}}` with 30 and `{{aging_days}}` with 90 (or custom values)
+
+**If Meeting Transcription selected:**
+- Ask which provider: `fireflies` (more providers coming)
+- Ask for team member mappings (alias, full name, email patterns)
+- Add `team` and `integrations.transcription` sections to config.yaml
+- Scaffold provider client (e.g., `fireflies.py`) from `${CLAUDE_PLUGIN_ROOT}/templates/scaffolding/lib/fireflies.py.tmpl`
+- Remind user to set API key in `.env.local` or environment
+
+### Step 4: Configure Semantic Search
 
 Present search configuration options:
 
@@ -96,7 +129,7 @@ Which semantic search would you like to enable?
 | Both | All of the above |
 | None | Skip search setup, use VitePress native search |
 
-### Step 5: Configure Maximum Freedom Settings
+### Step 6: Configure Maximum Freedom Settings
 
 **CRITICAL**: Always propose creating `.claude/settings.local.json` with maximum permissions:
 
@@ -117,7 +150,7 @@ Which semantic search would you like to enable?
 
 Show the settings and ask for confirmation before proceeding.
 
-### Step 6: Generate Scaffolding
+### Step 7: Generate Scaffolding
 
 Create the following structure:
 
@@ -157,6 +190,7 @@ Create the following structure:
 │   │   │   ├── custom.css
 │   │   │   └── components/
 │   │   │       ├── EntityTable.vue
+│   │   │       ├── ReviewBadge.vue  # (if review stamps enabled)
 │   │   │       └── SearchBox.vue   # (if Orama enabled)
 │   │   └── data/
 │   │       └── <entity>.data.ts # Per enabled entity
@@ -177,7 +211,7 @@ Create the following structure:
 └── .gitignore
 ```
 
-### Step 7: Generate Files
+### Step 8: Generate Files
 
 For each enabled entity, generate from templates in `${CLAUDE_PLUGIN_ROOT}/templates/`:
 
@@ -208,7 +242,16 @@ For each enabled entity, generate from templates in `${CLAUDE_PLUGIN_ROOT}/templ
    - **Orama:** `build-search-index.ts` from `scaffolding/vitepress/search/build-search-index.ts.tmpl`
    - **Orama:** Add dependencies to `package.json`
 
-### Step 8: Show Summary
+6. **Review Stamps (if enabled):**
+   - `ReviewBadge.vue` from `scaffolding/vitepress/theme/components/ReviewBadge.vue.tmpl`
+   - Replace `{{fresh_days}}` / `{{aging_days}}` with configured thresholds (defaults: 30/90)
+   - Add `review` section to `config.yaml`
+
+7. **Meeting Transcription (if enabled):**
+   - Provider client (e.g., `fireflies.py`) from `scaffolding/lib/fireflies.py.tmpl`
+   - Add `team` and `integrations.transcription` sections to `config.yaml`
+
+### Step 9: Show Summary
 
 ```
 ## Secondbrain Created Successfully!
@@ -256,6 +299,8 @@ docs/
 - /secondbrain-discussion <who> <topic> — Document discussion
 - /secondbrain-freshness               — Check what needs attention
 - /secondbrain-entity <name>           — Add custom entity type
+- /secondbrain-review <page> [name]    — Stamp page as reviewed (if enabled)
+- /secondbrain-transcribe <id|list|all> — Import meeting transcripts (if enabled)
 - /secondbrain-search-init             — Enable semantic search later
 ```
 
@@ -305,3 +350,5 @@ For detailed entity schemas and templates:
 - **secondbrain-task** — Create tasks
 - **secondbrain-discussion** — Document discussions
 - **secondbrain-freshness** — Freshness report
+- **secondbrain-review** — Stamp pages as reviewed
+- **secondbrain-transcribe** — Import meeting transcripts

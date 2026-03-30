@@ -242,6 +242,26 @@ def list_discussion_months() -> List[str]:
     ], reverse=True)
 
 
+def is_meeting_processed(meeting_id: str) -> bool:
+    """Check if a meeting has already been documented by searching discussion partitions."""
+    for year_month in list_discussion_months():
+        discussions = load_discussions(year_month)
+        for d in discussions:
+            if d.get('meeting_id') == meeting_id:
+                return True
+    return False
+
+
+def get_discussion_by_meeting_id(meeting_id: str) -> Optional[dict]:
+    """Find a discussion record by its meeting ID."""
+    for year_month in list_discussion_months():
+        discussions = load_discussions(year_month)
+        for d in discussions:
+            if d.get('meeting_id') == meeting_id:
+                return d
+    return None
+
+
 # ============================================================================
 # Meta Operations
 # ============================================================================

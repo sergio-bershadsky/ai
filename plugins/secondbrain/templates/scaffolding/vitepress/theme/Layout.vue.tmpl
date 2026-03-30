@@ -35,6 +35,9 @@ const showComments = () => {
 
 <template>
   <Layout>
+    <template #doc-before>
+      <ReviewBadge />
+    </template>
     <template #doc-after>
       <div v-if="showComments()" class="giscus-comments">
         <h2>Comments</h2>

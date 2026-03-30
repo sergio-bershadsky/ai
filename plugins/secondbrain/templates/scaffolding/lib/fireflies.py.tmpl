@@ -1,0 +1,269 @@
+#!/usr/bin/env python3
+"""
+Fireflies.ai API client for fetching meeting transcripts.
+
+Project: {{project_name}}
+Generated: {{timestamp}}
+
+Usage:
+    from fireflies import FirefliesClient
+
+    client = FirefliesClient()
+    meetings = client.list_meetings(limit=10)
+    transcript = client.get_transcript(meeting_id)
+"""
+
+import json
+import os
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Optional
+
+
+class FirefliesClient:
+    """Client for Fireflies.ai GraphQL API."""
+
+    API_URL = "https://api.fireflies.ai/graphql"
+
+    def __init__(self, api_key: Optional[str] = None):
+        """Initialize client with API key from param, env, or .env.local file."""
+        self.api_key = api_key or self._load_api_key()
+        if not self.api_key:
+            raise ValueError(
+                "Fireflies API key not found. "
+                "Set FIREFLIES_API_KEY env var or add to .env.local"
+            )
+
+    def _load_api_key(self) -> Optional[str]:
+        """Load API key from environment or .env.local file."""
+        if key := os.environ.get("FIREFLIES_API_KEY"):
+            return key
+
+        project_dir = os.environ.get("CLAUDE_PROJECT_DIR", ".")
+        env_file = Path(project_dir) / ".env.local"
+
+        if env_file.exists():
+            with open(env_file) as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("FIREFLIES_API_KEY="):
+                        return line.split("=", 1)[1].strip()
+
+        return None
+
+    def _graphql_request(self, query: str, variables: Optional[dict] = None) -> dict:
+        """Make a GraphQL request to Fireflies API."""
+        import urllib.request
+        import urllib.error
+
+        payload = {"query": query}
+        if variables:
+            payload["variables"] = variables
+
+        data = json.dumps(payload).encode("utf-8")
+
+        req = urllib.request.Request(
+            self.API_URL,
+            data=data,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}",
+                "User-Agent": "{{project_name}}-secondbrain/1.0"
+            }
+        )
+
+        try:
+            with urllib.request.urlopen(req, timeout=30) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            error_body = e.read().decode("utf-8") if e.fp else ""
+            raise RuntimeError(f"Fireflies API error {e.code}: {error_body}")
+        except urllib.error.URLError as e:
+            raise RuntimeError(f"Fireflies API connection error: {e.reason}")
+
+    def list_meetings(self, limit: int = 20, days: int = 7) -> list[dict]:
+        """
+        List recent meetings.
+
+        Args:
+            limit: Maximum number of meetings to return
+            days: Only return meetings from the last N days
+
+        Returns:
+            List of meeting objects with id, title, date, duration, participants
+        """
+        query = """
+        query RecentTranscripts($limit: Int) {
+            transcripts(limit: $limit) {
+                id
+                title
+                date
+                duration
+                organizer_email
+                participants
+                transcript_url
+            }
+        }
+        """
+
+        result = self._graphql_request(query, {"limit": limit})
+
+        if "errors" in result:
+            raise RuntimeError(f"GraphQL errors: {result['errors']}")
+
+        transcripts = result.get("data", {}).get("transcripts", [])
+
+        cutoff = datetime.now() - timedelta(days=days)
+        filtered = []
+
+        for t in transcripts:
+            if t.get("date"):
+                try:
+                    date_val = t["date"]
+                    if isinstance(date_val, int):
+                        meeting_date = datetime.fromtimestamp(date_val / 1000)
+                    else:
+                        meeting_date = datetime.fromisoformat(
+                            str(date_val).replace("Z", "+00:00")
+                        )
+                        meeting_date = meeting_date.replace(tzinfo=None)
+
+                    if meeting_date >= cutoff:
+                        filtered.append({
+                            "id": t["id"],
+                            "title": t.get("title", "Untitled Meeting"),
+                            "date": meeting_date.isoformat(),
+                            "duration": t.get("duration", 0),
+                            "organizer": t.get("organizer_email", ""),
+                            "participants": t.get("participants", []),
+                            "url": t.get("transcript_url", "")
+                        })
+                except (ValueError, TypeError, OSError):
+                    continue
+
+        return filtered
+
+    def get_transcript(self, meeting_id: str) -> dict:
+        """
+        Get full transcript for a meeting.
+
+        Args:
+            meeting_id: The Fireflies meeting ID
+
+        Returns:
+            Transcript object with sentences, summary, action_items
+        """
+        query = """
+        query Transcript($transcriptId: String!) {
+            transcript(id: $transcriptId) {
+                id
+                title
+                date
+                duration
+                organizer_email
+                participants
+                sentences {
+                    speaker_name
+                    text
+                    start_time
+                    end_time
+                }
+                summary {
+                    overview
+                    shorthand_bullet
+                    keywords
+                    action_items
+                    outline
+                }
+            }
+        }
+        """
+
+        result = self._graphql_request(query, {"transcriptId": meeting_id})
+
+        if "errors" in result:
+            raise RuntimeError(f"GraphQL errors: {result['errors']}")
+
+        transcript = result.get("data", {}).get("transcript")
+        if not transcript:
+            raise ValueError(f"Transcript not found: {meeting_id}")
+
+        return {
+            "id": transcript["id"],
+            "title": transcript.get("title", "Untitled Meeting"),
+            "date": transcript.get("date"),
+            "duration": transcript.get("duration", 0),
+            "organizer": transcript.get("organizer_email", ""),
+            "participants": transcript.get("participants", []),
+            "sentences": transcript.get("sentences", []),
+            "summary": transcript.get("summary", {}),
+        }
+
+    def get_summary(self, meeting_id: str) -> dict:
+        """
+        Get just the AI summary for a meeting (lighter weight than full transcript).
+
+        Args:
+            meeting_id: The Fireflies meeting ID
+
+        Returns:
+            Summary object with overview, action_items, keywords
+        """
+        query = """
+        query TranscriptSummary($transcriptId: String!) {
+            transcript(id: $transcriptId) {
+                id
+                title
+                date
+                participants
+                summary {
+                    overview
+                    shorthand_bullet
+                    keywords
+                    action_items
+                    outline
+                }
+            }
+        }
+        """
+
+        result = self._graphql_request(query, {"transcriptId": meeting_id})
+
+        if "errors" in result:
+            raise RuntimeError(f"GraphQL errors: {result['errors']}")
+
+        transcript = result.get("data", {}).get("transcript")
+        if not transcript:
+            raise ValueError(f"Transcript not found: {meeting_id}")
+
+        return {
+            "id": transcript["id"],
+            "title": transcript.get("title", "Untitled Meeting"),
+            "date": transcript.get("date"),
+            "participants": transcript.get("participants", []),
+            "summary": transcript.get("summary", {}),
+        }
+
+
+if __name__ == "__main__":
+    import sys
+
+    client = FirefliesClient()
+
+    if len(sys.argv) > 1:
+        cmd = sys.argv[1]
+
+        if cmd == "list":
+            meetings = client.list_meetings()
+            for m in meetings:
+                print(f"[{m['id']}] {m['date'][:10]} - {m['title']} ({m['duration']}min)")
+        elif cmd == "get" and len(sys.argv) > 2:
+            transcript = client.get_transcript(sys.argv[2])
+            print(json.dumps(transcript, indent=2))
+        elif cmd == "summary" and len(sys.argv) > 2:
+            summary = client.get_summary(sys.argv[2])
+            print(json.dumps(summary, indent=2))
+        else:
+            print("Usage: fireflies.py [list|get <id>|summary <id>]")
+    else:
+        print("Usage: fireflies.py [list|get <id>|summary <id>]")

@@ -1,6 +1,6 @@
 {
   "name": "secondbrain",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Flexible knowledge base scaffolding: personal KB, project docs, team collaboration with configurable entities, microdatabases, and VitePress portal",
   "author": {
     "name": "Sergey Bershadsky",

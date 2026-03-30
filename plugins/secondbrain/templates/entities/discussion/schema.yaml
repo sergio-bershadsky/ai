@@ -24,6 +24,18 @@ items:
         - manual
         - meeting
         - slack
+        - fireflies
+        - otter
+    meeting_id:
+      type: string
+      description: External meeting provider ID (e.g., Fireflies meeting ID)
+    provider:
+      type: string
+      description: Transcription provider name
+      enum:
+        - fireflies
+        - otter
+        - manual
     participants:
       type: array
       items:

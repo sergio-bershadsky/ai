@@ -248,11 +248,22 @@ def main():
         lines.extend(activities)
         lines.append("")
 
-    # Available skills - include search if initialized
+    # Available skills - include conditional ones
+    skills = []
     if search_status:
-        lines.append("**Available:** `/secondbrain-search`, `/secondbrain-adr`, `/secondbrain-note`, `/secondbrain-task`, `/secondbrain-discussion`, `/secondbrain-freshness`")
-    else:
-        lines.append("**Available:** `/secondbrain-adr`, `/secondbrain-note`, `/secondbrain-task`, `/secondbrain-discussion`, `/secondbrain-freshness`")
+        skills.append("`/secondbrain-search`")
+    skills.extend([
+        "`/secondbrain-adr`",
+        "`/secondbrain-note`",
+        "`/secondbrain-task`",
+        "`/secondbrain-discussion`",
+        "`/secondbrain-freshness`",
+    ])
+    if config.get("review"):
+        skills.append("`/secondbrain-review`")
+    if config.get("integrations", {}).get("transcription", {}).get("enabled"):
+        skills.append("`/secondbrain-transcribe`")
+    lines.append(f"**Available:** {', '.join(skills)}")
 
     print(json.dumps({
         "result": "continue",

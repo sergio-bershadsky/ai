@@ -1,0 +1,109 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useData } from 'vitepress'
+
+const { frontmatter } = useData()
+
+interface ReviewEntry {
+  date: string | Date
+  name: string
+}
+
+// Configurable thresholds (set during scaffolding, defaults: 30/90)
+const FRESH_DAYS = {{fresh_days}}
+const AGING_DAYS = {{aging_days}}
+
+const reviews = computed<ReviewEntry[]>(() => {
+  const raw = frontmatter.value?.reviewed_by
+  if (!raw) return []
+  if (Array.isArray(raw)) return raw
+  // Legacy: single string "Name" with separate last_reviewed date
+  const date = frontmatter.value?.last_reviewed
+  if (date && typeof raw === 'string') return [{ date, name: raw }]
+  return []
+})
+
+const latestReview = computed(() => {
+  if (reviews.value.length === 0) return null
+  const sorted = [...reviews.value].sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime()
+  })
+  return sorted[0]
+})
+
+const staleness = computed<'fresh' | 'aging' | 'stale' | 'never'>(() => {
+  if (!latestReview.value) return 'never'
+  const reviewDate = new Date(latestReview.value.date)
+  const now = new Date()
+  const daysSince = Math.floor((now.getTime() - reviewDate.getTime()) / (1000 * 60 * 60 * 24))
+  if (daysSince <= FRESH_DAYS) return 'fresh'
+  if (daysSince <= AGING_DAYS) return 'aging'
+  return 'stale'
+})
+
+function formatDate(date: string | Date): string {
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  })
+}
+</script>
+
+<template>
+  <div :class="['review-badge', `review-badge--${staleness}`]">
+    <template v-if="staleness === 'never'">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span>Not yet reviewed</span>
+    </template>
+    <template v-else>
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      <span v-if="reviews.length === 1">
+        Reviewed {{ formatDate(latestReview!.date) }} by {{ latestReview!.name }}
+      </span>
+      <span v-else>
+        Reviewed {{ formatDate(latestReview!.date) }} by {{ latestReview!.name }}
+        <span class="review-badge__count">({{ reviews.length }} reviews)</span>
+      </span>
+    </template>
+  </div>
+</template>
+
+<style scoped>
+.review-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  line-height: 1;
+  padding: 0.25rem 0;
+  margin-bottom: 0.5rem;
+}
+
+.review-badge--fresh {
+  color: var(--vp-c-success-1);
+}
+
+.review-badge--aging {
+  color: var(--vp-c-warning-1);
+}
+
+.review-badge--stale {
+  color: var(--vp-c-danger-1);
+}
+
+.review-badge--never {
+  color: var(--vp-c-text-3);
+}
+
+.review-badge__count {
+  opacity: 0.7;
+}
+</style>

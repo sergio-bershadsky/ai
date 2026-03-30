@@ -20,6 +20,11 @@
             "type": "command",
             "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/session-context.py\"",
             "timeout": 10000
+          },
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/transcription-check.py\"",
+            "timeout": 15000
           }
         ]
       }

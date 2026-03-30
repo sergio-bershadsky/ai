@@ -17,6 +17,10 @@ Verify Tasks entity is enabled:
 1. Check for `.claude/data/tasks/records.yaml`
 2. If not found, suggest enabling tasks via `secondbrain-init` or `secondbrain-entity`
 
+## Important Rules
+
+- **Do NOT add tasks to the left sidebar/navigation.** Tasks are listed automatically via the `EntityTable` component on `docs/tasks/index.md`, which reads from `.claude/data/tasks/records.yaml`. No sidebar modification is needed.
+
 ## Workflow
 
 ### Step 1: Gather Information

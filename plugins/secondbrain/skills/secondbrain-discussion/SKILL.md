@@ -16,6 +16,10 @@ Verify Discussions entity is enabled:
 1. Check for `.claude/data/discussions/schema.yaml`
 2. If not found, suggest enabling discussions via `secondbrain-init`
 
+## Important Rules
+
+- **Do NOT add discussions to the left sidebar/navigation.** Discussions are listed automatically via the `EntityTable` component on `docs/discussions/index.md`, which reads from monthly `.claude/data/discussions/YYYY-MM.yaml` files. No sidebar modification is needed.
+
 ## Workflow
 
 ### Step 1: Gather Information
