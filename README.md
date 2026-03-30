@@ -34,7 +34,7 @@ Personal Claude Code plugin marketplace for workflow automation and development 
 
 | Plugin | Description | Skills | Hooks |
 |--------|-------------|--------|-------|
-| [**secondbrain**](plugins/secondbrain/) | Knowledge base scaffolding with microdatabases, VitePress portal, semantic search | 9 skills | freshness, sidebar, search-index |
+| [**secondbrain**](plugins/secondbrain/) | Knowledge base scaffolding with microdatabases, VitePress portal, semantic search, review stamps, meeting transcription | 11 skills | freshness, sidebar, search-index, session-context, transcription-check |
 | [**replit-prompts**](plugins/replit-prompts/) | Optimized prompts, PRDs, and task plans for Replit Agent | 3 skills | — |
 
 ### Internal
@@ -119,7 +119,7 @@ Professional Frappe Framework v15 development toolkit.
 
 ### secondbrain
 
-Knowledge base scaffolding with microdatabases and semantic search.
+Knowledge base scaffolding with microdatabases, semantic search, review stamps, and meeting transcription.
 
 ```bash
 /plugin install secondbrain@bershadsky-claude-tools
@@ -128,12 +128,19 @@ Knowledge base scaffolding with microdatabases and semantic search.
 **Skills:**
 - `secondbrain-init` — Scaffold new knowledge base project
 - `secondbrain-search` — Semantic search (qmd + Orama)
+- `secondbrain-search-init` — Enable search on existing project
 - `secondbrain-adr` — Architecture Decision Records
 - `secondbrain-note` — Knowledge capture notes
 - `secondbrain-task` — Action item tracking
 - `secondbrain-discussion` — Meeting/conversation documentation
 - `secondbrain-freshness` — Stale content detection
 - `secondbrain-entity` — Custom entity types
+- `secondbrain-review` — Page review stamps with staleness tracking
+- `secondbrain-transcribe` — Import meeting transcripts (Fireflies.ai)
+
+**Agents:**
+- `secondbrain-review` — Document quality assessment
+- `secondbrain-refine` — Background knowledge base refinement
 
 **Search Options:**
 | Engine | For | Technology |

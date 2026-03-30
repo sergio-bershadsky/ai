@@ -1,6 +1,8 @@
 # Secondbrain Plugin
 
-Knowledge base scaffolding with microdatabases, VitePress portal, configurable entities, and semantic search.
+Knowledge base scaffolding with microdatabases, VitePress portal, configurable entities, semantic search, review stamps, and meeting transcription.
+
+**Version:** 1.1.0
 
 ## Overview
 
@@ -9,7 +11,9 @@ This plugin scaffolds a complete knowledge management system with:
 - **VitePress documentation portal** — Custom theme with Vue components
 - **Configurable entity types** — ADRs, Notes, Tasks, Discussions, or custom
 - **Semantic search** — qmd for Claude, Orama for browser
-- **Claude automation** — Hooks for freshness tracking and context injection
+- **Review stamps** — Track who reviewed which page and when, with visual staleness badges
+- **Meeting transcription** — Import transcripts from providers (Fireflies.ai) into discussion documents
+- **Claude automation** — Hooks for freshness tracking, context injection, and meeting detection
 
 ## Skills
 
@@ -112,6 +116,35 @@ Check what needs attention.
 - Configurable thresholds per entity
 - Urgency categorization
 - Remediation recommendations
+
+### secondbrain-review
+
+Stamp documentation pages as reviewed.
+
+**Triggers:**
+- "Review page"
+- "Stamp as reviewed"
+- "Mark reviewed"
+
+**Features:**
+- Append-only `reviewed_by` list in frontmatter
+- Configurable staleness thresholds (fresh/aging/stale)
+- ReviewBadge Vue component with color-coded indicators
+
+### secondbrain-transcribe
+
+Import meeting transcripts from external providers.
+
+**Triggers:**
+- "Transcribe meeting"
+- "Document meeting"
+- "Process transcript"
+
+**Features:**
+- Provider-agnostic design (Fireflies.ai supported)
+- Auto-generates discussion documents from transcripts
+- Participant mapping via team config
+- Decision extraction with optional ADR creation
 
 ## Quick Start
 

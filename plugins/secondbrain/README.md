@@ -1,11 +1,13 @@
 # Secondbrain Plugin
 
-Knowledge base scaffolding with microdatabases, VitePress portal, configurable entities, and semantic search.
+Knowledge base scaffolding with microdatabases, VitePress portal, configurable entities, semantic search, review stamps, and meeting transcription.
+
+**Version:** 1.1.0
 
 ## Installation
 
 ```bash
-claude mcp add-from-marketplace bershadsky-claude-tools/secondbrain
+/plugin install secondbrain@bershadsky-claude-tools
 ```
 
 ## Overview
@@ -16,7 +18,9 @@ This plugin scaffolds a complete knowledge management system with:
 - **VitePress documentation portal** — Custom theme with Vue components
 - **Configurable entity types** — ADRs, Notes, Tasks, Discussions, or custom
 - **Semantic search** — qmd for Claude Code, Orama for browser
-- **Claude automation** — Hooks for freshness tracking and context injection
+- **Review stamps** — Track who reviewed which page and when, with visual staleness badges
+- **Meeting transcription** — Import transcripts from providers (Fireflies.ai) into discussion documents
+- **Claude automation** — Hooks for freshness tracking, context injection, and meeting detection
 
 ## Quick Start
 
@@ -136,6 +140,37 @@ Check what needs attention.
 
 Add custom entity types to your project.
 
+### secondbrain-review
+
+Stamp documentation pages as reviewed.
+
+**Triggers:**
+- "Review page"
+- "Stamp as reviewed"
+- "Mark reviewed"
+
+**Features:**
+- Append-only `reviewed_by` list in frontmatter
+- Configurable staleness thresholds (fresh/aging/stale)
+- ReviewBadge Vue component with color-coded indicators
+- Legacy format migration
+
+### secondbrain-transcribe
+
+Import meeting transcripts from external providers.
+
+**Triggers:**
+- "Transcribe meeting"
+- "Document meeting"
+- "Process transcript"
+
+**Features:**
+- Provider-agnostic design (Fireflies.ai supported)
+- Auto-generates discussion documents from transcripts
+- Participant mapping via team config
+- Decision extraction with optional ADR creation
+- Deduplication to prevent re-processing
+
 ## Architecture
 
 ```
@@ -147,12 +182,16 @@ my-knowledge-base/
 │   │   ├── notes/records.yaml
 │   │   └── tasks/records.yaml
 │   ├── search/                # qmd index (if enabled)
+│   ├── lib/
+│   │   ├── tracking.py        # CRUD operations
+│   │   └── fireflies.py       # Fireflies client (if enabled)
 │   └── hooks/                 # Automation
 ├── docs/                      # VitePress portal
 │   ├── .vitepress/
 │   │   └── theme/
 │   │       └── components/
-│   │           └── SearchBox.vue  # Orama (if enabled)
+│   │           ├── SearchBox.vue   # Orama (if enabled)
+│   │           └── ReviewBadge.vue # Review stamps (if enabled)
 │   ├── adrs/
 │   ├── notes/
 │   └── tasks/
@@ -200,10 +239,11 @@ First run downloads ~1.5GB of models:
 
 | Hook | Event | Action |
 |------|-------|--------|
-| freshness-check | Stop | Report stale items |
-| sidebar-check | Stop | Verify sidebar consistency |
-| session-context | SessionStart | Inject recent items |
-| search-index-update | PostToolUse | Update qmd index |
+| freshness-check | UserPromptSubmit | Report stale items |
+| session-context | SessionStart | Inject project overview and recent activity |
+| transcription-check | SessionStart | Detect undocumented meetings |
+| sidebar-check | PostToolUse (Write/Edit) | Verify sidebar consistency |
+| search-index-update | PostToolUse (Write/Edit) | Update qmd index |
 
 ## Entity Types
 
