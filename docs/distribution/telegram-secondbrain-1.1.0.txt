@@ -1,0 +1,28 @@
+Secondbrain Plugin v1.1.0 — Review Stamps & Meeting Transcription
+
+Two new skills for the Secondbrain Claude Code plugin:
+
+Review Stamps /secondbrain-review
+
+Track who reviewed which doc page and when. Every review is an append-only entry in frontmatter — you build a full audit trail over time. The VitePress portal shows a color-coded badge on every page: green (fresh), yellow (aging), orange (stale). Thresholds are configurable.
+
+One command: /secondbrain-review docs/architecture/overview.md "Jane Smith"
+
+Meeting Transcription /secondbrain-transcribe
+
+Connect your Fireflies.ai account and turn meeting recordings into structured discussion documents automatically. Claude extracts participants, decisions, action items, and open questions — then writes the discussion file and updates the microdatabase. If it finds architectural decisions in the transcript, it offers to create ADRs.
+
+The plugin checks for undocumented meetings every time you start a session — no meetings slip through the cracks.
+
+Both features are opt-in during /secondbrain-init scaffolding or can be added to existing projects via config.
+
+Provider-agnostic design — Fireflies is first, more coming.
+
+Install in Claude Code
+
+/plugin marketplace add sergio-bershadsky/ai
+/plugin install secondbrain@bershadsky-claude-tools
+
+Then scaffold a new project with /secondbrain-init or add features to an existing one via config.yaml.
+
+GitHub: https://github.com/sergio-bershadsky/ai
