@@ -2,6 +2,49 @@
 
 Reference documentation for built-in entity types and their schemas.
 
+## Monthly Sharding (All Entities)
+
+All entities use monthly shard files instead of a single `records.yaml`. This keeps token costs low when an AI tool reads files to operate on them.
+
+### Storage Layout
+
+```
+.claude/data/<entity>/
+├── schema.yaml       # JSON Schema for validation
+├── meta.yaml         # Lightweight index (last_number, shard list)
+├── 2025-12.yaml      # Records created in Dec 2025
+├── 2026-01.yaml      # Records created in Jan 2026
+└── 2026-03.yaml      # Current month (active writes)
+```
+
+### meta.yaml Schema
+
+```yaml
+type: object
+properties:
+  last_number:
+    type: integer
+    description: Highest sequential number (for numbered entities like ADRs, Tasks)
+  shards:
+    type: array
+    items:
+      type: string
+      pattern: "^\\d{4}-\\d{2}$"
+    description: List of YYYY-MM shard files
+```
+
+### Shard File Schema
+
+Each `YYYY-MM.yaml` is a flat array of records (same item schema as the entity):
+
+```yaml
+type: array
+items:
+  # ... entity-specific record schema
+```
+
+---
+
 ## ADRs (Architecture Decision Records)
 
 ### Schema
@@ -118,9 +161,9 @@ items:
 
 `YYYY-MM-DD-<participant>-<topic-slug>.md`
 
-### Monthly Partitioning
+### Monthly Sharding
 
-Discussion records are partitioned by month:
+All entity types use monthly shard files. Discussion records are partitioned by month:
 - `discussions/2025-12.yaml`
 - `discussions/2026-01.yaml`
 

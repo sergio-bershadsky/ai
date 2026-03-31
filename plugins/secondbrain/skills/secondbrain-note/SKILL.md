@@ -14,7 +14,7 @@ Capture knowledge, ideas, and thoughts with tagging support.
 ## Prerequisites
 
 Verify Notes entity is enabled:
-1. Check for `.claude/data/notes/records.yaml`
+1. Check for `.claude/data/notes/meta.yaml` (sharded) or `.claude/data/notes/records.yaml` (legacy)
 2. If not found, suggest enabling notes via `secondbrain-init` or `secondbrain-entity`
 
 ## Workflow
@@ -71,7 +71,7 @@ Main content here...
 
 ### Step 4: Update Records
 
-Add entry to `.claude/data/notes/records.yaml`:
+Add entry to the current month's shard `.claude/data/notes/YYYY-MM.yaml`:
 
 ```yaml
 - id: "2026-01-15-my-note"
@@ -82,11 +82,13 @@ Add entry to `.claude/data/notes/records.yaml`:
   status: active
 ```
 
+Ensure the current month is registered in `.claude/data/notes/meta.yaml` shards list.
+
 ### Step 5: Sidebar Note
 
 **DO NOT manually add notes to VitePress sidebar.**
 
-Notes are automatically listed via the `EntityTable` component on `docs/notes/index.md`, which reads from `.claude/data/notes/records.yaml`. No sidebar modification needed.
+Notes are automatically listed via the `EntityTable` component on `docs/notes/index.md`, which reads from `.claude/data/notes/` shard files. No sidebar modification needed.
 
 ### Step 6: Confirm Creation
 

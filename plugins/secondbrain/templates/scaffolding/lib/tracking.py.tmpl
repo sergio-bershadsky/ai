@@ -97,123 +97,223 @@ def list_enabled_entities() -> List[str]:
 
 
 # ============================================================================
-# Generic Entity Operations
+# Monthly Shard Operations (Generic)
+# ============================================================================
+
+def _get_shard_file(entity: str, year_month: str = None) -> Path:
+    """Get path to a monthly shard file for any entity."""
+    if year_month is None:
+        year_month = date.today().strftime('%Y-%m')
+    return DATA_DIR / entity / f"{year_month}.yaml"
+
+
+def _get_meta_path(entity: str) -> Path:
+    """Get path to entity meta.yaml."""
+    return DATA_DIR / entity / "meta.yaml"
+
+
+def load_meta(entity: str) -> dict:
+    """Load entity metadata (last_number, shard list). Always tiny."""
+    path = _get_meta_path(entity)
+    return _load_yaml(path) or {'shards': []}
+
+
+def save_meta(entity: str, data: dict) -> None:
+    """Save entity metadata."""
+    _save_yaml(_get_meta_path(entity), data)
+
+
+def list_shards(entity: str) -> List[str]:
+    """List all monthly shards for an entity (newest first)."""
+    entity_dir = DATA_DIR / entity
+    if not entity_dir.exists():
+        return []
+    return sorted([
+        f.stem for f in entity_dir.glob("*.yaml")
+        if f.stem not in ("schema", "meta", "records")
+    ], reverse=True)
+
+
+def load_shard(entity: str, year_month: str = None) -> List[dict]:
+    """Load records from a single monthly shard."""
+    path = _get_shard_file(entity, year_month)
+    return _load_yaml(path) or []
+
+
+def save_shard(entity: str, records: List[dict], year_month: str = None) -> None:
+    """Save records to a monthly shard."""
+    path = _get_shard_file(entity, year_month)
+    _save_yaml(path, records)
+
+
+def _ensure_shard_registered(entity: str, year_month: str) -> None:
+    """Ensure a shard is listed in meta.yaml."""
+    meta = load_meta(entity)
+    if year_month not in meta.get('shards', []):
+        meta.setdefault('shards', []).append(year_month)
+        meta['shards'] = sorted(meta['shards'])
+        save_meta(entity, meta)
+
+
+# ============================================================================
+# Generic Entity Operations (Shard-Aware)
 # ============================================================================
 
 def load_entity_records(entity: str) -> dict:
-    """Load records for an entity with validation."""
-    entity_dir = DATA_DIR / entity
-    records_path = entity_dir / "records.yaml"
-    schema_path = entity_dir / "schema.yaml"
+    """Load ALL records for an entity across all shards.
 
-    if not records_path.exists():
-        return {'records': []}
+    Use sparingly — this reads every shard file. Prefer load_shard()
+    for operations that only need the current month.
+    """
+    # Support legacy flat records.yaml
+    legacy_path = DATA_DIR / entity / "records.yaml"
+    if legacy_path.exists():
+        data = _load_yaml(legacy_path)
+        return data or {'records': []}
 
-    data = _load_yaml(records_path)
-    if schema_path.exists():
-        schema = _load_yaml(schema_path)
-        if schema:
-            _validate(data, schema)
+    # Sharded: collect from all monthly files
+    meta = load_meta(entity)
+    all_records = []
+    for shard in sorted(meta.get('shards', list_shards(entity))):
+        all_records.extend(load_shard(entity, shard))
 
-    return data or {'records': []}
+    result = {'records': all_records}
+    if 'last_number' in meta:
+        result['last_number'] = meta['last_number']
+    return result
 
 
 def save_entity_records(entity: str, data: dict) -> None:
-    """Save entity records with validation."""
+    """Save entity records. Legacy compatibility — writes flat file."""
     entity_dir = DATA_DIR / entity
     records_path = entity_dir / "records.yaml"
-    schema_path = entity_dir / "schema.yaml"
-
-    if schema_path.exists():
-        schema = _load_yaml(schema_path)
-        if schema:
-            _validate(data, schema)
-
     _save_yaml(records_path, data)
 
 
 def add_record(entity: str, record: dict) -> dict:
-    """Add a record to an entity."""
-    data = load_entity_records(entity)
-    if 'records' not in data:
-        data['records'] = []
-    data['records'].append(record)
-    save_entity_records(entity, data)
+    """Add a record to the current month's shard."""
+    year_month = date.today().strftime('%Y-%m')
+
+    # Load current shard only (not all history)
+    records = load_shard(entity, year_month)
+    records.append(record)
+    save_shard(entity, records, year_month)
+    _ensure_shard_registered(entity, year_month)
+
     return record
 
 
-def get_record(entity: str, field: str, value: Any) -> Optional[dict]:
-    """Find a record by field value."""
-    data = load_entity_records(entity)
-    for record in data.get('records', []):
-        if record.get(field) == value:
-            return record
+def get_record(entity: str, field: str, value: Any, hint_month: str = None) -> Optional[dict]:
+    """Find a record by field value.
+
+    If hint_month is provided, searches that shard first.
+    Otherwise searches from newest shard to oldest (most lookups are recent).
+    """
+    shards_to_search = list_shards(entity)
+
+    # Check hinted month first
+    if hint_month and hint_month in shards_to_search:
+        shards_to_search.remove(hint_month)
+        shards_to_search.insert(0, hint_month)
+
+    for shard in shards_to_search:
+        for record in load_shard(entity, shard):
+            if record.get(field) == value:
+                return record
     return None
 
 
-def update_record(entity: str, field: str, value: Any, updates: dict) -> Optional[dict]:
-    """Update a record by field value."""
-    data = load_entity_records(entity)
-    for record in data.get('records', []):
-        if record.get(field) == value:
-            record.update(updates)
-            save_entity_records(entity, data)
-            return record
+def update_record(entity: str, field: str, value: Any, updates: dict, hint_month: str = None) -> Optional[dict]:
+    """Update a record by field value.
+
+    If hint_month is provided, checks that shard first.
+    """
+    shards_to_search = list_shards(entity)
+
+    if hint_month and hint_month in shards_to_search:
+        shards_to_search.remove(hint_month)
+        shards_to_search.insert(0, hint_month)
+
+    for shard in shards_to_search:
+        records = load_shard(entity, shard)
+        for record in records:
+            if record.get(field) == value:
+                record.update(updates)
+                save_shard(entity, records, shard)
+                return record
     return None
 
 
 def get_next_number(entity: str) -> int:
-    """Get the next sequential number for a numbered entity."""
-    data = load_entity_records(entity)
-    last = data.get('last_number', 0)
-    return last + 1
+    """Get the next sequential number. Reads meta.yaml only (~50 tokens)."""
+    meta = load_meta(entity)
+    return meta.get('last_number', 0) + 1
 
 
 def increment_last_number(entity: str) -> int:
-    """Increment and return the new last number."""
-    data = load_entity_records(entity)
-    data['last_number'] = data.get('last_number', 0) + 1
-    save_entity_records(entity, data)
-    return data['last_number']
+    """Increment and return the new last number. Updates meta.yaml only."""
+    meta = load_meta(entity)
+    meta['last_number'] = meta.get('last_number', 0) + 1
+    save_meta(entity, meta)
+    return meta['last_number']
+
+
+def migrate_to_shards(entity: str) -> None:
+    """Migrate a flat records.yaml to monthly shards.
+
+    Groups records by 'created' date into YYYY-MM.yaml files,
+    creates meta.yaml, and removes the old records.yaml.
+    """
+    legacy_path = DATA_DIR / entity / "records.yaml"
+    if not legacy_path.exists():
+        return
+
+    data = _load_yaml(legacy_path) or {'records': []}
+    records = data.get('records', [])
+
+    # Group by month
+    by_month: dict[str, list] = {}
+    for record in records:
+        created = record.get('created', record.get('date', ''))
+        if isinstance(created, (date, datetime)):
+            month = created.strftime('%Y-%m')
+        elif isinstance(created, str) and len(created) >= 7:
+            month = created[:7]  # "2026-03-15" → "2026-03"
+        else:
+            month = date.today().strftime('%Y-%m')
+        by_month.setdefault(month, []).append(record)
+
+    # Write shards
+    for month, month_records in by_month.items():
+        save_shard(entity, month_records, month)
+
+    # Write meta
+    meta = {'shards': sorted(by_month.keys())}
+    if 'last_number' in data:
+        meta['last_number'] = data['last_number']
+    save_meta(entity, meta)
+
+    # Remove legacy file
+    legacy_path.unlink()
 
 
 # ============================================================================
-# Discussion-specific (Monthly Partitions)
+# Discussion-specific (convenience wrappers)
 # ============================================================================
 
 def get_discussion_file(year_month: str = None) -> Path:
-    """Get path to discussion file for a given month."""
-    if year_month is None:
-        year_month = date.today().strftime('%Y-%m')
-    return DATA_DIR / "discussions" / f"{year_month}.yaml"
+    """Get path to discussion shard file for a given month."""
+    return _get_shard_file("discussions", year_month)
 
 
 def load_discussions(year_month: str = None) -> List[dict]:
     """Load discussions for a month."""
-    path = get_discussion_file(year_month)
-    schema_path = DATA_DIR / "discussions" / "schema.yaml"
-
-    data = _load_yaml(path) or []
-
-    if schema_path.exists():
-        schema = _load_yaml(schema_path)
-        if schema:
-            _validate(data, schema)
-
-    return data
+    return load_shard("discussions", year_month)
 
 
 def save_discussions(data: List[dict], year_month: str = None) -> None:
     """Save discussions for a month."""
-    path = get_discussion_file(year_month)
-    schema_path = DATA_DIR / "discussions" / "schema.yaml"
-
-    if schema_path.exists():
-        schema = _load_yaml(schema_path)
-        if schema:
-            _validate(data, schema)
-
-    _save_yaml(path, data)
+    save_shard("discussions", data, year_month)
 
 
 def add_discussion(member: str, topic: str, file: str, source: str = "manual") -> dict:
@@ -233,20 +333,13 @@ def add_discussion(member: str, topic: str, file: str, source: str = "manual") -
 
 def list_discussion_months() -> List[str]:
     """List all months with discussions."""
-    disc_dir = DATA_DIR / "discussions"
-    if not disc_dir.exists():
-        return []
-    return sorted([
-        f.stem for f in disc_dir.glob("*.yaml")
-        if f.stem != "schema"
-    ], reverse=True)
+    return list_shards("discussions")
 
 
 def is_meeting_processed(meeting_id: str) -> bool:
-    """Check if a meeting has already been documented by searching discussion partitions."""
+    """Check if a meeting has already been documented."""
     for year_month in list_discussion_months():
-        discussions = load_discussions(year_month)
-        for d in discussions:
+        for d in load_discussions(year_month):
             if d.get('meeting_id') == meeting_id:
                 return True
     return False
@@ -255,8 +348,7 @@ def is_meeting_processed(meeting_id: str) -> bool:
 def get_discussion_by_meeting_id(meeting_id: str) -> Optional[dict]:
     """Find a discussion record by its meeting ID."""
     for year_month in list_discussion_months():
-        discussions = load_discussions(year_month)
-        for d in discussions:
+        for d in load_discussions(year_month):
             if d.get('meeting_id') == meeting_id:
                 return d
     return None
@@ -291,7 +383,11 @@ def record_freshness_check() -> None:
 # ============================================================================
 
 def get_stale_entities(days_threshold: int = None) -> List[dict]:
-    """Get entities that haven't been updated recently."""
+    """Get entities that haven't been updated recently.
+
+    Uses shard dates for a fast initial check — only reads shard content
+    when the most recent shard date is older than the threshold.
+    """
     stale = []
     config = load_config()
 
@@ -299,10 +395,8 @@ def get_stale_entities(days_threshold: int = None) -> List[dict]:
         entity_config = config.get('entities', {}).get(entity_name, {})
         threshold = days_threshold or entity_config.get('freshness', {}).get('stale_after_days', 30)
 
-        data = load_entity_records(entity_name)
-        records = data.get('records', [])
-
-        if not records:
+        shards = list_shards(entity_name)
+        if not shards:
             stale.append({
                 'entity': entity_name,
                 'reason': 'No records',
@@ -310,26 +404,43 @@ def get_stale_entities(days_threshold: int = None) -> List[dict]:
             })
             continue
 
-        # Find most recent record
-        dates = []
-        for r in records:
-            for field in ['updated', 'created', 'date']:
-                if field in r and r[field]:
-                    try:
-                        d = datetime.fromisoformat(r[field]).date() if isinstance(r[field], str) else r[field]
-                        dates.append(d)
-                    except:
-                        pass
+        # Fast check: most recent shard name gives approximate last activity
+        newest_shard = shards[0]  # Already sorted newest-first
+        try:
+            shard_date = datetime.strptime(newest_shard + "-28", '%Y-%m-%d').date()
+        except ValueError:
+            shard_date = date.today()
 
-        if dates:
-            last = max(dates)
-            days_old = (date.today() - last).days
-            if days_old > threshold:
-                stale.append({
-                    'entity': entity_name,
-                    'reason': f'{days_old} days since last update',
-                    'last_activity': last.isoformat()
-                })
+        # Only read shard content if the month itself is old enough
+        shard_age = (date.today() - shard_date).days
+        if shard_age <= threshold:
+            # Recent shard exists — check actual record dates within it
+            records = load_shard(entity_name, newest_shard)
+            dates = []
+            for r in records:
+                for field in ['updated', 'created', 'date']:
+                    if field in r and r[field]:
+                        try:
+                            d = datetime.fromisoformat(r[field]).date() if isinstance(r[field], str) else r[field]
+                            dates.append(d)
+                        except:
+                            pass
+            if dates:
+                last = max(dates)
+                days_old = (date.today() - last).days
+                if days_old > threshold:
+                    stale.append({
+                        'entity': entity_name,
+                        'reason': f'{days_old} days since last update',
+                        'last_activity': last.isoformat()
+                    })
+        else:
+            # Shard month itself is older than threshold — definitely stale
+            stale.append({
+                'entity': entity_name,
+                'reason': f'{shard_age}+ days since last update',
+                'last_activity': f'{newest_shard}-01'
+            })
 
     return stale
 

@@ -162,16 +162,19 @@ Create the following structure:
 │   │   ├── config.yaml         # Project configuration
 │   │   ├── adrs/               # (if enabled)
 │   │   │   ├── schema.yaml
-│   │   │   └── records.yaml
+│   │   │   ├── meta.yaml       # last_number + shard list
+│   │   │   └── YYYY-MM.yaml    # Monthly shard
 │   │   ├── discussions/        # (if enabled)
 │   │   │   ├── schema.yaml
-│   │   │   └── YYYY-MM.yaml    # Current month
+│   │   │   └── YYYY-MM.yaml    # Monthly shard
 │   │   ├── notes/              # (if enabled)
 │   │   │   ├── schema.yaml
-│   │   │   └── records.yaml
+│   │   │   ├── meta.yaml       # shard list
+│   │   │   └── YYYY-MM.yaml    # Monthly shard
 │   │   └── tasks/              # (if enabled)
 │   │       ├── schema.yaml
-│   │       └── records.yaml
+│   │       ├── meta.yaml       # last_number + shard list
+│   │       └── YYYY-MM.yaml    # Monthly shard
 │   ├── lib/
 │   │   └── tracking.py         # CRUD library with validation
 │   ├── hooks/

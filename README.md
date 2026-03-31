@@ -1,55 +1,6 @@
-# Second Brain
+# Claude Code Plugin Marketplace
 
-## Why
-
-Your brain is a lousy database. It forgets names minutes after hearing them, rewrites memories every time it recalls them, and drops critical context the moment you switch tasks. Evolution optimized it for pattern-matching and snap decisions on the savanna — not for retaining the specifics of forty concurrent projects, three competing architectural proposals, and last Tuesday's meeting outcomes.
-
-A second brain is the acknowledgment that durable, searchable, structured knowledge does not belong inside a biological organ that was never designed for storage. It belongs in files you control, versioned with git, organized by meaning rather than by the date you happened to write them down.
-
-Most people who set out to build a second brain never get past choosing the tool. They spend weeks evaluating Obsidian vs. Notion vs. Logseq, configuring plugins, designing tag taxonomies — and never write the first useful note. The tool is a trap. The tool is the easiest part. The hard part is the discipline of writing things down, of revisiting what you wrote, of letting knowledge compound over time. A folder of plain markdown files committed to git will outperform any app you never open.
-
-This is why the only real contract a second brain demands is structural:
-
-```
-docs/[topic]/[article].md
-```
-
-Markdown files. In folders. Under version control. Everything above this — rendering, search, graph views, publishing — is a replaceable presentation layer. You can swap it without losing a single sentence.
-
-## The Beauty of Separation
-
-There is something deeply elegant about a file that will outlive every application used to open it.
-
-A markdown file written today will be readable in thirty years. Not because some company decided to keep its servers running — but because plain text is the cockroach of digital formats. It survives everything. The same cannot be said about your Notion workspace, your Confluence instance, or that Evernote account you forgot the password to.
-
-When you separate what you *think* from how it *looks*, something remarkable happens: you gain the freedom to change your mind about presentation without touching a single idea. Your knowledge base can be a minimalist terminal output on Monday, a polished VitePress portal on Tuesday, and an Obsidian graph on Wednesday — all from the same folder of files. The thoughts don't move. Only the lens changes.
-
-This is not just an architectural pattern. It is a statement about what matters. The rendering layer is cosmetics. The folder of markdown files is *you* — your decisions, your insights, the patterns you noticed, the mistakes you refuse to repeat. Treat the two with appropriate reverence.
-
-And here's the part that tools get wrong: they want to own your expression. They impose their structure, their templates, their way of connecting ideas. But a second brain is personal. The way you organize knowledge reflects the way you think. Some people think in trees. Others in webs. Some in chronological streams. The `docs/[topic]/[article].md` contract gives you a canvas — not a coloring book. Fill the folders with whatever makes sense to *you*. Name them in your language. Nest them as deep or flat as your mind prefers. The structure is yours to shape. The tool just serves it.
-
-## Choosing Your Presentation Layer
-
-This repository uses VitePress. It is one valid choice. Here are others — all of them consume the same `docs/[folders]/[article].md` structure:
-
-| | VitePress | Plain MD + Git | Obsidian | MkDocs Material | Docusaurus |
-|---|---|---|---|---|---|
-| **Type** | SSG (Vue) | Workflow | App | SSG (Python) | SSG (React) |
-| **`docs/` native** | Yes | Yes | Yes | Yes | Yes |
-| **Git-friendly** | Yes | It *is* git | Yes (plugin) | Yes | Yes |
-| **Search** | MiniSearch | grep / ripgrep | Built-in | lunr.js | Algolia |
-| **Graph / Backlinks** | Custom (Vue) | No | Built-in | Plugin | Custom (React) |
-| **Plugin ecosystem** | Moderate | N/A | Massive (1800+) | Good | Moderate |
-| **Hosting** | Any static host | GitHub renders | Obsidian Publish | Any static host | Any static host |
-| **Best for** | Publishing portal | Zero lock-in | Personal thinking | Technical docs | Project docs |
-
-Pick whatever matches how you think and where you publish. The files underneath don't care.
-
----
-
-## This Implementation
-
-What follows is one concrete implementation — a Claude Code plugin marketplace that scaffolds and automates a second brain using VitePress, YAML microdatabases, and semantic search.
+Personal plugin marketplace for Claude Code — skills, hooks, and agents for workflow automation and development toolkits.
 
 **Marketplace ID:** `bershadsky-claude-tools`
 

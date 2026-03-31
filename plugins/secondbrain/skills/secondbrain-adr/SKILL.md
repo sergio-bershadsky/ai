@@ -13,12 +13,12 @@ Create numbered ADRs with category-based organization and status workflow.
 ## Prerequisites
 
 Verify ADR entity is enabled in the secondbrain project:
-1. Check for `.claude/data/adrs/records.yaml`
+1. Check for `.claude/data/adrs/meta.yaml` (sharded) or `.claude/data/adrs/records.yaml` (legacy)
 2. If not found, suggest running `secondbrain-init` with ADRs enabled
 
 ## Important Rules
 
-- **Do NOT add ADRs to the left sidebar/navigation.** ADRs are listed automatically via the `EntityTable` component on `docs/adrs/index.md`, which reads from `.claude/data/adrs/records.yaml`. No sidebar modification is needed.
+- **Do NOT add ADRs to the left sidebar/navigation.** ADRs are listed automatically via the `EntityTable` component on `docs/adrs/index.md`, which reads from `.claude/data/adrs/` shard files. No sidebar modification is needed.
 
 ## Workflow
 
@@ -37,7 +37,7 @@ Collect from user or conversation context:
 
 ### Step 2: Determine ADR Number
 
-1. Load `.claude/data/adrs/records.yaml`
+1. Load `.claude/data/adrs/meta.yaml` (read `last_number` — tiny file, ~50 tokens)
 2. Find highest number in selected category range
 3. Increment to get next number
 4. Format: `ADR-XXXX` (zero-padded)
@@ -69,7 +69,7 @@ category: <category>
 
 ### Step 4: Update Records
 
-Add entry to `.claude/data/adrs/records.yaml`:
+Add entry to the current month's shard `.claude/data/adrs/YYYY-MM.yaml`:
 
 ```yaml
 - number: XXXX
@@ -81,13 +81,13 @@ Add entry to `.claude/data/adrs/records.yaml`:
   author: <author>
 ```
 
-Update `last_number` if this is the new highest.
+Update `last_number` in `.claude/data/adrs/meta.yaml` and ensure the current month is in the `shards` list.
 
 ### Step 5: Sidebar Note
 
 **DO NOT manually add ADRs to VitePress sidebar.**
 
-ADRs are automatically listed via the `EntityTable` component on `docs/adrs/index.md`, which reads from `.claude/data/adrs/records.yaml`. No sidebar modification needed.
+ADRs are automatically listed via the `EntityTable` component on `docs/adrs/index.md`, which reads from `.claude/data/adrs/` shard files. No sidebar modification needed.
 
 ### Step 6: Confirm Creation
 

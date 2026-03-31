@@ -14,12 +14,12 @@ Create tracked tasks with priority, due dates, and status workflow.
 ## Prerequisites
 
 Verify Tasks entity is enabled:
-1. Check for `.claude/data/tasks/records.yaml`
+1. Check for `.claude/data/tasks/meta.yaml` (sharded) or `.claude/data/tasks/records.yaml` (legacy)
 2. If not found, suggest enabling tasks via `secondbrain-init` or `secondbrain-entity`
 
 ## Important Rules
 
-- **Do NOT add tasks to the left sidebar/navigation.** Tasks are listed automatically via the `EntityTable` component on `docs/tasks/index.md`, which reads from `.claude/data/tasks/records.yaml`. No sidebar modification is needed.
+- **Do NOT add tasks to the left sidebar/navigation.** Tasks are listed automatically via the `EntityTable` component on `docs/tasks/index.md`, which reads from `.claude/data/tasks/` shard files. No sidebar modification is needed.
 
 ## Workflow
 
@@ -37,13 +37,13 @@ Collect from user or conversation context:
 
 Sequential ID format: `TASK-XXXX` (zero-padded)
 
-1. Load `.claude/data/tasks/records.yaml`
-2. Get `last_number`, increment by 1
+1. Load `.claude/data/tasks/meta.yaml` (read `last_number` — tiny file, ~50 tokens)
+2. Increment by 1
 3. Format as `TASK-0042`
 
 ### Step 3: Create Task Record
 
-Add to `.claude/data/tasks/records.yaml`:
+Add to the current month's shard `.claude/data/tasks/YYYY-MM.yaml`:
 
 ```yaml
 - number: 42
@@ -57,7 +57,7 @@ Add to `.claude/data/tasks/records.yaml`:
   tags: [auth, security]
 ```
 
-Update `last_number: 42`
+Update `last_number: 42` in `.claude/data/tasks/meta.yaml` and ensure the current month is in the `shards` list.
 
 ### Step 4: Create Task Document (Optional)
 
@@ -99,7 +99,7 @@ Implementation notes here...
 
 **DO NOT manually add tasks to VitePress sidebar.**
 
-Tasks are automatically listed via the `EntityTable` component on `docs/tasks/index.md`, which reads from `.claude/data/tasks/records.yaml`. No sidebar modification needed.
+Tasks are automatically listed via the `EntityTable` component on `docs/tasks/index.md`, which reads from `.claude/data/tasks/` shard files. No sidebar modification needed.
 
 ### Step 6: Confirm Creation
 

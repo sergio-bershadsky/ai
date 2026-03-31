@@ -248,19 +248,30 @@ Use when the knowledge base has accumulated enough content that manual cleanup i
 ```
 my-knowledge-base/
 ├── .claude/
-│   ├── data/                  # Microdatabases (YAML + JSON Schema)
-│   │   ├── config.yaml        # Central configuration
-│   │   ├── adrs/records.yaml
-│   │   ├── notes/records.yaml
-│   │   ├── tasks/records.yaml
-│   │   └── discussions/       # Monthly-partitioned
+│   ├── data/                     # Microdatabases (YAML + JSON Schema)
+│   │   ├── config.yaml           # Central configuration
+│   │   ├── adrs/                 # Monthly-sharded
+│   │   │   ├── schema.yaml
+│   │   │   ├── meta.yaml         # last_number + shard list
+│   │   │   ├── 2025-12.yaml
+│   │   │   └── 2026-03.yaml      # Current month
+│   │   ├── notes/                # Monthly-sharded
+│   │   │   ├── schema.yaml
+│   │   │   ├── meta.yaml         # shard list
+│   │   │   └── 2026-03.yaml
+│   │   ├── tasks/                # Monthly-sharded
+│   │   │   ├── schema.yaml
+│   │   │   ├── meta.yaml         # last_number + shard list
+│   │   │   └── 2026-03.yaml
+│   │   └── discussions/          # Monthly-sharded
+│   │       ├── schema.yaml
 │   │       └── 2026-03.yaml
-│   ├── search/                # qmd index (if enabled)
+│   ├── search/                   # qmd index (if enabled)
 │   ├── lib/
-│   │   ├── tracking.py        # CRUD operations for microdatabases
-│   │   └── fireflies.py       # Transcription provider client (if enabled)
-│   └── hooks/                 # Automation scripts
-├── docs/                      # VitePress portal
+│   │   ├── tracking.py           # CRUD operations for microdatabases
+│   │   └── fireflies.py          # Transcription provider client (if enabled)
+│   └── hooks/                    # Automation scripts
+├── docs/                         # VitePress portal
 │   ├── .vitepress/
 │   │   └── theme/
 │   │       └── components/
@@ -273,6 +284,83 @@ my-knowledge-base/
 │   └── discussions/
 └── package.json
 ```
+
+## Microdatabase Sharding
+
+### The Problem
+
+An AI assistant reads entire files into its context window. Every token counts. When your knowledge base has a single `records.yaml` with 300 ADRs, adding one new ADR forces the tool to read all 300 records (~9,000 tokens) just to append a line and update `last_number`. After two years of active use, a flat `records.yaml` for notes can easily hit 500+ records — 12,000+ tokens consumed for every single operation.
+
+This is not a hypothetical. It is the inevitable outcome of any flat-file database used with an AI tool that reads files to operate on them.
+
+### The Solution: Monthly Shards
+
+Every entity type stores records in monthly shard files (`YYYY-MM.yaml`) instead of a single `records.yaml`. A lightweight `meta.yaml` holds only the metadata needed for cross-shard operations (sequential counters, shard list).
+
+```
+.claude/data/adrs/
+├── schema.yaml           # JSON Schema (unchanged)
+├── meta.yaml             # Tiny: last_number + shard list
+├── 2025-12.yaml          # ~15 records from Dec 2025
+├── 2026-01.yaml          # ~12 records from Jan 2026
+└── 2026-03.yaml          # Current month (active writes)
+```
+
+**meta.yaml** (always tiny, always loaded):
+
+```yaml
+last_number: 47
+shards: ["2025-12", "2026-01", "2026-02", "2026-03"]
+```
+
+**Shard file** (one month of records):
+
+```yaml
+# 2026-03.yaml
+- number: 45
+  title: "Migrate to event-driven architecture"
+  status: draft
+  category: infrastructure
+  created: "2026-03-15"
+  file: docs/adrs/ADR-0045-event-driven-architecture.md
+- number: 46
+  title: "Use Kafka over RabbitMQ"
+  status: proposed
+  category: infrastructure
+  created: "2026-03-22"
+  file: docs/adrs/ADR-0046-kafka-over-rabbitmq.md
+```
+
+### Why This Works for AI Tools
+
+The key insight: **90%+ of operations touch the current or previous month.** Sharding by month means the common case reads one small file (~10-30 records) instead of one massive file (hundreds of records).
+
+| Operation | What the AI reads | Token cost |
+|-----------|-------------------|------------|
+| **Add record** | `meta.yaml` + current month shard | ~50 + ~300 = **350** |
+| **Update recent record** | `meta.yaml` + current month shard | ~50 + ~300 = **350** |
+| **Update old record** | `meta.yaml` + target month shard | ~50 + ~300 = **350** |
+| **Get next number** | `meta.yaml` only | **~50** |
+| **List recent** | Current month shard only | **~300** |
+| **Freshness check** | `meta.yaml` (shard dates tell the story) | **~100** |
+| **Full search** | All shards | Same as flat file |
+
+Compare this to the flat file approach where **every operation** costs the full file size (6,000-12,000+ tokens at scale).
+
+The worst case — searching all history — reads all shards sequentially, which is exactly the same cost as reading one big file. Sharding never makes things worse; it makes the common case dramatically cheaper.
+
+### Migration from records.yaml
+
+If you have an existing knowledge base with flat `records.yaml` files:
+
+1. Read `records.yaml`, group records by `created` month
+2. Write each group to its own `YYYY-MM.yaml` shard
+3. Create `meta.yaml` with `last_number` (if sequential) and `shards` list
+4. Remove the old `records.yaml`
+
+The tracking library handles this automatically via `migrate_to_shards(entity)`.
+
+---
 
 ## Search Engines
 
@@ -320,7 +408,7 @@ Query → qmd
 | ADRs | `ADR-NNNN` | Category-based numbering, 8-step status workflow |
 | Notes | `YYYY-MM-DD-slug` | Date-based, tags, active/archived |
 | Tasks | `TASK-NNNN` | Sequential, priority levels, due dates |
-| Discussions | `DISC-YYYYMM-N` | Monthly-partitioned, participants, decisions |
+| Discussions | `DISC-YYYYMM-N` | Monthly-sharded, participants, decisions |
 
 ### Custom
 
@@ -333,18 +421,22 @@ Define new entity types with `/secondbrain-entity`:
 
 ## Microdatabase Schema
 
-Each entity stores records in YAML with JSON Schema validation:
+Each entity stores records in monthly YAML shards with JSON Schema validation:
 
 ```yaml
-# .claude/data/adrs/records.yaml
+# .claude/data/adrs/meta.yaml (lightweight index — always tiny)
 last_number: 5
-records:
-  - number: 1
-    title: "Use PostgreSQL for primary storage"
-    status: implemented
-    category: infrastructure
-    created: 2025-01-15
-    file: docs/adrs/ADR-0001-use-postgresql.md
+shards: ["2025-01", "2025-03", "2026-03"]
+```
+
+```yaml
+# .claude/data/adrs/2025-01.yaml (one month of records)
+- number: 1
+  title: "Use PostgreSQL for primary storage"
+  status: implemented
+  category: infrastructure
+  created: 2025-01-15
+  file: docs/adrs/ADR-0001-use-postgresql.md
 ```
 
 ## License
