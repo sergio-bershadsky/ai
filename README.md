@@ -16,6 +16,18 @@ docs/[topic]/[article].md
 
 Markdown files. In folders. Under version control. Everything above this — rendering, search, graph views, publishing — is a replaceable presentation layer. You can swap it without losing a single sentence.
 
+## The Beauty of Separation
+
+There is something deeply elegant about a file that will outlive every application used to open it.
+
+A markdown file written today will be readable in thirty years. Not because some company decided to keep its servers running — but because plain text is the cockroach of digital formats. It survives everything. The same cannot be said about your Notion workspace, your Confluence instance, or that Evernote account you forgot the password to.
+
+When you separate what you *think* from how it *looks*, something remarkable happens: you gain the freedom to change your mind about presentation without touching a single idea. Your knowledge base can be a minimalist terminal output on Monday, a polished VitePress portal on Tuesday, and an Obsidian graph on Wednesday — all from the same folder of files. The thoughts don't move. Only the lens changes.
+
+This is not just an architectural pattern. It is a statement about what matters. The rendering layer is cosmetics. The folder of markdown files is *you* — your decisions, your insights, the patterns you noticed, the mistakes you refuse to repeat. Treat the two with appropriate reverence.
+
+And here's the part that tools get wrong: they want to own your expression. They impose their structure, their templates, their way of connecting ideas. But a second brain is personal. The way you organize knowledge reflects the way you think. Some people think in trees. Others in webs. Some in chronological streams. The `docs/[topic]/[article].md` contract gives you a canvas — not a coloring book. Fill the folders with whatever makes sense to *you*. Name them in your language. Nest them as deep or flat as your mind prefers. The structure is yours to shape. The tool just serves it.
+
 ## Choosing Your Presentation Layer
 
 This repository uses VitePress. It is one valid choice. Here are others — all of them consume the same `docs/[folders]/[article].md` structure:
