@@ -96,170 +96,79 @@ What follows is one concrete implementation — a Claude Code plugin marketplace
 
 ## Plugin Details
 
-### secondbrain
+### [secondbrain](plugins/secondbrain/)
 
-The core knowledge management plugin. Scaffolds a complete system with YAML microdatabases, configurable entity types, semantic search, and automation hooks that keep your knowledge base healthy without manual effort.
+Knowledge base scaffolding with YAML microdatabases, configurable entity types (ADRs, Notes, Tasks, Discussions, custom), dual semantic search (qmd for CLI, Orama for browser), review stamps with staleness badges, and meeting transcription. 11 skills, 2 agents, 5 automation hooks. See the [full documentation](plugins/secondbrain/README.md).
 
 ```bash
 /plugin install secondbrain@bershadsky-claude-tools
 ```
 
-#### Skills
-
-| Skill | Use Case |
-|-------|----------|
-| `secondbrain-init` | **Bootstrap a new knowledge base.** Creates the full project structure — YAML microdatabases, VitePress portal, entity schemas, automation hooks. Interactive: you choose which entity types to enable (ADRs, Notes, Tasks, Discussions), whether to add semantic search, review stamps, or meeting transcription. This is the starting point. |
-| `secondbrain-adr` | **Record a technical decision.** When you choose Kubernetes over ECS, pick Postgres over Mongo, or decide on a deployment strategy — capture the context, options considered, and consequences. Category-based numbering (infra: 0001-0999, feature: 2000-2999, process: 3000-3999). Status workflow from draft through implemented to rejected. |
-| `secondbrain-note` | **Capture knowledge that doesn't fit a formal category.** A debugging insight, a pattern you discovered, a summary of a paper you read. Date-based IDs (2026-03-31-slug), tagged for retrieval. The most flexible entity type — use it when nothing else fits. |
-| `secondbrain-task` | **Track action items inside the knowledge base.** Sequential IDs (TASK-0001), priority levels (critical/high/medium/low), due dates, status workflow (todo → in_progress → done, with blocked/canceled paths). Keeps tasks colocated with the knowledge they emerged from. |
-| `secondbrain-discussion` | **Document a meeting or conversation.** Captures participants, decisions made, action items assigned, and open questions. Monthly-partitioned YAML records. Source tracking (manual entry, meeting, Slack). Use this after any conversation that produced outcomes worth preserving. |
-| `secondbrain-freshness` | **Find content that's going stale.** Generates a report categorizing all content by staleness: critical (2x threshold), stale (1x), warning (0.75x). Configurable thresholds per entity type. Terminal statuses (implemented, done, archived) are exempt. Run periodically to keep the knowledge base honest. |
-| `secondbrain-entity` | **Define a new entity type.** When ADRs, Notes, Tasks, and Discussions aren't enough — create custom entities with their own schema, ID format (sequential, date-based, UUID), optional status workflow, and VitePress data loaders. Examples: RFCs, runbooks, retrospectives, vendor evaluations. |
-| `secondbrain-search` | **Find knowledge by meaning, not keywords.** Semantic search powered by qmd (SQLite + embedding-gemma + reranker). Filters by entity type, date range, status, tags. Output as brief summaries, detailed results, or JSON. Use when you know what you're looking for but not the exact words you used. |
-| `secondbrain-search-init` | **Add semantic search to an existing project.** Downloads embedding models (~1.5GB first run), generates qmd config, optionally installs a PostToolUse hook for automatic incremental indexing. One-time setup. |
-| `secondbrain-review` | **Stamp a page as reviewed.** Appends your name and date to the page's frontmatter. Multiple reviewers accumulate over time. Visual staleness badges: green (<30 days), yellow (30-90 days), orange (>90 days). Use during periodic review cycles to mark content as still accurate. |
-| `secondbrain-transcribe` | **Import a meeting transcript into a Discussion document.** Pulls transcripts from providers (Fireflies.ai), extracts participants, decisions, and action items. Maps speakers to team members via config. Identifies potential ADRs for manual confirmation. Deduplicates to prevent re-processing. |
-
-#### Agents
-
-| Agent | Use Case |
-|-------|----------|
-| `secondbrain-review` | **Assess document quality before publishing.** Evaluates completeness, clarity, and alignment with entity-specific criteria (ADRs need context + options + consequences, Notes need actionability). Returns a verdict: ready, minor revisions, major revisions, or needs rethinking. Use before sharing a document with the team. |
-| `secondbrain-refine` | **Autonomous knowledge base improvement.** Runs in the background, identifies stale content, broken links, missing metadata, and inconsistencies. Proposes improvements in batches that require your confirmation before applying. Supports notifications (ntfy.sh, macOS sound). Use when you want the knowledge base cleaned up without doing the grunt work yourself. |
-
-#### Hooks
-
-| Hook | Event | What It Does |
-|------|-------|--------------|
-| `freshness-check` | UserPromptSubmit | Reports the 10 most stale items at the start of each session (throttled to once per hour). You see what needs attention before you start working. |
-| `session-context` | SessionStart | Injects a project overview — entity counts, search status, recent activity, available skills. Gives Claude full context about your knowledge base without you having to explain it. |
-| `transcription-check` | SessionStart | Lists undocumented meetings from your transcription provider. Reminds you to run `/secondbrain-transcribe` for meetings that haven't been captured yet. |
-| `sidebar-check` | PostToolUse | Warns when a new markdown file isn't linked in the VitePress sidebar. Prevents orphaned documents that exist but are invisible in the portal. |
-| `search-index-update` | PostToolUse | Runs incremental qmd indexing in the background after any document is created or edited. Keeps search results current without manual rebuilds. |
-
-#### Search Engines
-
-| Engine | Environment | Technology | Use Case |
-|--------|-------------|------------|----------|
-| qmd | Claude Code (CLI) | SQLite + embedding-gemma + qwen3-reranker | BM25 keyword + vector semantic + LLM reranking. For when you're working in the terminal. |
-| Orama | VitePress (browser) | JSON + gte-small client-side embeddings | Offline-capable semantic search. Press Cmd+K in the published site. |
-
 ---
 
-### git
+### [git](plugins/git/)
 
-Standardized git workflow that prevents sloppy commits and protects against leaving uncommitted work behind.
+Conventional commits with branch safety checks and ticket detection (GitHub, GitLab, Jira, Linear). Semantic version bumping with git tags. Auto-stages files after edits. Blocks session exit if uncommitted changes exist.
 
 ```bash
 /plugin install git@bershadsky-claude-tools
 ```
 
-#### Skills
-
-| Skill | Use Case |
-|-------|----------|
-| `/commit` | **Create a conventional commit with guardrails.** Analyzes your diff, detects the branch naming convention and linked tickets (GitHub, GitLab, Jira, Linear), drafts a conventional commit message (type(scope): description), warns if you're committing to the default branch, and always asks for confirmation before committing. Never pushes. |
-| `/version` | **Bump a plugin's semantic version.** Choose major, minor, or patch. Updates plugin.json and marketplace.json, creates a commit and a git tag (v1.2.0-plugin-name). Auto-detects the plugin from your working directory. Never pushes — you run `git push --follow-tags` when ready. |
-
-#### Hooks
-
-| Hook | Event | What It Does |
-|------|-------|--------------|
-| `auto-stage` | PostToolUse | Automatically stages files after Write/Edit operations. No more forgotten `git add`. |
-| `pre-stop-commit` | Stop | Blocks session exit if uncommitted changes exist. Forces you to either commit or consciously discard before leaving. Exit code 2 prevents session close. |
+**Skills:** `/commit`, `/version` | **Hooks:** auto-stage, pre-stop-commit
 
 ---
 
-### settings-sync
+### [settings-sync](plugins/settings-sync/)
 
-Preserves your Claude Code configuration across ephemeral environments (cloud VMs, Codespaces, Gitpod).
+Backs up `~/.claude/` to the repo before session ends, excluding sensitive files. Bootstrap script restores settings on new VMs (Codespaces, Gitpod, cloud).
 
 ```bash
 /plugin install settings-sync@bershadsky-claude-tools
 ```
 
-#### Hook
-
-| Hook | Event | What It Does |
-|------|-------|--------------|
-| `backup-settings` | Stop | Copies `~/.claude/` to `.claude-backup/` in the repo before session ends. Excludes sensitive files (logs, credentials, tokens). On next VM, bootstrap restores them. |
-
-**Bootstrap for new VMs:**
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/sergio-bershadsky/ai/main/plugins/settings-sync/scripts/bootstrap.sh | bash
-```
+Bootstrap: `curl -fsSL https://raw.githubusercontent.com/sergio-bershadsky/ai/main/plugins/settings-sync/scripts/bootstrap.sh | bash`
 
 ---
 
-### django-dev
+### [django-dev](plugins/django-dev/)
 
-Opinionated Django patterns that enforce consistency across models, APIs, admin, and tests. Install once, and every Django project follows the same structure.
+Opinionated Django patterns: 1-file-per-model, UUID PKs, soft delete, Dynaconf config, Django Ninja APIs (1-endpoint-per-file, Pydantic schemas), Unfold admin with HTMX, pytest + factory_boy testing. Code review agent for convention compliance.
 
 ```bash
 /plugin install django-dev@bershadsky-claude-tools
 ```
 
-#### Skills
-
-| Skill | Use Case |
-|-------|----------|
-| `django-dev` | **Establish project structure and model conventions.** 1-file-per-model in a `models/` package. UUID primary keys, timestamps, soft delete via BaseModel. Naming conventions: Base* (abstract), Virtual* (in-memory), Proxy* (proxy models). Dynaconf for configuration. uv + pyproject.toml for dependencies. Strict class member ordering enforced. |
-| `django-dev-ninja` | **Build REST APIs with Django Ninja.** 1-endpoint-per-file in `api/<group>/` subpackages. Pydantic schemas in `schemas/`. Router-per-group. Business logic stays in services, not endpoints. Includes patterns for pagination, error handling, file uploads, JWT/API key/session auth. |
-| `django-dev-unfold` | **Configure Unfold admin dashboards.** 1-admin-per-file in `admin/` package. Unfold decorators for styled displays (@display with label coloring). Range filters, inline support, dashboard customization, Tailwind styling. |
-| `django-dev-test` | **Write tests with pytest and factory_boy.** Never Django TestCase. Factories for all test data. Mirror app structure in tests/unit/, tests/integration/, tests/e2e/. Conftest patterns for shared fixtures. Mock/patch for service isolation. |
-
-#### Agent
-
-| Agent | Use Case |
-|-------|----------|
-| `django-review` | **Review code for convention compliance.** Checks model organization, naming prefixes, class member ordering, API structure, admin setup, security (no hardcoded secrets, parameterized SQL), and configuration (Dynaconf, Docker). Issues categorized as critical, convention violation, or suggestion. |
+**Skills:** django-dev, django-dev-ninja, django-dev-unfold, django-dev-test | **Agent:** django-review
 
 ---
 
-### frappe-dev
+### [frappe-dev](plugins/frappe-dev/)
 
-Frappe Framework v15 development with multi-layer architecture: Controller → Service → Repository → DB.
+Frappe Framework v15 with multi-layer architecture (Controller → Service → Repository → DB). DocType scaffolding, REST API endpoints, service layer patterns, app bootstrapping, pytest integration tests.
 
 ```bash
 /plugin install frappe-dev@bershadsky-claude-tools
 ```
 
-#### Skills
-
-| Skill | Use Case |
-|-------|----------|
-| `frappe-doctype` | **Create a complete DocType implementation.** Generates controller with lifecycle hooks (before_validate through on_trash), service layer for business logic, repository for data access, and integration tests. v15 type annotations with TYPE_CHECKING blocks. DocStatus helpers for readable status checks. |
-| `frappe-api` | **Build REST API endpoints.** Standard CRUD (GET, GET list, POST, PUT, DELETE) plus bulk operations. Permission checks on every endpoint, input validation via v15 type hints, standardized error responses, transaction handling (auto-commit/rollback). Includes cURL examples. |
-| `frappe-service` | **Implement business logic in the service layer.** Decorators for permissions, transactions, and logging. CRUD with business rules, workflow processing, bulk operations, dashboard query methods. Integration service pattern for external APIs with retry logic. |
-| `frappe-app` | **Scaffold a new Frappe application.** Multi-layer architecture, proper module organization, v15 best practices out of the box. |
-| `frappe-test` | **Write tests with pytest and factories.** Fixtures, factory patterns, integration tests that exercise the full Controller → Service → Repository stack. |
+**Skills:** frappe-doctype, frappe-api, frappe-service, frappe-app, frappe-test
 
 ---
 
-### replit-prompts
+### [replit-prompts](plugins/replit-prompts/)
 
-Generate structured prompts that maximize Replit Agent's effectiveness and minimize back-and-forth iterations.
+Structured prompts for Replit Agent based on Replit's 10 official guidelines. Generates optimized prompts, PRDs, and phased development plans that minimize iteration.
 
 ```bash
 /plugin install replit-prompts@bershadsky-claude-tools
 ```
 
-#### Skills
-
-| Skill | Use Case |
-|-------|----------|
-| `replit-prompt` | **Turn a vague idea into a structured prompt.** Applies Replit's 10 official guidelines (Checkpoint, Debug, Discover, Experiment, Instruct, Select, Show, Simplify, Specify, Test). Outputs a template covering project overview, tech stack, core features, UI/UX, data model, user flows, constraints, and success criteria. |
-| `replit-prd` | **Write a Product Requirements Document.** Comprehensive PRD formatted for Replit Agent consumption. Covers scope, user stories, technical requirements, and acceptance criteria. |
-| `replit-plan` | **Create a phased development plan.** Breaks work into phases with checkpoints, dependencies, and deliverables. Designed for iterative Replit Agent sessions. |
+**Skills:** replit-prompt, replit-prd, replit-plan
 
 ---
 
-### marketplace-validator
+### [marketplace-validator](plugins/marketplace-validator/)
 
-Internal plugin. Validates marketplace.json schema automatically after every edit.
-
-Runs as a PostToolUse hook on Write/Edit operations. Checks required fields (name, owner, plugins array), plugin fields (name, source, description, version), and blocks the session (exit code 2) if validation fails.
+Internal. Validates marketplace.json schema after every Write/Edit. Blocks the session if validation fails.
 
 ---
 
