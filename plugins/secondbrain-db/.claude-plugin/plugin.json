@@ -1,0 +1,13 @@
+{
+  "name": "secondbrain-db",
+  "version": "0.1.0",
+  "description": "File-backed knowledge base ORM with YAML schemas, Starlark virtuals, integrity signing, and knowledge graph",
+  "author": {
+    "name": "Sergey Bershadsky",
+    "url": "https://github.com/sergio-bershadsky"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/sergio-bershadsky/secondbrain-db",
+  "homepage": "https://github.com/sergio-bershadsky/secondbrain-db",
+  "keywords": ["markdown", "knowledge-base", "orm", "semantic-search", "yaml", "integrity", "knowledge-graph"]
+}

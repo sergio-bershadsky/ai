@@ -64,6 +64,13 @@
       "description": "Generate optimized prompts, PRDs, and task plans for Replit Agent that maximize AI understanding and minimize iterations",
       "version": "1.0.0",
       "category": "productivity"
+    },
+    {
+      "name": "secondbrain-db",
+      "source": "./plugins/secondbrain-db",
+      "description": "CLI integration for secondbrain-db: YAML-schema ORM over markdown knowledge bases with integrity signing, knowledge graph, semantic search, and auto-review hooks",
+      "version": "0.1.0",
+      "category": "productivity"
     }
   ]
 }
