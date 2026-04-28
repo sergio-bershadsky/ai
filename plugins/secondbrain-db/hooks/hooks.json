@@ -8,11 +8,6 @@
             "type": "command",
             "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/guard-docs.py\"",
             "timeout": 5000
-          },
-          {
-            "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/guard-events.py\"",
-            "timeout": 5000
           }
         ]
       }
