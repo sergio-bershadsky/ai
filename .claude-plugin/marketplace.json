@@ -68,8 +68,8 @@
     {
       "name": "secondbrain-db",
       "source": "./plugins/secondbrain-db",
-      "description": "CLI integration for secondbrain-db: YAML-schema ORM over markdown knowledge bases with integrity signing, knowledge graph, semantic search, and auto-review hooks",
-      "version": "1.3.1",
+      "description": "CLI + embeddable Go library for secondbrain-db: per-md sidecar integrity, YAML-schema ORM, knowledge graph, semantic search, parallel-PR-safe layout, auto-review hooks",
+      "version": "2.0.0",
       "category": "productivity"
     }
   ]

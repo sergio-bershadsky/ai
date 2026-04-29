@@ -1,0 +1,42 @@
+version: 1
+entity: discussions
+docs_dir: docs/discussions
+filename: "{id}.md"
+id_field: id
+integrity: strict
+
+fields:
+  id:           { type: string, required: true }
+  date:         { type: date, required: true }
+  topic:        { type: string, required: true }
+  participants: { type: list, items: { type: string } }
+  source:
+    type: enum
+    values: [manual, meeting, slack, fireflies, otter, telegram, email]
+    default: manual
+  meeting_id:   { type: string }
+  provider:     { type: string }
+  tags:         { type: list, items: { type: string } }
+  status:
+    type: enum
+    values: [documented, pending-review, archived]
+    default: documented
+
+virtuals:
+  title:
+    returns: string
+    source: |
+      def compute(content, fields):
+          for line in content.splitlines():
+              if line.startswith("# "):
+                  return line.removeprefix("# ").strip()
+          return fields["topic"]
+  key_points_count:
+    returns: int
+    source: |
+      def compute(content, fields):
+          count = 0
+          for line in content.splitlines():
+              if line.startswith("### "):
+                  count += 1
+          return count
