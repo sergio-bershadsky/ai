@@ -1,0 +1,43 @@
+version: 1
+entity: decisions
+docs_dir: docs/decisions
+filename: "{id}.md"
+id_field: id
+integrity: strict
+
+fields:
+  id:       { type: string, required: true }
+  number:   { type: int, required: true }
+  title:    { type: string, required: true }
+  status:
+    type: enum
+    values: [draft, proposed, admitted, applied, implemented, tested, superseded, rejected, canceled]
+    default: draft
+  category:
+    type: enum
+    values: [infrastructure, feature, process]
+  created:  { type: date, required: true }
+  updated:  { type: date }
+  author:   { type: string }
+  reviewers: { type: list, items: { type: string } }
+  superseded_by: { type: ref, entity: decisions }
+
+virtuals:
+  title_from_content:
+    returns: string
+    source: |
+      def compute(content, fields):
+          for line in content.splitlines():
+              if line.startswith("# "):
+                  return line.removeprefix("# ").strip()
+          return fields["id"]
+  status_from_content:
+    returns: string
+    source: |
+      def compute(content, fields):
+          for line in content.splitlines():
+              if "**Status:**" in line or "**Текущий:**" in line:
+                  parts = line.split(":**")
+                  if len(parts) > 1:
+                      return parts[1].strip().lower().split()[0]
+          return fields.get("status", "draft")

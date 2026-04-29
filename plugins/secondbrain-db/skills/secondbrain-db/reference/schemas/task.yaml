@@ -1,0 +1,53 @@
+version: 1
+entity: tasks
+docs_dir: docs/tasks
+filename: "{id}.md"
+id_field: id
+integrity: strict
+
+fields:
+  id:             { type: string, required: true }
+  number:         { type: int, required: true }
+  title:          { type: string, required: true }
+  description:    { type: string }
+  status:
+    type: enum
+    values: [todo, in_progress, blocked, done, canceled]
+    default: todo
+  priority:
+    type: enum
+    values: [low, medium, high, critical]
+    default: medium
+  created:        { type: date, required: true }
+  due_date:       { type: date }
+  completed_date: { type: date }
+  assignee:       { type: string }
+  tags:           { type: list, items: { type: string } }
+  blocks:         { type: list, items: { type: ref, entity: tasks } }
+  blocked_by:     { type: list, items: { type: ref, entity: tasks } }
+  related_adr:    { type: ref, entity: decisions }
+
+virtuals:
+  title_from_content:
+    returns: string
+    source: |
+      def compute(content, fields):
+          for line in content.splitlines():
+              if line.startswith("# "):
+                  return line.removeprefix("# ").strip()
+          return fields["title"]
+  checklist_progress:
+    returns: string
+    source: |
+      def compute(content, fields):
+          done = 0
+          total = 0
+          for line in content.splitlines():
+              if line.strip().startswith("- [x]"):
+                  done += 1
+                  total += 1
+              elif line.strip().startswith("- [ ]"):
+                  total += 1
+          if total == 0:
+              return "0/0"
+          return str(done) + "/" + str(total)

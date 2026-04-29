@@ -1,0 +1,34 @@
+version: 1
+entity: notes
+docs_dir: docs/notes
+filename: "{id}.md"
+id_field: id
+integrity: strict
+
+fields:
+  id:      { type: string, required: true }
+  created: { type: date, required: true }
+  status:  { type: enum, values: [active, archived], default: active }
+  tags:    { type: list, items: { type: string } }
+  sources:
+    type: list
+    items:
+      type: object
+      fields:
+        type: { type: string, required: true }
+        link: { type: string, required: true }
+
+virtuals:
+  title:
+    returns: string
+    source: |
+      def compute(content, fields):
+          for line in content.splitlines():
+              if line.startswith("# "):
+                  return line.removeprefix("# ").strip()
+          return fields["id"]
+  word_count:
+    returns: int
+    source: |
+      def compute(content, fields):
+          return len(content.split())
