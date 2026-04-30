@@ -69,7 +69,7 @@
       "name": "secondbrain-db",
       "source": "./plugins/secondbrain-db",
       "description": "CLI + embeddable Go library for secondbrain-db: per-md sidecar integrity, YAML-schema ORM, knowledge graph, semantic search, parallel-PR-safe layout, auto-review hooks",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "category": "productivity"
     }
   ]
