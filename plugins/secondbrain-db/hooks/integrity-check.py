@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
 """PostToolUse hook: runs sbdb doctor check after Write/Edit on .md or .yaml files.
 
-Only triggers when the edited file is inside a docs/ or data/ directory and
-a .sbdb.toml exists in the project root (indicating an sbdb-managed project).
+Only triggers when the edited file is inside a docs/ directory and a
+.sbdb.toml exists in the project root (indicating an sbdb-managed project).
+
+Updated for sbdb v2 layout:
+- v2 has no data/ directory; per-doc <id>.yaml sidecars sit next to <id>.md
+  under docs_dir.
+- doctor check returns exit 0 (clean) or non-zero with `{"action":
+  "doctor.check", "scope": ..., "drifts": [{"file": ..., "drift": ...,
+  "causes": [...]}, ...]}`. Older keys drift_count / tamper_count are gone.
+- doctor check defaults to working-tree-only scope; that's exactly what we
+  want here (only audit what just changed), so we omit --all.
 """
 
 import json
@@ -12,13 +21,11 @@ import sys
 
 
 def main():
-    # Read the hook input from stdin
     try:
         hook_input = json.loads(sys.stdin.read())
     except (json.JSONDecodeError, EOFError):
         return
 
-    # Get the tool name and file path
     tool_name = hook_input.get("tool_name", "")
     tool_input = hook_input.get("tool_input", {})
 
@@ -29,25 +36,22 @@ def main():
     if not file_path:
         return
 
-    # Only check .md and .yaml files
+    # Only check .md and .yaml files inside docs/
     if not file_path.endswith((".md", ".yaml", ".yml")):
         return
-
-    # Only check files in docs/ or data/ directories
-    if "/docs/" not in file_path and "/data/" not in file_path:
+    if "/docs/" not in file_path:
         return
 
-    # Find the project root (walk up looking for .sbdb.toml)
     project_root = find_project_root(file_path)
     if not project_root:
         return
 
-    # Check if sbdb is available
     sbdb_path = find_sbdb()
     if not sbdb_path:
         return
 
-    # Run doctor check
+    # Default scope (uncommitted-only) is precisely what we want: only
+    # audit changes that haven't been committed yet.
     try:
         result = subprocess.run(
             [sbdb_path, "doctor", "check", "--format", "json", "-b", project_root],
@@ -59,51 +63,84 @@ def main():
         return
 
     if result.returncode == 0:
-        return  # all clean
+        return  # clean
 
-    # Parse the result
-    try:
-        data = json.loads(result.stdout)
-        issues = data.get("data", {})
-        drift_count = issues.get("drift_count", 0)
-        tamper_count = issues.get("tamper_count", 0)
-    except (json.JSONDecodeError, KeyError):
-        drift_count = 0
-        tamper_count = 0
+    drifts = parse_drifts(result.stdout)
+    if not drifts:
+        return
 
-    # Build warning message
-    warnings = []
-    if drift_count > 0:
-        warnings.append(f"{drift_count} drift issue(s)")
-    if tamper_count > 0:
-        warnings.append(f"{tamper_count} tamper issue(s)")
-
-    if warnings:
-        parts = [f"[sbdb] KB integrity: {', '.join(warnings)} detected after editing {os.path.basename(file_path)}."]
-
-        if drift_count > 0 and tamper_count == 0:
-            # Pure drift (likely caused by AI editing frontmatter/content) — safe to auto-fix
-            parts.append(
-                "This is drift caused by direct file edits. "
-                "Run `sbdb doctor fix --recompute` to sync frontmatter with records and re-sign."
-            )
-        elif tamper_count > 0:
-            # Tamper — file was edited outside the ORM
-            parts.append(
-                "Files were modified outside sbdb. "
-                "Review the changes, then either:\n"
-                "  - `sbdb doctor sign --force` to accept the edits\n"
-                "  - `git checkout <file>` to revert"
-            )
-
-        msg = " ".join(parts)
+    msg = build_message(drifts, file_path)
+    if msg:
         print(json.dumps({"message": msg}))
 
 
+def parse_drifts(stdout):
+    """Return the list of drift entries from a doctor.check JSON payload.
+
+    Tolerates both wire shapes:
+      {"action":"doctor.check","scope":"uncommitted","drifts":[...]}
+      {"data":{"drifts":[...]}}
+    """
+    try:
+        data = json.loads(stdout)
+    except json.JSONDecodeError:
+        return []
+    if isinstance(data, dict):
+        if isinstance(data.get("drifts"), list):
+            return data["drifts"]
+        inner = data.get("data")
+        if isinstance(inner, dict) and isinstance(inner.get("drifts"), list):
+            return inner["drifts"]
+    return []
+
+
+def build_message(drifts, edited_file):
+    pure_drift = []
+    tamper = []
+    bad_sig = []
+    missing = []
+
+    for d in drifts:
+        causes = d.get("causes", [])
+        kind = d.get("drift", "")
+        if kind in ("missing-md", "missing-sidecar"):
+            missing.append(d.get("file", ""))
+        elif "bad_sig" in causes:
+            bad_sig.append(d.get("file", ""))
+        elif "content_sha mismatch" in causes:
+            tamper.append(d.get("file", ""))
+        elif causes:
+            pure_drift.append(d.get("file", ""))
+
+    parts = [f"[sbdb] integrity check found drift after editing {os.path.basename(edited_file)}:"]
+
+    if pure_drift:
+        parts.append(
+            f"\n  • {len(pure_drift)} pure drift (frontmatter/record vs. sidecar) — "
+            "auto-fixable: `sbdb doctor fix --recompute`"
+        )
+    if tamper:
+        parts.append(
+            f"\n  • {len(tamper)} content tamper — review the markdown body, then either "
+            "`sbdb doctor sign --force` (accept the edit) or revert via git"
+        )
+    if bad_sig:
+        parts.append(
+            f"\n  • {len(bad_sig)} HMAC signature mismatch — file edited outside the ORM "
+            "with an active integrity key; re-sign or revert"
+        )
+    if missing:
+        parts.append(
+            f"\n  • {len(missing)} missing pair (md or sidecar) — run "
+            "`sbdb doctor fix --recompute` to rebuild the sidecar"
+        )
+
+    return "".join(parts) if len(parts) > 1 else ""
+
+
 def find_project_root(file_path):
-    """Walk up from the file path looking for .sbdb.toml."""
     directory = os.path.dirname(os.path.abspath(file_path))
-    for _ in range(10):  # max 10 levels up
+    for _ in range(10):
         if os.path.exists(os.path.join(directory, ".sbdb.toml")):
             return directory
         parent = os.path.dirname(directory)
@@ -114,22 +151,14 @@ def find_project_root(file_path):
 
 
 def find_sbdb():
-    """Find the sbdb binary in PATH or common locations."""
-    # Check PATH
     for path_dir in os.environ.get("PATH", "").split(os.pathsep):
         candidate = os.path.join(path_dir, "sbdb")
         if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
             return candidate
-
-    # Check common Go bin locations
     home = os.path.expanduser("~")
-    for candidate in [
-        os.path.join(home, "go", "bin", "sbdb"),
-        "/usr/local/bin/sbdb",
-    ]:
+    for candidate in [os.path.join(home, "go", "bin", "sbdb"), "/usr/local/bin/sbdb"]:
         if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
             return candidate
-
     return None
 
 

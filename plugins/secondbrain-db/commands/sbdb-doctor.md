@@ -1,34 +1,69 @@
 ---
 name: sbdb-doctor
-description: Check and repair knowledge base consistency (drift + integrity)
-argument-hint: "[--fix] [--recompute]"
+description: Check, repair, sign, or migrate knowledge base integrity
+argument-hint: "[schema] [check|fix|sign|migrate]"
 allowed-tools:
   - Bash
 ---
 
 # sbdb-doctor
 
-Run `sbdb doctor check` to find drift and integrity issues, or `sbdb doctor fix` to repair drift.
+`sbdb doctor` verifies each `<id>.md` against its sibling `<id>.yaml`
+sidecar (content / frontmatter / record SHA + optional HMAC signature).
+
+## Default scope: working-tree only
+
+Without `--all`, doctor only audits files that differ from `HEAD`
+(modified, staged, untracked under any schema's `docs_dir`). The premise:
+committed history was already verified, so re-scanning thousands of clean
+files on every invocation is wasteful. Outside a git repo, doctor falls
+back to `--all` with a stderr notice.
+
+Use `--all` for periodic full audits (CI, cron) or recovery scenarios.
 
 ## Usage
 
-Check for issues:
+Check current changes:
 ```bash
-sbdb doctor check -s ${1:-$(sbdb config show default_schema 2>/dev/null || echo "notes")} --format json
+sbdb doctor check -s ${1:-notes} --format json
 ```
 
-Fix drift (does NOT re-sign tampered files):
+Full audit:
 ```bash
-sbdb doctor fix -s ${1:-notes} --recompute
+sbdb doctor check --all -s ${1:-notes} --format json
 ```
 
-Re-sign after intentional hand-edit:
+Fix drift (rebuilds sidecar from on-disk markdown, key-optional):
 ```bash
-sbdb doctor sign -s ${1:-notes} --force --id <id>
+sbdb doctor fix --recompute -s ${1:-notes}
+```
+
+Re-sign after intentional hand-edit (requires HMAC key):
+```bash
+sbdb doctor sign --force -s ${1:-notes}
+```
+
+Migrate v1 (data/) layout to v2 (per-md sidecars), one-shot, idempotent:
+```bash
+sbdb doctor migrate
 ```
 
 ## Exit codes
-- `0` clean
-- `4` drift detected
-- `6` tamper detected
-- `7` both drift and tamper
+
+- `0` — clean
+- non-zero — drift detected; the JSON output lists per-doc causes:
+  `content_sha mismatch`, `frontmatter_sha mismatch`,
+  `record_sha mismatch`, `bad_sig`, `missing-sidecar`, `missing-md`.
+
+## Output shape
+
+```json
+{
+  "action": "doctor.check",
+  "scope": "uncommitted",
+  "drifts": [
+    {"file": "docs/notes/x.md", "drift": "tamper",
+     "causes": ["content_sha mismatch"]}
+  ]
+}
+```

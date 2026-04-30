@@ -151,10 +151,15 @@ def emit_block(project_root):
     if sbdb:
         reason = (
             f"Direct edits to docs/ are not allowed in sbdb-managed repos "
-            f"(.sbdb.toml at {project_root}). "
-            f"Use the sbdb CLI instead — e.g. `sbdb doc create`, "
-            f"`sbdb doc edit <id>`, `sbdb doc delete <id>`. "
-            f"Run `sbdb --help` for the full command list."
+            f"(.sbdb.toml at {project_root}). The CLI maintains both the "
+            f".md file and its sibling <id>.yaml integrity sidecar in "
+            f"lockstep — direct edits leave them out of sync.\n\n"
+            f"Use sbdb subcommands instead:\n"
+            f"  sbdb create -s <schema> --field key=value --content '...'\n"
+            f"  sbdb update -s <schema> --id <id> --field key=value\n"
+            f"  sbdb delete -s <schema> --id <id> --yes\n"
+            f"After unintentional direct edits, run "
+            f"`sbdb doctor fix --recompute` to rebuild the sidecar."
         )
     else:
         reason = (
@@ -162,10 +167,10 @@ def emit_block(project_root):
             f"(.sbdb.toml at {project_root}), and the `sbdb` CLI was not "
             f"found in PATH or ~/go/bin.\n\n"
             f"Install with:\n"
-            f"  go install github.com/bershadsky/sbdb@latest\n"
+            f"  go install github.com/sergio-bershadsky/secondbrain-db@latest\n"
             f"Then ensure $(go env GOPATH)/bin is on your PATH.\n"
-            f"After installing, retry your change via `sbdb` subcommands "
-            f"(`sbdb doc create`, `sbdb doc edit <id>`, `sbdb --help`)."
+            f"After installing, retry via `sbdb create / update / delete` "
+            f"(see `sbdb --help`)."
         )
 
     print(json.dumps({

@@ -8,7 +8,7 @@ allowed-tools:
 
 # sbdb-query
 
-Query records from the knowledge base using filters and ordering. Reads only records.yaml — no file I/O per record, fast even for thousands of documents.
+Query records from the knowledge base using filters and ordering. Walks `docs_dir` and parses each `.md` frontmatter directly (concurrent, bounded by `SBDB_WALK_WORKERS`). Comparable speed to v1 for typical KBs (<10k docs); larger bases get the same scaling cost as a `find` + parse.
 
 ## Usage
 
