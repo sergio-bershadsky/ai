@@ -1,6 +1,6 @@
 {
   "name": "secondbrain-db",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "File-backed knowledge base ORM with per-md sidecars, YAML schemas, Starlark virtuals, HMAC integrity, knowledge graph, and an embeddable Go library at pkg/sbdb",
   "author": {
     "name": "Sergey Bershadsky",
