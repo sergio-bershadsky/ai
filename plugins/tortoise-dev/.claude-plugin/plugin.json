@@ -1,0 +1,13 @@
+{
+  "name": "tortoise-dev",
+  "version": "1.0.0",
+  "description": "Opinionated enterprise Tortoise ORM (async Python) toolkit: one-model-per-file, abstract Base interfaces for mocks/transitions, strict class layout, FastAPI lifespan integration, Aerich migrations, transactions, signals, pytest patterns",
+  "author": {
+    "name": "Sergey Bershadsky",
+    "url": "https://github.com/sergio-bershadsky"
+  },
+  "license": "Unlicense",
+  "repository": "https://github.com/sergio-bershadsky/ai",
+  "homepage": "https://github.com/sergio-bershadsky/ai/tree/main/plugins/tortoise-dev",
+  "keywords": ["tortoise-orm", "tortoise", "asyncio", "fastapi", "aerich", "pydantic", "python", "orm", "development"]
+}
