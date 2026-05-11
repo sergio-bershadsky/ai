@@ -66,13 +66,6 @@
       "category": "productivity"
     },
     {
-      "name": "secondbrain-db",
-      "source": "./plugins/secondbrain-db",
-      "description": "CLI + embeddable Go library for secondbrain-db: per-md sidecar integrity, YAML-schema ORM, knowledge graph, semantic search, parallel-PR-safe layout, auto-review hooks",
-      "version": "2.1.0",
-      "category": "productivity"
-    },
-    {
       "name": "tortoise-dev",
       "source": "./plugins/tortoise-dev",
       "description": "Enterprise Tortoise ORM (async Python) toolkit: one-model-per-file in models/ subpackage, abstract Base interfaces for mocks/transitions, strict class layout, FastAPI lifespan, Aerich migrations, Pydantic v2, pytest patterns",
