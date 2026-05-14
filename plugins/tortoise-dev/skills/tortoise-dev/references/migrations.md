@@ -92,6 +92,114 @@ Aerich's auto-detect will happily emit a `DROP COLUMN`. Read the migration befor
 
 Run **before** the new app version takes traffic. If a migration fails, the deploy aborts.
 
+## Runtime integration — migration service/hook
+
+CI-level migration runs are great for centralized deploys, but most production setups also
+need migrations to run when the container boots in dev/staging or when someone runs
+`helm upgrade` directly. **Detect the deployment style and propose the right shape:**
+
+### Docker Compose
+
+A dedicated one-shot `migrate` service that exits 0 on success:
+
+```yaml
+services:
+  migrate:
+    build: { context: .., dockerfile: docker/Dockerfile }
+    command: ["uv", "run", "aerich", "upgrade"]
+    env_file: ../.env
+    depends_on:
+      db: { condition: service_healthy }
+    restart: "no"
+
+  app:
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      db:      { condition: service_healthy }
+```
+
+Why a separate service and not an entrypoint script:
+- Re-running `docker compose up app` won't re-run the migration unless explicitly invoked.
+- Logs are isolated — a failed migration shows up in its own container.
+- `restart: "no"` prevents migrate from looping on success.
+
+### Helm (preferred for Kubernetes)
+
+Use a Helm hook Job, not an init container, so migrations run **once per release** instead
+of once per pod:
+
+```yaml
+# templates/migrate-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "app.fullname" . }}-migrate-{{ .Release.Revision }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: aerich-upgrade
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command: ["uv", "run", "aerich", "upgrade"]
+          envFrom:
+            - secretRef: { name: {{ include "app.fullname" . }}-db }
+```
+
+Key flags:
+- `backoffLimit: 0` — a failed migration aborts the release; you do **not** want retries
+  silently masking a broken migration.
+- `hook-delete-policy: before-hook-creation,hook-succeeded` — clean up old hook Jobs but
+  keep a failed one around for debugging.
+- `activeDeadlineSeconds` — prevent a runaway migration from blocking the deploy forever.
+
+### Init-container fallback
+
+When Helm hooks aren't available (raw kustomize, ArgoCD without sync hooks, plain
+manifests):
+
+```yaml
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: aerich-upgrade
+          image: <same as app>
+          command: ["uv", "run", "aerich", "upgrade"]
+          envFrom: [{ secretRef: { name: app-db } }]
+```
+
+Trade-off: this runs on **every pod start**, including HPA scale-ups. Aerich serializes via
+PG advisory locks, so concurrent runners are safe, but it's wasted work. Prefer the Job
+approach when you can.
+
+### Procfile (Heroku/Render/Fly)
+
+```
+release: uv run aerich upgrade
+web:     uv run uvicorn main:app --host 0.0.0.0 --port $PORT
+```
+
+`release` phase runs before traffic switches. Failure aborts the release.
+
+### Detection checklist for the skill
+
+When opening a project, look for any of:
+- `docker-compose*.y*ml`, `compose.yaml`
+- `Chart.yaml`, `helm/`, `charts/`, `values*.yaml`
+- `kustomization.yaml`
+- `Procfile`, `app.json` (Heroku), `fly.toml`, `render.yaml`
+- `.github/workflows/deploy*.yml`, `.gitlab-ci.yml` with deploy stages
+
+If at least one exists **and** there is no `aerich upgrade` invocation in it yet, propose
+adding the appropriate hook from the patterns above. Show the user a diff before writing.
+
 ## Troubleshooting
 
 - **"No changes detected"** — Aerich diffs against `migrations/<app>/models.py` snapshot. If

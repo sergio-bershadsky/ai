@@ -337,6 +337,77 @@ uv run aerich upgrade
 - Use `RunPython` for data migrations; never edit schema and data in the same auto-generated migration.
 - In CI: `aerich upgrade` runs before the app boots.
 
+### Deployment integration — propose a migration service/hook
+
+**Before adding or modifying models, scan the repo for deployment manifests.** If any of
+these exist, **proactively propose** wiring `aerich upgrade` as a one-shot migration
+service/hook so the user never has to remember to run it by hand:
+
+| Detected file(s) | What to propose |
+|---|---|
+| `docker-compose.yml`, `docker-compose.*.yml`, `compose.yaml` | A one-shot `migrate` service that runs `aerich upgrade` and exits; mark `app` as `depends_on: { migrate: { condition: service_completed_successfully } }` |
+| `Chart.yaml`, `helm/`, `charts/`, `values.yaml` | A Helm `pre-install` + `pre-upgrade` Job (or an init container on the Deployment) running `aerich upgrade` |
+| `kustomization.yaml` only | A Kubernetes `Job` resource or an init container — same shape, no Helm hook annotations |
+| `Procfile` (Heroku/Render/Fly) | A `release:` process running `aerich upgrade` |
+| GitHub Actions / GitLab CI manifests | A pre-deploy job step; only after the container-level hook exists, not as a substitute |
+
+Always ask the user before generating these files — they're shared-infra changes. Show a
+draft, list the files you'll add/modify, then wait for approval.
+
+**Docker Compose pattern:**
+
+```yaml
+# docker/docker-compose.yml
+services:
+  migrate:
+    build: { context: .., dockerfile: docker/Dockerfile }
+    command: ["uv", "run", "aerich", "upgrade"]
+    env_file: ../.env
+    depends_on:
+      db: { condition: service_healthy }
+    restart: "no"
+
+  app:
+    build: { context: .., dockerfile: docker/Dockerfile }
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      db:      { condition: service_healthy }
+    ports: ["8000:8000"]
+```
+
+`restart: "no"` is essential — a migration container must not loop on success.
+
+**Helm pattern (pre-install + pre-upgrade Job):**
+
+```yaml
+# charts/<app>/templates/migrate-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "app.fullname" . }}-migrate-{{ .Release.Revision }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 0           # fail fast; don't replay a broken migration
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: aerich-upgrade
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command: ["uv", "run", "aerich", "upgrade"]
+          envFrom:
+            - secretRef: { name: {{ include "app.fullname" . }}-db }
+```
+
+`backoffLimit: 0` makes a failed upgrade abort the release — that's the behavior you want.
+
+**Init-container alternative** (when you can't add Helm hooks): put `aerich upgrade` in an
+`initContainers` entry on the Deployment. Trade-off: it runs on every pod start instead of
+once per release, so guard against concurrent runners (Aerich uses an advisory lock on PG).
+
 Full migration patterns: `references/migrations.md`.
 
 ## Testing
@@ -374,6 +445,7 @@ Use the modern `tortoise_test_context()` pattern (Tortoise 1.0+), **not** the le
 7. **Register** the models module in `config/tortoise.py` if it's a new app.
 8. **`aerich migrate --name add_<entity>`** then `aerich upgrade`.
 9. **Add tests** against `Base<Entity>` for pure logic; integration test for the concrete model.
+10. **Check for deployment manifests** (Helm chart, docker-compose, Procfile, kustomize). If present and there is no migration service/hook yet, propose adding one (see "Deployment integration" above) so `aerich upgrade` runs automatically before the app starts.
 
 ## Reference Files
 
