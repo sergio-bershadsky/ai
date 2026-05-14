@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-python:
+    name: Python lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install ruff
+        run: python -m pip install --upgrade pip && pip install ruff==0.6.9
+      - name: Ruff check (scripts/)
+        run: ruff check scripts
+      - name: Ruff format check (scripts/)
+        run: ruff format --check scripts
+      - name: Python syntax check (all plugins + scripts)
+        run: python3 scripts/ci/check_python_syntax.py
+
+  validate-manifests:
+    name: Validate plugin manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate plugin.json + marketplace.json
+        run: python3 scripts/ci/validate_plugin_manifests.py
+      - name: Validate hooks.json
+        run: python3 scripts/ci/validate_hooks_manifests.py
+
+  validate-frontmatter:
+    name: Validate skill / agent / command frontmatter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pyyaml
+        run: pip install pyyaml==6.0.2
+      - name: Parse YAML frontmatter on every plugin .md
+        run: python3 scripts/ci/validate_frontmatter.py
