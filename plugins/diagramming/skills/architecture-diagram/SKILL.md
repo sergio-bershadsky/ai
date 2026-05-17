@@ -34,7 +34,7 @@ See `resources/template.html` for the canonical starting point.
 
 1. **Label placement: clean background beats geometric midpoint.** Don't put labels at the Bezier midpoint just because the math says so. Find empty visual space the size of the label and put the label there. Use leader lines if needed. See `resources/label-placement.md` for the full algorithm. This rule comes from real user feedback after generating diagrams where strict-midpoint placement produced unreadable visual chaos.
 2. **3× spacing between root-level blocks.** Generous padding around every cluster. Default gap between major bands is 100–200 px, not 30 px. Visual hierarchy depends on whitespace.
-3. **Halos on every text label.** `paint-order: stroke fill; stroke: rgba(2, 6, 23, 0.5); stroke-width: 3` on the `svg text` selector. Defence-in-depth for readability when labels unavoidably overlap.
+3. **Halos on every text label.** `paint-order: stroke fill; stroke: rgba(2, 6, 23, 0.5); stroke-width: 1` on the `svg text` selector. Defence-in-depth for readability when labels unavoidably overlap.
 4. **Sub-group clusters within larger clusters.** When a logical group has more than ~4 components, partition them into 2–4 named sub-groups with their own dashed boundaries.
 
 ## Workflow

@@ -32,12 +32,10 @@ Every `<text>` element in the SVG renders with a semi-transparent dark stroke be
 svg text {
   paint-order: stroke fill;
   stroke: rgba(2, 6, 23, 0.5);
-  stroke-width: 3;
+  stroke-width: 1;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
-svg text.heading { stroke-width: 4; }
-svg text.label-tiny { stroke-width: 2.5; }
 ```
 
 This makes labels readable when they unavoidably overlap with cluster boundaries, other boxes, or arrows. It is not a substitute for correct placement; it's defence-in-depth.
