@@ -14,6 +14,16 @@
     .lbl-ctrl { font-size: 11px; fill: #67e8f9; }
     .sub { font-size: 10px; fill: #94a3b8; stroke-width: 2; }
     .cluster { font-size: 11px; fill: #cbd5e1; }
+  
+    /* Hover glow */
+    rect.component { transition: filter 220ms ease; cursor: pointer; }
+    rect.component:hover { filter: drop-shadow(0 0 12px var(--glow, rgba(255,255,255,0.3))) brightness(1.15); }
+    rect.cyan    { --glow: rgba( 34, 211, 238, 0.65); }
+    rect.emerald { --glow: rgba( 52, 211, 153, 0.65); }
+    rect.violet  { --glow: rgba(167, 139, 250, 0.65); }
+    rect.rose    { --glow: rgba(251, 113, 133, 0.65); }
+    rect.amber   { --glow: rgba(251, 191, 36, 0.65); }
+    rect.slate   { --glow: rgba(148, 163, 184, 0.50); }
   </style>
   <rect width="900" height="540" fill="#020617"/>
   <rect width="900" height="540" fill="url(#grid)"/>
@@ -24,7 +34,7 @@
   <!-- Control plane cluster -->
   <rect x="280" y="90" width="340" height="100" rx="14" fill="rgba(8,51,68,0.05)" stroke="#22d3ee" stroke-width="1" stroke-dasharray="10,6"/>
   <rect x="294.0" y="99.7" width="97.8" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="300" y="112" class="cluster">CONTROL PLANE</text>
-  <rect x="380" y="125" width="140" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+  <rect class="component cyan" x="380" y="125" width="140" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
   <text x="450" y="155" text-anchor="middle">xDS SERVER</text>
 
   <!-- Data plane cluster -->
@@ -34,25 +44,25 @@
   <!-- Pod A -->
   <rect x="80"  y="290" width="200" height="180" rx="10" fill="transparent" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
   <text x="180" y="312" class="sub" text-anchor="middle">pod-a</text>
-  <rect x="100" y="330" width="160" height="50" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+  <rect class="component emerald" x="100" y="330" width="160" height="50" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
   <text x="180" y="360" text-anchor="middle">SERVICE A</text>
-  <rect x="100" y="400" width="160" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+  <rect class="component cyan" x="100" y="400" width="160" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
   <text x="180" y="430" text-anchor="middle">ENVOY</text>
 
   <!-- Pod B -->
   <rect x="350" y="290" width="200" height="180" rx="10" fill="transparent" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
   <text x="450" y="312" class="sub" text-anchor="middle">pod-b</text>
-  <rect x="370" y="330" width="160" height="50" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+  <rect class="component emerald" x="370" y="330" width="160" height="50" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
   <text x="450" y="360" text-anchor="middle">SERVICE B</text>
-  <rect x="370" y="400" width="160" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+  <rect class="component cyan" x="370" y="400" width="160" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
   <text x="450" y="430" text-anchor="middle">ENVOY</text>
 
   <!-- Pod C -->
   <rect x="620" y="290" width="200" height="180" rx="10" fill="transparent" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
   <text x="720" y="312" class="sub" text-anchor="middle">pod-c</text>
-  <rect x="640" y="330" width="160" height="50" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+  <rect class="component emerald" x="640" y="330" width="160" height="50" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
   <text x="720" y="360" text-anchor="middle">SERVICE C</text>
-  <rect x="640" y="400" width="160" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+  <rect class="component cyan" x="640" y="400" width="160" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
   <text x="720" y="430" text-anchor="middle">ENVOY</text>
 
   <!-- xDS dashed control plane lines to each Envoy -->

@@ -36,6 +36,7 @@ See `resources/template.html` for the canonical starting point.
 2. **3× spacing between root-level blocks.** Generous padding around every cluster. Default gap between major bands is 100–200 px, not 30 px. Visual hierarchy depends on whitespace.
 3. **Floating labels sit in chip rects.** Every label that does not live inside a coloured component box (titles, edge labels, cluster names, annotations) needs an explicit background `<rect>` drawn just before the `<text>`: `fill="rgba(15, 23, 42, 0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1" rx="3"`. The universal text halo (`paint-order: stroke fill; stroke: rgba(2, 6, 23, 0.75); stroke-width: 1`) stays as defence-in-depth. See `resources/design-system.md` § *Label chip backgrounds*.
 4. **Sub-group clusters within larger clusters.** When a logical group has more than ~4 components, partition them into 2–4 named sub-groups with their own dashed boundaries.
+5. **Reserve icon space before placing text.** When a component box has an icon in the left padding, the label must NOT centre on the full box — it will slide under the icon. Either centre the text in the space *right of the icon* (`text_x = (icon_right + 8 + box_right) / 2`, `text-anchor="middle"`) or left-align at `icon_right + 8`. Required guard: `icon_size + 16 px` of horizontal space before any text glyph. Same rule mirrored for right-/top-positioned icons. See `resources/design-system.md` § *Icon + text layout*.
 
 ## Workflow
 

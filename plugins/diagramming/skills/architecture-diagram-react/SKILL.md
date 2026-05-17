@@ -124,6 +124,33 @@ If no listed icon fits, **don't invent one** — author the path inline as the p
 
 The 20 px icon at `(x+16, y+16)` from the box's top-left leaves room for a centred label on the right two-thirds of the box. For small (≤80 px wide) boxes, drop the sublabel; for tall boxes, centre the icon above the label using `text-anchor="middle"` and place the icon at `(box_cx - 10, box_y + 12)`.
 
+### Reserve icon space before placing text — non-negotiable
+
+When an icon sits in a box's left padding, the label inside that box **must not centre on the full box width** — it will slide under the icon. Two correct options:
+
+**A. Right-shifted centre (preferred for short labels):**
+```
+icon_left      = box_x + 16            # left padding
+icon_right     = icon_left + size      # size is the lucide-icon `size` attr
+text_anchor    = "middle"
+text_x         = (icon_right + 8 + box_right) / 2     # centre in the space *right of the icon*
+```
+
+**B. Left-aligned (preferred for long labels or multi-line):**
+```
+text_anchor    = "start"
+text_x         = icon_right + 8        # 8 px gap between icon and text
+```
+
+The wrong pattern — and the one that produces visible icon/text intersection:
+```
+# DON'T: centres text across the whole box, overlaying the icon
+text_x = box_cx
+text_anchor = "middle"
+```
+
+Reserve at least `size + 16 px` of horizontal space on the icon side before any text glyph starts. For a 20 px icon that means a 36 px left guard. Apply the same rule when icons sit on the right (mirror) or top (vertical guard ≥ `size + 8 px`).
+
 ## Consumer contract
 
 The renderer in the consumer repo (this site) lives at:
@@ -137,7 +164,22 @@ The renderer:
 1. Parses the `<!-- ... -->` metadata comment off the front.
 2. Runs `expandLucideIcons()` over the body, replacing `<lucide-icon ... />` with positioned/scaled `<g>` groups containing real Lucide paths.
 3. Sanitizes through DOMPurify's SVG profile.
-4. Paints the body inside an accent-bordered frame with slate-950 grid background, JetBrains Mono font-family, and a `COPY_SVG` / `SAVE` toolbar.
+4. Paints the body inside an accent-bordered frame with slate-950 grid background, JetBrains Mono font-family, and a `ZOOM` / `COPY_SVG` / `SAVE` toolbar.
+
+### Zoom (fullscreen) mode
+
+Every rendered diagram has a `ZOOM` button in its toolbar. Clicking it opens a fullscreen modal overlay:
+
+- The SVG is re-rendered at viewport width (capped at 1600 px) with `width: 100%; height: auto`, so authors can rely on the *intrinsic* `viewBox` aspect ratio — no special "zoom mode" markup needed in the SVG itself.
+- The modal toolbar carries the same `COPY_SVG` and `SAVE` controls plus an explicit `CLOSE` button. ESC and clicking the backdrop also dismiss.
+- Body scroll is locked while the modal is open and restored on close.
+- The same DOMPurify-sanitized body and the same slate-950 grid surface are reused — visual continuity between inline and zoomed.
+
+**Authoring implications:**
+
+- **Design for the inline view first.** Zoom is a reading aid, not the default. If the diagram is unreadable at the inline width (~720 px), simplify it — don't push detail into the zoom layer and call it done.
+- **Use the `viewBox` aspect ratio you actually want.** The zoom layer scales the SVG to fill width while preserving aspect; ultra-tall or ultra-wide viewBoxes will read poorly at zoom too.
+- **Halos still required.** Zoom does not relax the halo rule. Each `<text>` that overlaps anything must carry its own `paint-order="stroke fill"`, `stroke="rgba(2,6,23,0.65)"`, `stroke-width="3"`.
 
 **What this means for what you emit:**
 

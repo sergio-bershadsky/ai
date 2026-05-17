@@ -16,6 +16,16 @@
     .cluster { font-size: 11px; fill: #cbd5e1; }
     .zone-ctrl { font-size: 11px; fill: #fbbf24; }
     .zone-data { font-size: 11px; fill: #34d399; }
+  
+    /* Hover glow */
+    rect.component { transition: filter 220ms ease; cursor: pointer; }
+    rect.component:hover { filter: drop-shadow(0 0 12px var(--glow, rgba(255,255,255,0.3))) brightness(1.15); }
+    rect.cyan    { --glow: rgba( 34, 211, 238, 0.65); }
+    rect.emerald { --glow: rgba( 52, 211, 153, 0.65); }
+    rect.violet  { --glow: rgba(167, 139, 250, 0.65); }
+    rect.rose    { --glow: rgba(251, 113, 133, 0.65); }
+    rect.amber   { --glow: rgba(251, 191, 36, 0.65); }
+    rect.slate   { --glow: rgba(148, 163, 184, 0.50); }
   </style>
   <rect width="960" height="600" fill="#020617"/>
   <rect width="960" height="600" fill="url(#grid)"/>
@@ -28,19 +38,19 @@
   <rect x="54.0" y="99.7" width="229.8" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="60" y="112" class="zone-ctrl">CONTROL PLANE — encrypted at rest</text>
 
   <!-- Tenant config DB -->
-  <rect x="80" y="170" width="180" height="80" rx="6" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+  <rect class="component violet" x="80" y="170" width="180" height="80" rx="6" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1.5"/>
   <text x="170" y="200" text-anchor="middle">TENANT CONFIG DB</text>
   <text x="170" y="220" class="sub" text-anchor="middle">creds: KMS-wrapped</text>
   <text x="170" y="236" class="sub" text-anchor="middle">DEK per tenant</text>
 
   <!-- KMS -->
-  <rect x="380" y="170" width="180" height="80" rx="6" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="2"/>
+  <rect class="component rose" x="380" y="170" width="180" height="80" rx="6" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="2"/>
   <text x="470" y="200" text-anchor="middle">AWS / GCP KMS</text>
   <text x="470" y="220" class="sub" text-anchor="middle">CMK (HSM-backed)</text>
   <text x="470" y="236" class="sub" text-anchor="middle">never leaves boundary</text>
 
   <!-- Admin API -->
-  <rect x="680" y="170" width="180" height="80" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+  <rect class="component emerald" x="680" y="170" width="180" height="80" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
   <text x="770" y="200" text-anchor="middle">ADMIN API</text>
   <text x="770" y="220" class="sub" text-anchor="middle">tenant onboarding</text>
   <text x="770" y="236" class="sub" text-anchor="middle">writes wrapped DEK</text>
@@ -52,13 +62,13 @@
   <!-- xDS Agent (the only place plaintext exists) -->
   <rect x="260" y="400" width="220" height="140" rx="10" fill="transparent" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="4,4"/>
   <text x="370" y="422" class="sub" text-anchor="middle">RAM-only — no swap, no core</text>
-  <rect x="280" y="438" width="180" height="80" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+  <rect class="component emerald" x="280" y="438" width="180" height="80" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
   <text x="370" y="468" text-anchor="middle">XDS AGENT</text>
   <text x="370" y="488" class="sub" text-anchor="middle">holds plaintext DEK</text>
   <text x="370" y="504" class="sub" text-anchor="middle">rewrites Envoy LDS/CDS</text>
 
   <!-- Envoy -->
-  <rect x="640" y="438" width="180" height="80" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+  <rect class="component cyan" x="640" y="438" width="180" height="80" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
   <text x="730" y="468" text-anchor="middle">ENVOY</text>
   <text x="730" y="488" class="sub" text-anchor="middle">per-tenant clusters</text>
   <text x="730" y="504" class="sub" text-anchor="middle">TLS keys hot-swapped</text>

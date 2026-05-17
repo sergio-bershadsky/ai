@@ -13,6 +13,16 @@
     .lbl { font-size: 11px; fill: #cbd5e1; }
     .lbl-audit { font-size: 11px; fill: #c4b5fd; }
     .sub { font-size: 10px; fill: #94a3b8; stroke-width: 2; }
+  
+    /* Hover glow */
+    rect.component { transition: filter 220ms ease; cursor: pointer; }
+    rect.component:hover { filter: drop-shadow(0 0 12px var(--glow, rgba(255,255,255,0.3))) brightness(1.15); }
+    rect.cyan    { --glow: rgba( 34, 211, 238, 0.65); }
+    rect.emerald { --glow: rgba( 52, 211, 153, 0.65); }
+    rect.violet  { --glow: rgba(167, 139, 250, 0.65); }
+    rect.rose    { --glow: rgba(251, 113, 133, 0.65); }
+    rect.amber   { --glow: rgba(251, 191, 36, 0.65); }
+    rect.slate   { --glow: rgba(148, 163, 184, 0.50); }
   </style>
   <rect width="900" height="520" fill="#020617"/>
   <rect width="900" height="520" fill="url(#grid)"/>
@@ -21,32 +31,32 @@
   <text x="40" y="60" class="sub">solid = command path; amber dashed = pub/sub; violet dotted thin = audit log fan-out</text>
 
   <!-- Command Service -->
-  <rect x="40" y="200" width="160" height="70" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+  <rect class="component emerald" x="40" y="200" width="160" height="70" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
   <text x="120" y="230" text-anchor="middle">COMMAND SVC</text>
   <text x="120" y="250" class="sub" text-anchor="middle">write side</text>
 
   <!-- Broker -->
-  <rect x="290" y="200" width="180" height="70" rx="6" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+  <rect class="component amber" x="290" y="200" width="180" height="70" rx="6" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1.5"/>
   <text x="380" y="230" text-anchor="middle">KAFKA</text>
   <text x="380" y="250" class="sub" text-anchor="middle">orders.events</text>
 
   <!-- Projection consumer -->
-  <rect x="560" y="120" width="160" height="70" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+  <rect class="component emerald" x="560" y="120" width="160" height="70" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
   <text x="640" y="150" text-anchor="middle">PROJECTOR</text>
   <text x="640" y="170" class="sub" text-anchor="middle">build read model</text>
 
   <!-- Notifier consumer -->
-  <rect x="560" y="280" width="160" height="70" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+  <rect class="component emerald" x="560" y="280" width="160" height="70" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
   <text x="640" y="310" text-anchor="middle">NOTIFIER</text>
   <text x="640" y="330" class="sub" text-anchor="middle">email / push</text>
 
   <!-- Read DB -->
-  <rect x="760" y="120" width="120" height="70" rx="6" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+  <rect class="component violet" x="760" y="120" width="120" height="70" rx="6" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1.5"/>
   <text x="820" y="150" text-anchor="middle">READ DB</text>
   <text x="820" y="170" class="sub" text-anchor="middle">denorm</text>
 
   <!-- Audit sink -->
-  <rect x="290" y="400" width="180" height="70" rx="6" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+  <rect class="component violet" x="290" y="400" width="180" height="70" rx="6" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1.5"/>
   <text x="380" y="430" text-anchor="middle">AUDIT SINK</text>
   <text x="380" y="450" class="sub" text-anchor="middle">S3 cold storage</text>
 
