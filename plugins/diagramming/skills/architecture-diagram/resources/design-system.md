@@ -31,7 +31,7 @@ Every `<text>` element in the SVG renders with a semi-transparent dark stroke be
 ```css
 svg text {
   paint-order: stroke fill;
-  stroke: rgba(2, 6, 23, 0.5);
+  stroke: rgba(2, 6, 23, 0.75);
   stroke-width: 1;
   stroke-linejoin: round;
   stroke-linecap: round;
@@ -39,6 +39,25 @@ svg text {
 ```
 
 This makes labels readable when they unavoidably overlap with cluster boundaries, other boxes, or arrows. It is not a substitute for correct placement; it's defence-in-depth.
+
+## Label chip backgrounds (floating text)
+
+Floating labels — titles, edge labels, cluster names, anything not inside a coloured component box — must sit on an explicit `<rect>` "chip" with a 1 px translucent border, drawn immediately *before* the `<text>` element so it renders underneath:
+
+```svg
+<rect x="..." y="..." width="..." height="..." rx="3"
+      fill="rgba(15, 23, 42, 0.92)"
+      stroke="rgba(148, 163, 184, 0.75)"
+      stroke-width="1"/>
+<text class="lbl" x="..." y="...">LABEL</text>
+```
+
+**Applies to:** `.title`, `.cluster`, `.zone-*`, `.lbl`, `.lbl-auth`, `.lbl-ctrl`, `.lbl-audit`, `.lbl-key`, and any free-floating annotation.
+**Does NOT apply to:** `.sub` and bare text *inside* a colored component box — those sit on the component's own fill, no chip needed.
+
+**Sizing (JetBrains Mono):** width ≈ `len(text) × font-size × 0.6 + 12`. Height ≈ `font-size × 1.05 + 6`. `text-anchor` shifts the chip x by `0 / -w/2 / -w` for `start / middle / end`.
+
+The chip is the primary readability mechanism; the universal text-halo above is defence-in-depth.
 
 ## Semantic component colors
 

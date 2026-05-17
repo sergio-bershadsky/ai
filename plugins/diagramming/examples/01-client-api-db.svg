@@ -8,7 +8,7 @@
     </pattern>
   </defs>
   <style>
-    text { paint-order: stroke fill; stroke: rgba(2,6,23,0.5); stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; fill: #e2e8f0; font-size: 12px; }
+    text { paint-order: stroke fill; stroke: rgba(2, 6, 23, 0.75); stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; fill: #e2e8f0; font-size: 12px; }
     .title { font-size: 16px; font-weight: 700; fill: #f1f5f9; }
     .lbl { font-size: 11px; fill: #cbd5e1; }
     .sub { font-size: 10px; fill: #94a3b8; stroke-width: 2; }
@@ -16,7 +16,7 @@
   <rect width="900" height="320" fill="#020617"/>
   <rect width="900" height="320" fill="url(#grid)"/>
 
-  <text x="40" y="40" class="title">Three-tier request flow</text>
+  <rect x="34.0" y="23.4" width="232.8" height="22.8" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="40" y="40" class="title">Three-tier request flow</text>
   <text x="40" y="60" class="sub">straight edges, semantic palette, halo labels — the simplest diagram the skill produces</text>
 
   <!-- External user -->
@@ -41,11 +41,11 @@
 
   <!-- Edges -->
   <line x1="180" y1="205" x2="258" y2="205" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ah)"/>
-  <text x="219" y="195" class="lbl" text-anchor="middle">HTTPS</text>
+  <rect x="196.5" y="182.7" width="45.0" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="219" y="195" class="lbl" text-anchor="middle">HTTPS</text>
 
   <line x1="400" y1="205" x2="478" y2="205" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#ah)"/>
-  <text x="439" y="195" class="lbl" text-anchor="middle">gRPC</text>
+  <rect x="419.8" y="182.7" width="38.4" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="439" y="195" class="lbl" text-anchor="middle">gRPC</text>
 
   <line x1="620" y1="205" x2="698" y2="205" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#ah)"/>
-  <text x="659" y="195" class="lbl" text-anchor="middle">SQL</text>
+  <rect x="643.1" y="182.7" width="31.8" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="659" y="195" class="lbl" text-anchor="middle">SQL</text>
 </svg>
