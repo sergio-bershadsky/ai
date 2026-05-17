@@ -67,7 +67,7 @@ When converting output of the parent skill to embedded form, **remove**:
 **Keep:**
 
 - The whole `<svg>` block: `<defs>`, `<pattern>`, `<marker>`, all `<rect>`/`<path>`/`<line>`/`<polyline>`/`<text>` elements, arrow leader lines, halo styles inlined as SVG attributes.
-- **Halos must move from CSS into inline SVG attrs** since the renderer doesn't ship the global `svg text { paint-order: stroke fill; ... }` selector. Each `<text>` that needs a halo must carry its own `paint-order="stroke fill"`, `stroke="rgba(2, 6, 23, 0.5)"`, `stroke-width="1"`. The renderer adds nothing to text — what you emit is what renders.
+- **Halos must move from CSS into inline SVG attrs** since the renderer doesn't ship the global `svg text { paint-order: stroke fill; ... }` selector. Each `<text>` that needs a halo must carry its own `paint-order="stroke fill"`, `stroke="rgba(2, 6, 23, 0.75)"`, `stroke-width="1"`. The renderer adds nothing to text — what you emit is what renders.
 - Background grid pattern is optional — the renderer surface already paints a slate-950 + 40 px grid. If the SVG also draws one, it just doubles up; usually safe to omit.
 
 ## Lucide icon promotion
@@ -183,19 +183,19 @@ If the audit flags labels for being far from the arrow midpoint without a leader
   <lucide-icon name="monitor" x="56" y="76" size="20" color="#22d3ee"/>
   <text x="130" y="96" fill="white" font-size="12" font-weight="600"
         text-anchor="middle"
-        paint-order="stroke fill" stroke="rgba(2,6,23,0.5)" stroke-width="1">CLIENT</text>
+        paint-order="stroke fill" stroke="rgba(2, 6, 23, 0.75)" stroke-width="1">CLIENT</text>
 
   <line x1="220" y1="100" x2="380" y2="100"
         stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
   <text x="300" y="92" fill="#cbd5e1" font-size="9" text-anchor="middle"
-        paint-order="stroke fill" stroke="rgba(2,6,23,0.5)" stroke-width="1">HTTPS</text>
+        paint-order="stroke fill" stroke="rgba(2, 6, 23, 0.75)" stroke-width="1">HTTPS</text>
 
   <rect x="380" y="60" width="180" height="80" rx="6"
         fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
   <lucide-icon name="server" x="396" y="76" size="20" color="#34d399"/>
   <text x="470" y="96" fill="white" font-size="12" font-weight="600"
         text-anchor="middle"
-        paint-order="stroke fill" stroke="rgba(2,6,23,0.5)" stroke-width="1">API</text>
+        paint-order="stroke fill" stroke="rgba(2, 6, 23, 0.75)" stroke-width="1">API</text>
 </svg>
 ```
 ````

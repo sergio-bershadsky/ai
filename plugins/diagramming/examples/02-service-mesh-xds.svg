@@ -8,7 +8,7 @@
     </pattern>
   </defs>
   <style>
-    text { paint-order: stroke fill; stroke: rgba(2,6,23,0.5); stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; fill: #e2e8f0; font-size: 12px; }
+    text { paint-order: stroke fill; stroke: rgba(2, 6, 23, 0.75); stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; fill: #e2e8f0; font-size: 12px; }
     .title { font-size: 16px; font-weight: 700; fill: #f1f5f9; }
     .lbl { font-size: 11px; fill: #cbd5e1; }
     .lbl-ctrl { font-size: 11px; fill: #67e8f9; }
@@ -18,18 +18,18 @@
   <rect width="900" height="540" fill="#020617"/>
   <rect width="900" height="540" fill="url(#grid)"/>
 
-  <text x="40" y="40" class="title">Service mesh — xDS control plane / Envoy data plane</text>
+  <rect x="34.0" y="23.4" width="501.6" height="22.8" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="40" y="40" class="title">Service mesh — xDS control plane / Envoy data plane</text>
   <text x="40" y="60" class="sub">dashed cyan = control plane (config push); solid emerald = data plane (request traffic)</text>
 
   <!-- Control plane cluster -->
   <rect x="280" y="90" width="340" height="100" rx="14" fill="rgba(8,51,68,0.05)" stroke="#22d3ee" stroke-width="1" stroke-dasharray="10,6"/>
-  <text x="300" y="112" class="cluster">CONTROL PLANE</text>
+  <rect x="294.0" y="99.7" width="97.8" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="300" y="112" class="cluster">CONTROL PLANE</text>
   <rect x="380" y="125" width="140" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
   <text x="450" y="155" text-anchor="middle">xDS SERVER</text>
 
   <!-- Data plane cluster -->
   <rect x="40" y="240" width="820" height="260" rx="14" fill="rgba(6,78,59,0.04)" stroke="#34d399" stroke-width="1" stroke-dasharray="10,6"/>
-  <text x="60" y="262" class="cluster">DATA PLANE — pods</text>
+  <rect x="54.0" y="249.7" width="124.2" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="60" y="262" class="cluster">DATA PLANE — pods</text>
 
   <!-- Pod A -->
   <rect x="80"  y="290" width="200" height="180" rx="10" fill="transparent" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
@@ -59,11 +59,11 @@
   <path d="M 420 175 Q 200 230 180 400" fill="none" stroke="#22d3ee" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#ah)"/>
   <line x1="450" y1="175" x2="450" y2="400" stroke="#22d3ee" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#ah)"/>
   <path d="M 480 175 Q 700 230 720 400" fill="none" stroke="#22d3ee" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#ah)"/>
-  <text x="540" y="220" class="lbl-ctrl">xDS push</text>
+  <rect x="534.0" y="207.7" width="64.8" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="540" y="220" class="lbl-ctrl">xDS push</text>
 
   <!-- Data plane solid arrows Envoy-to-Envoy -->
   <line x1="260" y1="425" x2="368" y2="425" stroke="#34d399" stroke-width="1.5" marker-end="url(#ah)"/>
-  <text x="314" y="415" class="lbl" text-anchor="middle">mTLS</text>
+  <rect x="294.8" y="402.6" width="38.4" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="314" y="415" class="lbl" text-anchor="middle">mTLS</text>
   <line x1="530" y1="425" x2="638" y2="425" stroke="#34d399" stroke-width="1.5" marker-end="url(#ah)"/>
-  <text x="584" y="415" class="lbl" text-anchor="middle">mTLS</text>
+  <rect x="564.8" y="402.6" width="38.4" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="584" y="415" class="lbl" text-anchor="middle">mTLS</text>
 </svg>

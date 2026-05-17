@@ -8,7 +8,7 @@
     </pattern>
   </defs>
   <style>
-    text { paint-order: stroke fill; stroke: rgba(2,6,23,0.5); stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; fill: #e2e8f0; font-size: 12px; }
+    text { paint-order: stroke fill; stroke: rgba(2, 6, 23, 0.75); stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; fill: #e2e8f0; font-size: 12px; }
     .title { font-size: 16px; font-weight: 700; fill: #f1f5f9; }
     .lbl { font-size: 11px; fill: #cbd5e1; }
     .lbl-auth { font-size: 11px; fill: #fda4af; }
@@ -18,7 +18,7 @@
   <rect width="900" height="480" fill="#020617"/>
   <rect width="900" height="480" fill="url(#grid)"/>
 
-  <text x="40" y="40" class="title">OAuth2 / JWT flow with security boundary</text>
+  <rect x="34.0" y="23.4" width="396.0" height="22.8" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="40" y="40" class="title">OAuth2 / JWT flow with security boundary</text>
   <text x="40" y="60" class="sub">rose dashed = auth/token material; rose-bordered cluster = security trust zone</text>
 
   <!-- Client -->
@@ -28,7 +28,7 @@
 
   <!-- Security trust zone -->
   <rect x="260" y="120" width="600" height="280" rx="8" fill="transparent" stroke="#fb7185" stroke-width="1" stroke-dasharray="4,4"/>
-  <text x="280" y="142" class="cluster">TRUST ZONE — server-side</text>
+  <rect x="274.0" y="129.7" width="170.4" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="280" y="142" class="cluster">TRUST ZONE — server-side</text>
 
   <!-- API -->
   <rect x="300" y="200" width="140" height="70" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
@@ -48,25 +48,25 @@
   <!-- Edges -->
   <!-- Client -> API: bearer token -->
   <line x1="180" y1="235" x2="298" y2="235" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#ah)"/>
-  <text x="239" y="225" class="lbl-auth" text-anchor="middle">Bearer JWT</text>
+  <rect x="200.0" y="212.7" width="78.0" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="239" y="225" class="lbl-auth" text-anchor="middle">Bearer JWT</text>
 
   <!-- API -> AuthZ: introspect -->
   <line x1="440" y1="235" x2="518" y2="235" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#ah)"/>
-  <text x="479" y="225" class="lbl-auth" text-anchor="middle">introspect</text>
+  <rect x="440.0" y="212.7" width="78.0" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="479" y="225" class="lbl-auth" text-anchor="middle">introspect</text>
 
   <!-- AuthZ -> IdP: fetch JWKS -->
   <line x1="660" y1="225" x2="698" y2="225" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#ah)"/>
-  <text x="679" y="215" class="lbl-auth" text-anchor="middle">JWKS</text>
+  <rect x="659.8" y="202.7" width="38.4" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="679" y="215" class="lbl-auth" text-anchor="middle">JWKS</text>
 
   <!-- IdP -> AuthZ: public key -->
   <line x1="700" y1="248" x2="662" y2="248" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#ah)"/>
-  <text x="679" y="270" class="lbl-auth" text-anchor="middle">pub key</text>
+  <rect x="649.9" y="257.6" width="58.2" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="679" y="270" class="lbl-auth" text-anchor="middle">pub key</text>
 
   <!-- Client login redirect -->
   <path d="M 110 200 Q 110 100 770 100 Q 770 100 770 198" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#ah)"/>
-  <text x="440" y="92" class="lbl-auth" text-anchor="middle">OAuth2 redirect (login)</text>
+  <rect x="358.1" y="79.7" width="163.8" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="440" y="92" class="lbl-auth" text-anchor="middle">OAuth2 redirect (login)</text>
 
   <!-- API -> client response -->
   <path d="M 300 250 Q 240 320 180 270" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#ah)"/>
-  <text x="240" y="320" class="lbl" text-anchor="middle">resource</text>
+  <rect x="207.6" y="307.6" width="64.8" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="240" y="320" class="lbl" text-anchor="middle">resource</text>
 </svg>

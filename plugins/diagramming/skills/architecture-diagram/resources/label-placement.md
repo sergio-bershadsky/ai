@@ -152,7 +152,7 @@ For unavoidable small overlaps with backgrounds, use SVG `paint-order: stroke fi
 ```css
 svg text {
   paint-order: stroke fill;
-  stroke: rgba(2, 6, 23, 0.5);
+  stroke: rgba(2, 6, 23, 0.75);
   stroke-width: 1;
   stroke-linejoin: round;
   stroke-linecap: round;
