@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 540" font-family="JetBrains Mono, ui-monospace, monospace">
+  <defs>
+    <marker id="ah" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"/>
+    </marker>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <style>
+    text { paint-order: stroke fill; stroke: rgba(2,6,23,0.5); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; fill: #e2e8f0; font-size: 12px; }
+    .title { font-size: 16px; font-weight: 700; fill: #f1f5f9; stroke-width: 4; }
+    .lbl { font-size: 11px; fill: #cbd5e1; stroke-width: 2.5; }
+    .lbl-ctrl { font-size: 11px; fill: #67e8f9; stroke-width: 2.5; }
+    .sub { font-size: 10px; fill: #94a3b8; stroke-width: 2; }
+    .cluster { font-size: 11px; fill: #cbd5e1; stroke-width: 2.5; }
+  </style>
+  <rect width="900" height="540" fill="#020617"/>
+  <rect width="900" height="540" fill="url(#grid)"/>
+
+  <text x="40" y="40" class="title">Service mesh — xDS control plane / Envoy data plane</text>
+  <text x="40" y="60" class="sub">dashed cyan = control plane (config push); solid emerald = data plane (request traffic)</text>
+
+  <!-- Control plane cluster -->
+  <rect x="280" y="90" width="340" height="100" rx="14" fill="rgba(8,51,68,0.05)" stroke="#22d3ee" stroke-width="1" stroke-dasharray="10,6"/>
+  <text x="300" y="112" class="cluster">CONTROL PLANE</text>
+  <rect x="380" y="125" width="140" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+  <text x="450" y="155" text-anchor="middle">xDS SERVER</text>
+
+  <!-- Data plane cluster -->
+  <rect x="40" y="240" width="820" height="260" rx="14" fill="rgba(6,78,59,0.04)" stroke="#34d399" stroke-width="1" stroke-dasharray="10,6"/>
+  <text x="60" y="262" class="cluster">DATA PLANE — pods</text>
+
+  <!-- Pod A -->
+  <rect x="80"  y="290" width="200" height="180" rx="10" fill="transparent" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
+  <text x="180" y="312" class="sub" text-anchor="middle">pod-a</text>
+  <rect x="100" y="330" width="160" height="50" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+  <text x="180" y="360" text-anchor="middle">SERVICE A</text>
+  <rect x="100" y="400" width="160" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+  <text x="180" y="430" text-anchor="middle">ENVOY</text>
+
+  <!-- Pod B -->
+  <rect x="350" y="290" width="200" height="180" rx="10" fill="transparent" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
+  <text x="450" y="312" class="sub" text-anchor="middle">pod-b</text>
+  <rect x="370" y="330" width="160" height="50" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+  <text x="450" y="360" text-anchor="middle">SERVICE B</text>
+  <rect x="370" y="400" width="160" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+  <text x="450" y="430" text-anchor="middle">ENVOY</text>
+
+  <!-- Pod C -->
+  <rect x="620" y="290" width="200" height="180" rx="10" fill="transparent" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
+  <text x="720" y="312" class="sub" text-anchor="middle">pod-c</text>
+  <rect x="640" y="330" width="160" height="50" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+  <text x="720" y="360" text-anchor="middle">SERVICE C</text>
+  <rect x="640" y="400" width="160" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+  <text x="720" y="430" text-anchor="middle">ENVOY</text>
+
+  <!-- xDS dashed control plane lines to each Envoy -->
+  <path d="M 420 175 Q 200 230 180 400" fill="none" stroke="#22d3ee" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#ah)"/>
+  <line x1="450" y1="175" x2="450" y2="400" stroke="#22d3ee" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#ah)"/>
+  <path d="M 480 175 Q 700 230 720 400" fill="none" stroke="#22d3ee" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#ah)"/>
+  <text x="540" y="220" class="lbl-ctrl">xDS push</text>
+
+  <!-- Data plane solid arrows Envoy-to-Envoy -->
+  <line x1="260" y1="425" x2="368" y2="425" stroke="#34d399" stroke-width="1.5" marker-end="url(#ah)"/>
+  <text x="314" y="415" class="lbl" text-anchor="middle">mTLS</text>
+  <line x1="530" y1="425" x2="638" y2="425" stroke="#34d399" stroke-width="1.5" marker-end="url(#ah)"/>
+  <text x="584" y="415" class="lbl" text-anchor="middle">mTLS</text>
+</svg>

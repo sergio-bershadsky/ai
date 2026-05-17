@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" font-family="JetBrains Mono, ui-monospace, monospace">
+  <defs>
+    <marker id="ah" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"/>
+    </marker>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <style>
+    text { paint-order: stroke fill; stroke: rgba(2,6,23,0.5); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; fill: #e2e8f0; font-size: 12px; }
+    .title { font-size: 16px; font-weight: 700; fill: #f1f5f9; stroke-width: 4; }
+    .lbl { font-size: 11px; fill: #cbd5e1; stroke-width: 2.5; }
+    .lbl-key { font-size: 11px; fill: #fda4af; stroke-width: 2.5; font-weight: 700; }
+    .sub { font-size: 10px; fill: #94a3b8; stroke-width: 2; }
+    .cluster { font-size: 11px; fill: #cbd5e1; stroke-width: 2.5; }
+    .zone-ctrl { font-size: 11px; fill: #fbbf24; stroke-width: 2.5; }
+    .zone-data { font-size: 11px; fill: #34d399; stroke-width: 2.5; }
+  </style>
+  <rect width="960" height="600" fill="#020617"/>
+  <rect width="960" height="600" fill="url(#grid)"/>
+
+  <text x="40" y="40" class="title">Multi-tenant credentials — KMS-wrapped at rest, plaintext only in xDS agent memory</text>
+  <text x="40" y="60" class="sub">bold rose = key material flow; emerald = decrypted-in-memory boundary; everything else is encrypted</text>
+
+  <!-- Control plane region -->
+  <rect x="40" y="90" width="880" height="200" rx="14" fill="rgba(251,191,36,0.05)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="10,6"/>
+  <text x="60" y="112" class="zone-ctrl">CONTROL PLANE — encrypted at rest</text>
+
+  <!-- Tenant config DB -->
+  <rect x="80" y="170" width="180" height="80" rx="6" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="170" y="200" text-anchor="middle">TENANT CONFIG DB</text>
+  <text x="170" y="220" class="sub" text-anchor="middle">creds: KMS-wrapped</text>
+  <text x="170" y="236" class="sub" text-anchor="middle">DEK per tenant</text>
+
+  <!-- KMS -->
+  <rect x="380" y="170" width="180" height="80" rx="6" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="2"/>
+  <text x="470" y="200" text-anchor="middle">AWS / GCP KMS</text>
+  <text x="470" y="220" class="sub" text-anchor="middle">CMK (HSM-backed)</text>
+  <text x="470" y="236" class="sub" text-anchor="middle">never leaves boundary</text>
+
+  <!-- Admin API -->
+  <rect x="680" y="170" width="180" height="80" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+  <text x="770" y="200" text-anchor="middle">ADMIN API</text>
+  <text x="770" y="220" class="sub" text-anchor="middle">tenant onboarding</text>
+  <text x="770" y="236" class="sub" text-anchor="middle">writes wrapped DEK</text>
+
+  <!-- Data plane region -->
+  <rect x="40" y="330" width="880" height="240" rx="14" fill="rgba(6,78,59,0.04)" stroke="#34d399" stroke-width="1" stroke-dasharray="10,6"/>
+  <text x="60" y="352" class="zone-data">DATA PLANE — plaintext only in agent memory</text>
+
+  <!-- xDS Agent (the only place plaintext exists) -->
+  <rect x="260" y="400" width="220" height="140" rx="10" fill="transparent" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="4,4"/>
+  <text x="370" y="422" class="sub" text-anchor="middle">RAM-only — no swap, no core</text>
+  <rect x="280" y="438" width="180" height="80" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+  <text x="370" y="468" text-anchor="middle">XDS AGENT</text>
+  <text x="370" y="488" class="sub" text-anchor="middle">holds plaintext DEK</text>
+  <text x="370" y="504" class="sub" text-anchor="middle">rewrites Envoy LDS/CDS</text>
+
+  <!-- Envoy -->
+  <rect x="640" y="438" width="180" height="80" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+  <text x="730" y="468" text-anchor="middle">ENVOY</text>
+  <text x="730" y="488" class="sub" text-anchor="middle">per-tenant clusters</text>
+  <text x="730" y="504" class="sub" text-anchor="middle">TLS keys hot-swapped</text>
+
+  <!-- Control plane internal edges -->
+  <!-- Admin -> Config DB: wrapped DEK (routed above KMS to avoid overlap) -->
+  <path d="M 770 170 Q 770 130 470 130 Q 170 130 170 168" fill="none" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#ah)"/>
+  <text x="470" y="122" class="lbl" text-anchor="middle">write wrapped DEK</text>
+
+  <!-- Admin -> KMS: encrypt -->
+  <path d="M 680 220 Q 620 260 560 220" fill="none" stroke="#fb7185" stroke-width="2" marker-end="url(#ah)"/>
+  <text x="620" y="270" class="lbl-key" text-anchor="middle">Encrypt(DEK)</text>
+
+  <!-- xDS agent -> Config DB: fetch wrapped DEK -->
+  <path d="M 280 438 Q 200 360 170 250" fill="none" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#ah)"/>
+  <text x="148" y="335" class="lbl" text-anchor="end">fetch wrapped</text>
+
+  <!-- xDS agent -> KMS: Decrypt call (bold rose - key material) -->
+  <path d="M 370 400 Q 370 320 470 250" fill="none" stroke="#fb7185" stroke-width="2" marker-end="url(#ah)"/>
+  <text x="385" y="340" class="lbl-key">Decrypt(wrapped)</text>
+
+  <!-- xDS agent -> Envoy: rewritten config -->
+  <line x1="460" y1="478" x2="638" y2="478" stroke="#34d399" stroke-width="1.5" marker-end="url(#ah)"/>
+  <text x="549" y="468" class="lbl" text-anchor="middle">xDS push</text>
+</svg>
