@@ -8,14 +8,14 @@
     </pattern>
   </defs>
   <style>
-    text { paint-order: stroke fill; stroke: rgba(2,6,23,0.5); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; fill: #e2e8f0; font-size: 12px; }
-    .title { font-size: 16px; font-weight: 700; fill: #f1f5f9; stroke-width: 4; }
-    .lbl { font-size: 11px; fill: #cbd5e1; stroke-width: 2.5; }
-    .lbl-key { font-size: 11px; fill: #fda4af; stroke-width: 2.5; font-weight: 700; }
+    text { paint-order: stroke fill; stroke: rgba(2,6,23,0.5); stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; fill: #e2e8f0; font-size: 12px; }
+    .title { font-size: 16px; font-weight: 700; fill: #f1f5f9; }
+    .lbl { font-size: 11px; fill: #cbd5e1; }
+    .lbl-key { font-size: 11px; fill: #fda4af; font-weight: 700; }
     .sub { font-size: 10px; fill: #94a3b8; stroke-width: 2; }
-    .cluster { font-size: 11px; fill: #cbd5e1; stroke-width: 2.5; }
-    .zone-ctrl { font-size: 11px; fill: #fbbf24; stroke-width: 2.5; }
-    .zone-data { font-size: 11px; fill: #34d399; stroke-width: 2.5; }
+    .cluster { font-size: 11px; fill: #cbd5e1; }
+    .zone-ctrl { font-size: 11px; fill: #fbbf24; }
+    .zone-data { font-size: 11px; fill: #34d399; }
   </style>
   <rect width="960" height="600" fill="#020617"/>
   <rect width="960" height="600" fill="url(#grid)"/>
