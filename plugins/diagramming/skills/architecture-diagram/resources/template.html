@@ -92,6 +92,22 @@
       stroke-linecap: round;
     }
 
+    /* Hover interactivity — each component box glows in its accent colour.
+       Opt-in: add class="component <color>" to each component <rect>. */
+    svg rect.component {
+      transition: filter 220ms ease;
+      cursor: pointer;
+    }
+    svg rect.component:hover {
+      filter: drop-shadow(0 0 12px var(--glow, rgba(255,255,255,0.3))) brightness(1.15);
+    }
+    svg rect.cyan    { --glow: rgba( 34, 211, 238, 0.65); }
+    svg rect.emerald { --glow: rgba( 52, 211, 153, 0.65); }
+    svg rect.violet  { --glow: rgba(167, 139, 250, 0.65); }
+    svg rect.rose    { --glow: rgba(251, 113, 133, 0.65); }
+    svg rect.amber   { --glow: rgba(251, 191, 36, 0.65); }
+    svg rect.slate   { --glow: rgba(148, 163, 184, 0.50); }
+
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
