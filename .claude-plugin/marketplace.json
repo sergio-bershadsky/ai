@@ -71,6 +71,13 @@
       "description": "Enterprise Tortoise ORM (async Python) toolkit: one-model-per-file in models/ subpackage, abstract Base interfaces for mocks/transitions, strict class layout, FastAPI lifespan, Aerich migrations, Pydantic v2, pytest patterns",
       "version": "1.0.0",
       "category": "development"
+    },
+    {
+      "name": "diagramming",
+      "source": "./plugins/diagramming",
+      "description": "Polished dark-themed architecture diagrams as self-contained HTML+SVG. Includes design system, Bezier-correct label placement with clean-background priority, halo text, leader lines, and audit + coordinate-shifter scripts.",
+      "version": "1.0.0",
+      "category": "productivity"
     }
   ]
 }
