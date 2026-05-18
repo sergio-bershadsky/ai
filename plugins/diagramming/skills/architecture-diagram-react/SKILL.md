@@ -70,6 +70,27 @@ When converting output of the parent skill to embedded form, **remove**:
 - **Halos must move from CSS into inline SVG attrs** since the renderer doesn't ship the global `svg text { paint-order: stroke fill; ... }` selector. Each `<text>` that needs a halo must carry its own `paint-order="stroke fill"`, `stroke="rgba(2, 6, 23, 0.75)"`, `stroke-width="1"`. The renderer adds nothing to text — what you emit is what renders.
 - Background grid pattern is optional — the renderer surface already paints a slate-950 + 40 px grid. If the SVG also draws one, it just doubles up; usually safe to omit.
 
+## Chip-rect backgrounds for floating labels — *exactly one*
+
+Per the parent skill's rule #3, every floating `<text>` (one that does not live inside a coloured component box — titles, edge labels, cluster names, annotations) needs a backing chip rect drawn **immediately before** the text:
+
+```svg
+<rect x="..." y="..." width="..." height="..." rx="3"
+      fill="rgba(15,23,42,0.92)" stroke="rgba(148,163,184,0.75)" stroke-width="1"/>
+<text x="..." y="..." font-size="..." ...
+      paint-order="stroke fill" stroke="rgba(2,6,23,0.65)" stroke-width="3">
+  LABEL
+</text>
+```
+
+**Exactly one chip per label.** Do *not* nest chips. Do *not* draw a slightly-larger outer chip around the canonical one — the result is a double-bordered pill that reads as a bug.
+
+Two patterns produce the double-border bug:
+1. The author writes a chip-rect AND a downstream post-pass (e.g. `add_chip_rects.py`) re-runs and adds another because its idempotency check missed yours. Mitigation: the post-pass now scans the 240 characters before each `<text>` for `fill="rgba(15,23,42,0.92)"` and skips if found. Authors must use the canonical `fill` value verbatim — no alpha variants, no off-by-one rgba.
+2. The author wraps the label with a *decorative* outer rect for emphasis. Don't. Use one canonical chip. If you want a title to feel heavier, use larger `font-size` and `font-weight="700"`, not a second border.
+
+**The chip is for floating labels only.** Text already living inside a coloured component box (e.g. a service name inside a cyan-stroked rect) inherits the box as its background — no chip needed and adding one looks doubly busy.
+
 ## Lucide icon promotion
 
 Replace bespoke icon `<path>` blocks with `<lucide-icon>` tags. The React renderer expands these at runtime via `lucide-react`, so authoring stays compact and icons match the rest of the site.
@@ -108,48 +129,54 @@ Replace bespoke icon `<path>` blocks with `<lucide-icon>` tags. The React render
 
 If no listed icon fits, **don't invent one** — author the path inline as the parent skill does. Adding a name to the consumer requires editing `archDiagramIcons.ts` (the icon must be imported from `lucide-react`).
 
-**Placement convention inside a component box:**
+### Reserve icon space before placing text — NON-NEGOTIABLE
+
+When an icon sits in a box's left padding, the label inside that box **must not centre on the full box width** — the text glyphs will slide under the icon and intersect it. This bug is visually obvious and unprofessional; it has been reported on shipped diagrams more than once.
+
+**Mandatory formulas — compute every time, do not eyeball coordinates:**
+
+```
+icon_left   = box_x + 16            # 16 px left padding
+icon_right  = icon_left + size      # size is the <lucide-icon> `size` attr
+box_right   = box_x + box_w
+```
+
+**Pattern A — right-shifted centre (use for short labels):**
+```
+text_anchor = "middle"
+text_x      = (icon_right + 8 + box_right) / 2     # midpoint of space RIGHT of icon
+```
+
+**Pattern B — left-aligned (use for long or multi-line labels):**
+```
+text_anchor = "start"
+text_x      = icon_right + 8        # 8 px gap between icon and first glyph
+```
+
+**The wrong pattern that produces visible icon/text intersection — DO NOT EMIT:**
+```
+text_x      = box_cx                # centres across whole box, overlays the icon
+text_anchor = "middle"
+```
+
+Minimum reserved space on the icon side: `size + 16 px`. For a 20 px icon that's a 36 px guard. Mirror for right-side icons. Vertical guard for top-positioned icons is `size + 8 px`.
+
+**Placement example — correct math applied (180×80 box, 20 px icon):**
 
 ```html
-<!-- 180×80 component box, icon in top-left padding (16,16 from top-left) -->
+<!-- Box: x=40, w=180 → box_right=220.  Icon: x=56..76.
+     text_x = (76 + 8 + 220) / 2 = 152  (not 130 = box_cx) -->
 <rect x="40" y="40" width="180" height="80" rx="6"
       fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
 <lucide-icon name="server" x="56" y="56" size="20" color="#34d399"/>
-<text x="130" y="76" fill="white" font-size="12" font-weight="600"
+<text x="152" y="76" fill="white" font-size="12" font-weight="600"
       text-anchor="middle">API GATEWAY</text>
-<text x="130" y="92" fill="#94a3b8" font-size="9" text-anchor="middle">
+<text x="152" y="92" fill="#94a3b8" font-size="9" text-anchor="middle">
   AUTHN / RATE-LIMIT
 </text>
 ```
 
-The 20 px icon at `(x+16, y+16)` from the box's top-left leaves room for a centred label on the right two-thirds of the box. For small (≤80 px wide) boxes, drop the sublabel; for tall boxes, centre the icon above the label using `text-anchor="middle"` and place the icon at `(box_cx - 10, box_y + 12)`.
-
-### Reserve icon space before placing text — non-negotiable
-
-When an icon sits in a box's left padding, the label inside that box **must not centre on the full box width** — it will slide under the icon. Two correct options:
-
-**A. Right-shifted centre (preferred for short labels):**
-```
-icon_left      = box_x + 16            # left padding
-icon_right     = icon_left + size      # size is the lucide-icon `size` attr
-text_anchor    = "middle"
-text_x         = (icon_right + 8 + box_right) / 2     # centre in the space *right of the icon*
-```
-
-**B. Left-aligned (preferred for long labels or multi-line):**
-```
-text_anchor    = "start"
-text_x         = icon_right + 8        # 8 px gap between icon and text
-```
-
-The wrong pattern — and the one that produces visible icon/text intersection:
-```
-# DON'T: centres text across the whole box, overlaying the icon
-text_x = box_cx
-text_anchor = "middle"
-```
-
-Reserve at least `size + 16 px` of horizontal space on the icon side before any text glyph starts. For a 20 px icon that means a 36 px left guard. Apply the same rule when icons sit on the right (mirror) or top (vertical guard ≥ `size + 8 px`).
+For small (≤80 px wide) boxes the right-of-icon space is too narrow for any label — drop the icon or stack vertically: icon at `(box_cx − size/2, box_y + 10)`, label at `(box_cx, box_y + size + 22)` with `text-anchor="middle"`.
 
 ## Consumer contract
 
@@ -220,10 +247,11 @@ If the audit flags labels for being far from the arrow midpoint without a leader
     </marker>
   </defs>
 
+  <!-- Box 1: x=40..220, icon 56..76 → text_x = (76+8+220)/2 = 152 -->
   <rect x="40" y="60" width="180" height="80" rx="6"
         fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
   <lucide-icon name="monitor" x="56" y="76" size="20" color="#22d3ee"/>
-  <text x="130" y="96" fill="white" font-size="12" font-weight="600"
+  <text x="152" y="96" fill="white" font-size="12" font-weight="600"
         text-anchor="middle"
         paint-order="stroke fill" stroke="rgba(2, 6, 23, 0.75)" stroke-width="1">CLIENT</text>
 
@@ -232,10 +260,11 @@ If the audit flags labels for being far from the arrow midpoint without a leader
   <text x="300" y="92" fill="#cbd5e1" font-size="9" text-anchor="middle"
         paint-order="stroke fill" stroke="rgba(2, 6, 23, 0.75)" stroke-width="1">HTTPS</text>
 
+  <!-- Box 2: x=380..560, icon 396..416 → text_x = (416+8+560)/2 = 492 -->
   <rect x="380" y="60" width="180" height="80" rx="6"
         fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
   <lucide-icon name="server" x="396" y="76" size="20" color="#34d399"/>
-  <text x="470" y="96" fill="white" font-size="12" font-weight="600"
+  <text x="492" y="96" fill="white" font-size="12" font-weight="600"
         text-anchor="middle"
         paint-order="stroke fill" stroke="rgba(2, 6, 23, 0.75)" stroke-width="1">API</text>
 </svg>
