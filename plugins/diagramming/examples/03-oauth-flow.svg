@@ -1,31 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440">
-<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern><marker id="ah-cyan" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-emerald" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-violet" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-rose" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-amber" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-slate" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="end-tri-open" viewBox="0 0 10 10" markerWidth="9" markerHeight="9" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10 Z" fill="#020617" stroke="#94a3b8" stroke-width="1.2"/></marker><marker id="end-diamond-filled" viewBox="0 0 10 10" markerWidth="10" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,5 L5,0 L10,5 L5,10 Z" fill="#94a3b8" stroke="#94a3b8" stroke-width="1"/></marker><marker id="end-diamond-open" viewBox="0 0 10 10" markerWidth="10" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,5 L5,0 L10,5 L5,10 Z" fill="#020617" stroke="#94a3b8" stroke-width="1"/></marker><marker id="end-dot" viewBox="0 0 10 10" markerWidth="6" markerHeight="6" refX="5" refY="5" orient="auto" markerUnits="strokeWidth"><circle cx="5" cy="5" r="3" fill="#94a3b8"/></marker></defs>
+<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern><marker id="ah-cyan" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-emerald" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-violet" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-rose" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-amber" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-slate" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <style>text{paint-order:stroke fill;stroke:#020617;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;fill:#e2e8f0;font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace;}text.title{stroke-width:6;font-size:16px;font-weight:700;fill:#f1f5f9;}text.sub{stroke-width:3;font-size:10px;fill:#94a3b8;}text.lbl{font-size:11px;fill:#cbd5e1;}text.cluster{stroke-width:5;font-size:11px;font-weight:600;fill:#cbd5e1;}rect.component{transition:filter 220ms ease;cursor:pointer;}rect.component:hover{filter:drop-shadow(0 0 8px var(--glow,rgba(255,255,255,0.2)));}rect.cyan{--glow:rgba(34,211,238,0.5);}rect.emerald{--glow:rgba(52,211,153,0.5);}rect.violet{--glow:rgba(167,139,250,0.5);}rect.rose{--glow:rgba(251,113,133,0.5);}rect.amber{--glow:rgba(251,191,36,0.5);}rect.slate{--glow:rgba(148,163,184,0.4);}</style>
 <rect width="960" height="440" fill="#020617"/>
 <rect width="960" height="440" fill="url(#grid)"/>
 <text class="title" x="32" y="44">OAUTH2 / JWT FLOW WITH SECURITY BOUNDARY</text>
 <text class="sub" x="32" y="64">rose dashed = auth / token material · rose cluster = trust zone</text>
-<rect x="240" y="140" width="680" height="240" rx="4" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="8,4"/>
-<text class="cluster" x="256" y="146">TRUST ZONE — server-side</text>
+<rect x="260" y="140" width="660" height="240" rx="4" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="8,4"/>
+<text class="cluster" x="276" y="146">TRUST ZONE — server-side</text>
 <rect class="component slate" x="60" y="200" width="140" height="64" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/>
 <text x="130" y="236" text-anchor="middle">SPA CLIENT</text>
 <text class="sub" x="130" y="252" text-anchor="middle">browser</text>
-<rect class="component emerald" x="280" y="200" width="140" height="64" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
-<text x="350" y="236" text-anchor="middle">API</text>
-<text class="sub" x="350" y="252" text-anchor="middle">resource svr</text>
-<rect class="component rose" x="480" y="200" width="140" height="64" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/>
-<text x="550" y="236" text-anchor="middle">AUTHZ</text>
-<text class="sub" x="550" y="252" text-anchor="middle">policy decision</text>
-<rect class="component rose" x="720" y="200" width="140" height="64" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/>
-<text x="790" y="236" text-anchor="middle">IDP</text>
-<text class="sub" x="790" y="252" text-anchor="middle">Keycloak / Auth0</text>
-<path d="M200,232 H280" fill="none" stroke="#fb7185" stroke-width="1.0" stroke-dasharray="3,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-rose)"/>
-<text class="lbl" x="240" y="226" text-anchor="middle">Bearer JWT</text>
-<line x1="207.0" y1="230" x2="273.0" y2="230" stroke="#94a3b8" stroke-width="0.75"/>
-<path d="M420,232 H480" fill="none" stroke="#fb7185" stroke-width="1.0" stroke-dasharray="3,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-rose)"/>
-<text class="lbl" x="450" y="226" text-anchor="middle">introspect</text>
-<line x1="417.0" y1="230" x2="483.0" y2="230" stroke="#94a3b8" stroke-width="0.75"/>
-<path d="M620,232 H720" fill="none" stroke="#fb7185" stroke-width="1.0" stroke-dasharray="3,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-rose)"/>
-<text class="lbl" x="670" y="226" text-anchor="middle">JWKS</text>
-<line x1="656.8" y1="230" x2="683.2" y2="230" stroke="#94a3b8" stroke-width="0.75"/>
+<rect class="component emerald" x="290" y="200" width="140" height="64" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="360" y="236" text-anchor="middle">API</text>
+<text class="sub" x="360" y="252" text-anchor="middle">resource svr</text>
+<rect class="component rose" x="520" y="200" width="140" height="64" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/>
+<text x="590" y="236" text-anchor="middle">AUTHZ</text>
+<text class="sub" x="590" y="252" text-anchor="middle">policy decision</text>
+<rect class="component rose" x="750" y="200" width="140" height="64" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/>
+<text x="820" y="236" text-anchor="middle">IDP</text>
+<text class="sub" x="820" y="252" text-anchor="middle">Keycloak / Auth0</text>
+<path d="M200,232 H290" fill="none" stroke="#fb7185" stroke-width="1.0" stroke-dasharray="3,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-rose)"/>
+<text class="lbl" x="245" y="226" text-anchor="middle">Bearer JWT</text>
+<path d="M430,232 H520" fill="none" stroke="#fb7185" stroke-width="1.0" stroke-dasharray="3,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-rose)"/>
+<text class="lbl" x="475" y="226" text-anchor="middle">introspect</text>
+<path d="M660,232 H750" fill="none" stroke="#fb7185" stroke-width="1.0" stroke-dasharray="3,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-rose)"/>
+<text class="lbl" x="705" y="226" text-anchor="middle">JWKS</text>
 </svg>

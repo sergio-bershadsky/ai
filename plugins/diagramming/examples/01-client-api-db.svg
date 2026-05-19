@@ -19,11 +19,8 @@
 <text class="sub" x="810" y="212" text-anchor="middle">primary</text>
 <path d="M220,192 H300" fill="none" stroke="#94a3b8" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-slate)"/>
 <text class="lbl" x="260" y="186" text-anchor="middle">HTTPS</text>
-<line x1="243.5" y1="190" x2="276.5" y2="190" stroke="#94a3b8" stroke-width="0.75"/>
 <path d="M440,192 H520" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
 <text class="lbl" x="480" y="186" text-anchor="middle">gRPC</text>
-<line x1="466.8" y1="190" x2="493.2" y2="190" stroke="#94a3b8" stroke-width="0.75"/>
 <path d="M660,192 H740" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-dasharray="4,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
 <text class="lbl" x="700" y="186" text-anchor="middle">SQL</text>
-<line x1="690.1" y1="190" x2="709.9" y2="190" stroke="#94a3b8" stroke-width="0.75"/>
 </svg>

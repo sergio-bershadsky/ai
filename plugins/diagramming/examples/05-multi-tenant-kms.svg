@@ -26,17 +26,12 @@
 <text class="sub" x="720" y="480" text-anchor="middle">per-tenant clusters</text>
 <path d="M780,170 V142 Q780,130 768,130 H192 Q180,130 180,142 V170" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-dasharray="4,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
 <text class="lbl" x="480" y="164" text-anchor="middle">write wrapped DEK</text>
-<line x1="423.9" y1="168" x2="536.1" y2="168" stroke="#94a3b8" stroke-width="0.75"/>
 <path d="M680,210 H580" fill="none" stroke="#fb7185" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-rose)"/>
 <text class="lbl" x="630" y="204" text-anchor="middle">Encrypt(DEK)</text>
-<line x1="590.4" y1="208" x2="669.6" y2="208" stroke="#94a3b8" stroke-width="0.75"/>
 <path d="M366,420 V322 Q366,310 354,310 H192 Q180,310 180,298 V250" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-dasharray="4,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
 <text class="lbl" x="273" y="329" text-anchor="middle">fetch wrapped</text>
-<line x1="230.1" y1="333" x2="315.9" y2="333" stroke="#94a3b8" stroke-width="0.75"/>
 <path d="M433,420 V322 Q433,310 445,310 H468 Q480,310 480,298 V250" fill="none" stroke="#fb7185" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-rose)"/>
 <text class="lbl" x="456" y="329" text-anchor="middle">Decrypt(wrapped)</text>
-<line x1="403.2" y1="333" x2="508.8" y2="333" stroke="#94a3b8" stroke-width="0.75"/>
 <path d="M500,460 H620" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-emerald)"/>
 <text class="lbl" x="560" y="454" text-anchor="middle">xDS push</text>
-<line x1="533.6" y1="458" x2="586.4" y2="458" stroke="#94a3b8" stroke-width="0.75"/>
 </svg>

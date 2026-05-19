@@ -30,16 +30,14 @@
 <rect class="component emerald" x="670" y="410" width="180" height="44" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
 <text x="760" y="436" text-anchor="middle">SERVICE C</text>
 <text class="sub" x="760" y="452" text-anchor="middle">app</text>
-<path d="M440,182 V258 Q440,270 428,270 H212 Q200,270 200,282 V310" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<path d="M440,182 V234 Q440,246 428,246 H212 Q200,246 200,258 V310" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
 <path d="M480,182 V310" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
-<path d="M520,182 V258 Q520,270 532,270 H748 Q760,270 760,282 V310" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<path d="M520,182 V234 Q520,246 532,246 H748 Q760,246 760,258 V310" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
 <path d="M200,354 V410" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
 <path d="M480,354 V410" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
 <path d="M760,354 V410" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
 <path d="M290,332 H390" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-emerald)"/>
 <text class="lbl" x="340" y="326" text-anchor="middle">mTLS</text>
-<line x1="326.8" y1="330" x2="353.2" y2="330" stroke="#94a3b8" stroke-width="0.75"/>
 <path d="M570,332 H670" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-emerald)"/>
 <text class="lbl" x="620" y="326" text-anchor="middle">mTLS</text>
-<line x1="606.8" y1="330" x2="633.2" y2="330" stroke="#94a3b8" stroke-width="0.75"/>
 </svg>

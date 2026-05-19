@@ -2,6 +2,34 @@
 
 Dark-theme, monospace-typography, **engineering-blueprint** diagrams. The reference is a classic structural drawing or PCB layout: aggressive alignment, quiet geometry, computed coordinates, no decoration. Use this as the canonical reference for every diagram produced by this skill.
 
+## Layout pre-check — gaps must fit edge labels (non-negotiable)
+
+**Edge labels affect layout, not the other way round.** Before fixing component coordinates, enumerate every edge that will sit between two adjacent boxes (same row or same column) and measure the label that will go on it:
+
+```
+label_width_px  = len(label_text) * font_size * 0.6     (JetBrains Mono)
+label_height_px = font_size * 1.2
+required_gap    = label_width + 2 * pad                 (pad = 12 px each side, default)
+```
+
+If the current planned gap between the two boxes is less than `required_gap`, you have three options. In priority order:
+
+1. **Widen the gap.** Push the right-hand (or lower) box further along its axis until the label fits comfortably. This is the default fix — the diagram width grows by `required_gap - current_gap`. Then re-align downstream columns / rows.
+2. **Shorten the label.** If the label is verbose (`"introspect token via /jwks"` → `introspect`), trim it. Verbose only counts if it carries meaning the diagram doesn't already convey.
+3. **Promote to callout.** Move the label off the edge into clear space and connect via a leader (see *Labels — default and leader-line*). Use sparingly — see the callout rule above.
+
+**Worked example.** Row of four boxes (each 140 px wide) at y=200, edge labels "Bearer JWT" (10 chars), "introspect" (10 chars), "JWKS" (4 chars). At 11 px font size:
+
+| Edge | Label | label_w | required_gap | current gap (60) | required gap | verdict |
+|---|---|---|---|---|---|---|
+| 1→2 | Bearer JWT | 66 | 90 | 60 | 90 | widen +30 |
+| 2→3 | introspect | 66 | 90 | 60 | 90 | widen +30 |
+| 3→4 | JWKS | 26 | 50 | 60 | 50 | OK |
+
+Result: re-plan box positions with the new gaps before drawing anything. Same algorithm for vertically stacked boxes — `required_gap` becomes `label_height + 2 * pad`.
+
+**Cluster boundaries must also be re-checked.** When you widen a gap, the parent cluster's width grows; re-derive `cluster.right` and `cluster.width` from `max(child.right) + pad` before validation.
+
 ## Workflow — layout first, content second (foundational)
 
 Drawing a diagram in two phases prevents almost every class of mistake the earlier versions of this plugin produced (text overlapping icons, edges cutting through boxes, labels colliding, cluster borders intersecting components).
@@ -228,6 +256,39 @@ Three distinct departure points, sorted top-down to match the destinations.
 
 **Failure mode to watch for.** Two parallel edges to the *same target side* — e.g., two "READ" arrows into a DB's left side. The slot algorithm gives them distinct points, but if their source x-columns differ they may still cross visually. In that case prefer a *single bundled* edge labelled with a multiplicity (`2..*`) over two parallel lines.
 
+## Departure and arrival are perpendicular to the box side (non-negotiable)
+
+**An edge's first segment must move perpendicular to the side it attaches from. The last segment must arrive perpendicular to the side it attaches to.** This prevents the visually-broken case where an arrow leaves a vertical edge by moving vertically, which makes the first 10–20 px of the arrow line up on top of the box's own border.
+
+The rule maps the two attach sides to the required shape:
+
+| src side | dst side | Path shape | Waypoint |
+|---|---|---|---|
+| `r` or `l` | `r` or `l` | **H-V-H** (Z, two turns) | `via_x = (src.x + dst.x) / 2` |
+| `t` or `b` | `t` or `b` | **V-H-V** (Z, two turns) | `via_y = (src.y + dst.y) / 2` |
+| `r` or `l` | `t` or `b` | H-V (single turn) | none — H first, then V |
+| `t` or `b` | `r` or `l` | V-H (single turn) | none — V first, then H |
+| equal x or y | (any) | straight line | — |
+
+For the two same-orientation Z-shape cases, the auto-chosen waypoint is the midpoint of the corresponding coordinate. Override only when the midpoint would cross a cluster boundary or a row of components — see the next section.
+
+## Z-shape waypoints must clear cluster boundaries
+
+The horizontal leg (in V-H-V) or vertical leg (in H-V-H) must **not** coincide with any cluster boundary line — if it does, the edge merges visually with the dashed cluster border and becomes unreadable.
+
+**Rule:** `via_y` must be ≥ 12 px away from every horizontal cluster edge it would otherwise sit on. Same for `via_x` vs. every vertical cluster edge.
+
+Procedure when picking `via_y`:
+
+1. Start with the midpoint candidate.
+2. List every horizontal cluster boundary on the canvas (each cluster contributes two: `c.y` and `c.bottom`).
+3. If the candidate is within 12 px of any of them, shift the candidate to the nearer of `boundary − 12` (above) or `boundary + 12` (below), choosing whichever stays in the gap between the source and destination rows.
+4. If neither shift fits, pick a different cluster boundary to bypass (route via a different corridor entirely).
+
+Same algorithm for `via_x` vs. vertical cluster boundaries.
+
+For diagrams where multiple cross-band edges share the same horizontal corridor, fix `via_y` per-edge with explicit offsets (`via_y = corridor_y + 4 * k` for the k-th edge), so the horizontal legs stack as visually distinct rails instead of overlapping.
+
 ## Edge routing — orthogonal only
 
 Default routing is **orthogonal**: edges run horizontal or vertical, never diagonal. Turns are rounded with `r = 12`. The only exceptions are leader lines for displaced labels (see *Labels*).
@@ -318,36 +379,39 @@ Two styles. Pick by whether the label can fit *on* the line it labels.
 
 **No chip rects, no rounded boxes around text — ever.** The universal text-border halo (solid canvas-colour stroke, 4 px wide) is what creates the visible background. Two styles below use the same halo and differ only in how they associate the label with its referent.
 
-### Default — inline with underline
+### Default — text only
 
-The label sits directly ON its edge. The text-border halo masks the edge line cleanly through the glyphs (no separate gap rect needed — the halo IS the gap). A short horizontal underline 2–3 px below the text anchors the label to its line:
+The label sits directly ON or NEAR its edge. The text-border knockout halo masks the underlying line through the glyphs cleanly — no underline, no chip, no leader. Visual association comes from proximity to the edge (or to the box, for component labels).
 
 ```svg
 <!-- centred label on a horizontal edge at y=190 -->
 <text x="cx" y="y - 1" text-anchor="middle" fill="#cbd5e1" font-size="11">HTTPS</text>
-<line x1="cx - w/2" y1="y + 3" x2="cx + w/2" y2="y + 3"
-      stroke="#94a3b8" stroke-width="0.75"/>
-<!-- where w = len(text) × font-size × 0.6 -->
 ```
 
-The universal `text { paint-order: stroke fill; stroke: #020617; stroke-width: 4 }` rule does the line-masking for free. No `<rect>` behind the text.
+No `<rect>`, no `<line>` underline. The halo IS the background.
 
-### Leader-line — when the label can't fit on the edge
+### Callout — when the label needs to point at a distant referent
 
-When the edge is too short, too crowded, or the label refers to a distant element, use a leader: text in clear space + two short strokes forming an elbow that points at the target (image #4 in the v2 brief).
+In engineering drawing parlance this is a *callout* or *footnote*. Use it **only** when the label cannot sit on or adjacent to its referent: the referent is across the diagram, the local edge is too crowded, or several adjacent edges would all want a label in the same place.
+
+A callout is text + a horizontal "shelf" + a diagonal leader stroke ending in a small dot, oblique tick, or open chevron at the referent (ISO 128-24, leader-line terminator):
 
 ```svg
 <!-- "LABEL" sitting in clear space, pointing at target (tx, ty) -->
 <text x="lx" y="ly" font-size="11">LABEL</text>
-<line x1="lx"     y1="ly + 3" x2="lx + w" y2="ly + 3" stroke="#94a3b8" stroke-width="0.75"/>
-<line x1="lx + w" y1="ly + 3" x2="tx"     y2="ty"     stroke="#94a3b8" stroke-width="0.75"/>
+<line x1="lx"      y1="ly + 3" x2="lx + w"  y2="ly + 3"
+      stroke="#94a3b8" stroke-width="0.75"/>           <!-- shelf -->
+<line x1="lx + w"  y1="ly + 3" x2="tx"      y2="ty"
+      stroke="#94a3b8" stroke-width="0.75"/>           <!-- leader -->
+<circle cx="tx" cy="ty" r="1.2" fill="#94a3b8"/>      <!-- terminator -->
+<!-- where w = len(text) × font-size × 0.6 -->
 ```
 
-Use leader-lines sparingly — when more than 2–3 appear in a diagram, the layout is wrong, not the labelling.
+Use callouts sparingly. **If more than ~3 callouts appear in a diagram, the layout is wrong, not the labelling** — put the labels back on the edges and re-route the edges so labels fit.
 
 ### Titles, legends, zone headings — same rule
 
-Free-floating labels at top of the diagram or at zone boundaries also use text-only with the halo. No chips. Use `class="title"` for the heading-weight halo (6 px stroke) and `class="sub"` for the smaller subtitle (3 px).
+Top-of-diagram titles, subtitles, and zone headings are text-only with the knockout halo. No chips, no underlines. Use `class="title"` for the heading-weight halo (6 px stroke) and `class="sub"` for the smaller subtitle (3 px).
 
 ## Spacing rules (the most violated, the most important)
 
