@@ -12,31 +12,31 @@ Five patterns the skill produces, rendered to SVG with the canonical design syst
 
 The minimum viable diagram — external user, edge, compute, storage — illustrating semantic palette (slate / cyan / emerald / violet) and edge dash semantics (solid HTTPS, solid gRPC, dashed SQL).
 
-![Three-tier request flow](./examples/01-client-api-db.svg?v=3)
+![Three-tier request flow](./examples/01-client-api-db.svg?v=4)
 
 ### 2. Service mesh — xDS control plane / Envoy data plane
 
 Two-cluster layout demonstrating **control plane vs data plane** convention: dashed cyan lines push xDS config, solid emerald lines carry mTLS request traffic. Sub-groups (`pod-a/b/c`) inside the data-plane cluster show two-level nesting.
 
-![Service mesh — xDS / Envoy](./examples/02-service-mesh-xds.svg?v=3)
+![Service mesh — xDS / Envoy](./examples/02-service-mesh-xds.svg?v=4)
 
 ### 3. OAuth2 / JWT flow with security boundary
 
 Rose dashed lines mark every auth/token edge; a rose-bordered dashed cluster wraps the server-side trust zone. Shows how to keep many short same-coloured edges legible by alternating label sides (above the line / below the line).
 
-![OAuth2 / JWT flow](./examples/03-oauth-flow.svg?v=3)
+![OAuth2 / JWT flow](./examples/03-oauth-flow.svg?v=4)
 
 ### 4. Event-driven CQRS with audit stream
 
 Demonstrates three edge semantics in one diagram: solid emerald (synchronous command), amber dashed (pub/sub fan-out), and violet dotted-thin (audit tap). The audit stream visibly recedes — exactly what the dotted-thin convention is for.
 
-![Event-driven CQRS](./examples/04-event-driven-cqrs.svg?v=3)
+![Event-driven CQRS](./examples/04-event-driven-cqrs.svg?v=4)
 
 ### 5. Multi-tenant credentials — KMS-wrapped at rest
 
 The strongest stress-test of the design system: nested control-plane / data-plane regions, **bold rose** lines reserved for key material (KMS Encrypt/Decrypt), an inner rose dashed boundary marking the *only* place plaintext lives (RAM-only xDS agent). Label routing avoids cluster borders and the central KMS box.
 
-![Multi-tenant KMS](./examples/05-multi-tenant-kms.svg?v=3)
+![Multi-tenant KMS](./examples/05-multi-tenant-kms.svg?v=4)
 
 ---
 

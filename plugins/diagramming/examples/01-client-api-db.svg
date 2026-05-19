@@ -1,61 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" font-family="JetBrains Mono, ui-monospace, monospace">
-  <defs>
-    <marker id="ah" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"/>
-    </marker>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
-    </pattern>
-  </defs>
-  <style>
-    text { paint-order: stroke fill; stroke: rgba(2, 6, 23, 0.75); stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; fill: #e2e8f0; font-size: 12px; }
-    .title { font-size: 16px; font-weight: 700; fill: #f1f5f9; }
-    .lbl { font-size: 11px; fill: #cbd5e1; }
-    .sub { font-size: 10px; fill: #94a3b8; stroke-width: 2; }
-  
-    /* Hover glow */
-    rect.component { transition: filter 220ms ease; cursor: pointer; }
-    rect.component:hover { filter: drop-shadow(0 0 12px var(--glow, rgba(255,255,255,0.3))) brightness(1.15); }
-    rect.cyan    { --glow: rgba( 34, 211, 238, 0.65); }
-    rect.emerald { --glow: rgba( 52, 211, 153, 0.65); }
-    rect.violet  { --glow: rgba(167, 139, 250, 0.65); }
-    rect.rose    { --glow: rgba(251, 113, 133, 0.65); }
-    rect.amber   { --glow: rgba(251, 191, 36, 0.65); }
-    rect.slate   { --glow: rgba(148, 163, 184, 0.50); }
-  </style>
-  <rect width="900" height="320" fill="#020617"/>
-  <rect width="900" height="320" fill="url(#grid)"/>
-
-  <rect x="34.0" y="23.4" width="232.8" height="22.8" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="40" y="40" class="title">Three-tier request flow</text>
-  <text x="40" y="60" class="sub">straight edges, semantic palette, halo labels — the simplest diagram the skill produces</text>
-
-  <!-- External user -->
-  <rect class="component slate" x="40"  y="170" width="140" height="70" rx="6" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="110" y="200" text-anchor="middle">USER</text>
-  <text x="110" y="220" class="sub" text-anchor="middle">browser</text>
-
-  <!-- API Gateway -->
-  <rect class="component cyan" x="260" y="170" width="140" height="70" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
-  <text x="330" y="200" text-anchor="middle">API GATEWAY</text>
-  <text x="330" y="220" class="sub" text-anchor="middle">edge / TLS</text>
-
-  <!-- Service -->
-  <rect class="component emerald" x="480" y="170" width="140" height="70" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
-  <text x="550" y="200" text-anchor="middle">ORDER SVC</text>
-  <text x="550" y="220" class="sub" text-anchor="middle">compute</text>
-
-  <!-- Database -->
-  <rect class="component violet" x="700" y="170" width="140" height="70" rx="6" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1.5"/>
-  <text x="770" y="200" text-anchor="middle">POSTGRES</text>
-  <text x="770" y="220" class="sub" text-anchor="middle">primary</text>
-
-  <!-- Edges -->
-  <line x1="180" y1="205" x2="258" y2="205" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ah)"/>
-  <rect x="196.5" y="182.7" width="45.0" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="219" y="195" class="lbl" text-anchor="middle">HTTPS</text>
-
-  <line x1="400" y1="205" x2="478" y2="205" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#ah)"/>
-  <rect x="419.8" y="182.7" width="38.4" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="439" y="195" class="lbl" text-anchor="middle">gRPC</text>
-
-  <line x1="620" y1="205" x2="698" y2="205" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#ah)"/>
-  <rect x="643.1" y="182.7" width="31.8" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="659" y="195" class="lbl" text-anchor="middle">SQL</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 300">
+<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern><marker id="ah-cyan" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-emerald" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-violet" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-rose" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-amber" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-slate" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="end-tri-open" viewBox="0 0 10 10" markerWidth="9" markerHeight="9" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10 Z" fill="#020617" stroke="#94a3b8" stroke-width="1.2"/></marker><marker id="end-diamond-filled" viewBox="0 0 10 10" markerWidth="10" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,5 L5,0 L10,5 L5,10 Z" fill="#94a3b8" stroke="#94a3b8" stroke-width="1"/></marker><marker id="end-diamond-open" viewBox="0 0 10 10" markerWidth="10" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,5 L5,0 L10,5 L5,10 Z" fill="#020617" stroke="#94a3b8" stroke-width="1"/></marker><marker id="end-dot" viewBox="0 0 10 10" markerWidth="6" markerHeight="6" refX="5" refY="5" orient="auto" markerUnits="strokeWidth"><circle cx="5" cy="5" r="3" fill="#94a3b8"/></marker></defs>
+<style>text{paint-order:stroke fill;stroke:#020617;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;fill:#e2e8f0;font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace;}text.title{stroke-width:6;font-size:16px;font-weight:700;fill:#f1f5f9;}text.sub{stroke-width:3;font-size:10px;fill:#94a3b8;}text.lbl{font-size:11px;fill:#cbd5e1;}text.cluster{stroke-width:5;font-size:11px;font-weight:600;fill:#cbd5e1;}rect.component{transition:filter 220ms ease;cursor:pointer;}rect.component:hover{filter:drop-shadow(0 0 8px var(--glow,rgba(255,255,255,0.2)));}rect.cyan{--glow:rgba(34,211,238,0.5);}rect.emerald{--glow:rgba(52,211,153,0.5);}rect.violet{--glow:rgba(167,139,250,0.5);}rect.rose{--glow:rgba(251,113,133,0.5);}rect.amber{--glow:rgba(251,191,36,0.5);}rect.slate{--glow:rgba(148,163,184,0.4);}</style>
+<rect width="960" height="300" fill="#020617"/>
+<rect width="960" height="300" fill="url(#grid)"/>
+<text class="title" x="32" y="44">THREE-TIER REQUEST FLOW</text>
+<text class="sub" x="32" y="64">user · edge · service · storage — blueprint v2 baseline</text>
+<rect class="component slate" x="80" y="160" width="140" height="64" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/>
+<text x="150" y="196" text-anchor="middle">USER</text>
+<text class="sub" x="150" y="212" text-anchor="middle">browser</text>
+<rect class="component cyan" x="300" y="160" width="140" height="64" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+<text x="370" y="196" text-anchor="middle">API GATEWAY</text>
+<text class="sub" x="370" y="212" text-anchor="middle">edge · TLS</text>
+<rect class="component emerald" x="520" y="160" width="140" height="64" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="590" y="196" text-anchor="middle">ORDER SVC</text>
+<text class="sub" x="590" y="212" text-anchor="middle">compute</text>
+<rect class="component violet" x="740" y="160" width="140" height="64" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/>
+<text x="810" y="196" text-anchor="middle">POSTGRES</text>
+<text class="sub" x="810" y="212" text-anchor="middle">primary</text>
+<path d="M220,192 H300" fill="none" stroke="#94a3b8" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-slate)"/>
+<text class="lbl" x="260" y="186" text-anchor="middle">HTTPS</text>
+<line x1="243.5" y1="190" x2="276.5" y2="190" stroke="#94a3b8" stroke-width="0.75"/>
+<path d="M440,192 H520" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<text class="lbl" x="480" y="186" text-anchor="middle">gRPC</text>
+<line x1="466.8" y1="190" x2="493.2" y2="190" stroke="#94a3b8" stroke-width="0.75"/>
+<path d="M660,192 H740" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-dasharray="4,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
+<text class="lbl" x="700" y="186" text-anchor="middle">SQL</text>
+<line x1="690.1" y1="190" x2="709.9" y2="190" stroke="#94a3b8" stroke-width="0.75"/>
 </svg>

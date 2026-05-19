@@ -1,6 +1,34 @@
-# Architecture Diagram Design System
+# Architecture Diagram Design System — v2 (Blueprint)
 
-Dark-theme, monospace-typography, semantic-color diagrams. Built on the Cocoon-AI design language. Use this as the canonical reference for every diagram produced by this skill.
+Dark-theme, monospace-typography, **engineering-blueprint** diagrams. The reference is a classic structural drawing or PCB layout: aggressive alignment, quiet geometry, computed coordinates, no decoration. Use this as the canonical reference for every diagram produced by this skill.
+
+## Workflow — layout first, content second (foundational)
+
+Drawing a diagram in two phases prevents almost every class of mistake the earlier versions of this plugin produced (text overlapping icons, edges cutting through boxes, labels colliding, cluster borders intersecting components).
+
+**Phase 1 — Layout.** Before emitting a single visual element, compute the bounding box for every entity:
+
+1. Enumerate every component, cluster, sub-group, and free-floating label the diagram needs.
+2. Assign `(x, y, width, height)` to each on the planned grid. Components that share a role share a width. Components in the same row share a y. Same-role columns share an x.
+3. Lay out clusters around their child components: cluster `x = min(child.x) − pad`, `y = min(child.y) − pad − header`, `right = max(child.right) + pad`, `bottom = max(child.bottom) + pad`.
+4. **Validation pass — required:**
+   - No two component bounding boxes intersect.
+   - No component extends beyond its parent cluster.
+   - Edge routing channels have ≥ 20 px clearance from neighbouring boxes.
+   - Same-role boxes have identical widths (alignment check).
+   - Row centrelines and column centrelines align across the diagram (no fractional offsets).
+5. If validation fails, **fix the layout numbers**. Do not "draw around" the bug — re-derive the geometry.
+
+**Phase 2 — Content.** Only after Phase 1 validates: draw the rects, place the icons (apply icon-space formula), place the labels (apply text-border halo + underline), route the edges (orthogonal with `r=12` corners), attach markers.
+
+Treat Phase 1 as the engineering drawing's grid pencilling and Phase 2 as the ink-over. Skipping Phase 1 is the source of every visual-chaos complaint historically reported on this plugin.
+
+## Blueprint priorities (read this first)
+
+1. **Aggressive alignment.** Components that share a role share a column or row. Same-role boxes get the same width. Centerlines line up across bands. If two things almost line up, make them line up exactly.
+2. **Quiet geometry.** Stroke widths come from the fixed set `{0.5, 1, 1.5, 2}` — never an ad-hoc value. Corner radii from `{0, 2, 4}` — never 6/8/10. Same rx for the same role across the whole diagram.
+3. **Computed coordinates.** Every position is derived from the box geometry. Never eyeball. The icon-space and label-routing rules in this document are formulas — compute them.
+4. **No visual chaos.** No decoration that doesn't encode something. No drop-shadow except on hover. No bezier curves except for leader-lines. No diagonal edges. No off-grid placement.
 
 ## Canvas
 
@@ -24,21 +52,25 @@ Dark-theme, monospace-typography, semantic-color diagrams. Built on the Cocoon-A
   - 13–16 px — cluster headings
 - All text gets the halo treatment (see below)
 
-## Text halo (universal)
+## Text-border (knockout halo, universal)
 
-Every `<text>` element in the SVG renders with a semi-transparent dark stroke behind its fill:
+Every `<text>` element in the SVG renders with a wide **solid canvas-colour** stroke behind its fill. The stroke acts as a knockout — wherever the text sits on top of an edge or another shape, the underlying line is masked cleanly around the glyphs. This is what makes "labels just sit on the line" work without any chip rect.
 
 ```css
 svg text {
   paint-order: stroke fill;
-  stroke: rgba(2, 6, 23, 0.75);
-  stroke-width: 1;
+  stroke: #020617;            /* solid canvas colour — knockout */
+  stroke-width: 4;            /* 4 px masks 1–1.5 px edges */
   stroke-linejoin: round;
   stroke-linecap: round;
 }
+svg text.title { stroke-width: 6; }   /* 16 px headings */
+svg text.sub   { stroke-width: 3; }   /* 9–10 px sub-labels */
 ```
 
-This makes labels readable when they unavoidably overlap with cluster boundaries, other boxes, or arrows. It is not a substitute for correct placement; it's defence-in-depth.
+The width is sized to **cover the widest edge line in the diagram plus 2 px of headroom**. For 1.5 px stroke edges the 4 px halo gives roughly 1.25 px of clean canvas on either side of each glyph — enough to feel deliberate without looking pillowy.
+
+No chip rects. No rounded boxes around text. The text-border is the only label background mechanism.
 
 ## Icon + text layout (component boxes)
 
@@ -71,7 +103,7 @@ Minimum reserved horizontal space on the icon side: `icon_size + 16 px`. For a 2
 The canonical `template.html` ships hover CSS so each component box gains a subtle coloured glow when the cursor enters it. To opt in, add the `component` class plus one semantic color class to every component `<rect>`:
 
 ```svg
-<rect class="component emerald" x="..." y="..." width="..." height="..." rx="6"
+<rect class="component emerald" x="..." y="..." width="..." height="..." rx="2"
       fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
 ```
 
@@ -99,24 +131,9 @@ svg rect.slate   { --glow: rgba(148, 163, 184, 0.50); }
 - Example SVGs opened directly in a browser — works.
 - Example SVGs displayed via `<img src="...svg">` (e.g. on the GitHub README) — **does not work**, browsers strip CSS interactivity from `<img>` SVGs. This is expected; the README is preview, the interactive copy lives at the file URL.
 
-## Label chip backgrounds (floating text)
-
-Floating labels — titles, edge labels, cluster names, anything not inside a coloured component box — must sit on an explicit `<rect>` "chip" with a 1 px translucent border, drawn immediately *before* the `<text>` element so it renders underneath:
-
-```svg
-<rect x="..." y="..." width="..." height="..." rx="3"
-      fill="rgba(15, 23, 42, 0.92)"
-      stroke="rgba(148, 163, 184, 0.75)"
-      stroke-width="1"/>
-<text class="lbl" x="..." y="...">LABEL</text>
-```
-
-**Applies to:** `.title`, `.cluster`, `.zone-*`, `.lbl`, `.lbl-auth`, `.lbl-ctrl`, `.lbl-audit`, `.lbl-key`, and any free-floating annotation.
-**Does NOT apply to:** `.sub` and bare text *inside* a colored component box — those sit on the component's own fill, no chip needed.
-
-**Sizing (JetBrains Mono):** width ≈ `len(text) × font-size × 0.6 + 12`. Height ≈ `font-size × 1.05 + 6`. `text-anchor` shifts the chip x by `0 / -w/2 / -w` for `start / middle / end`.
-
-The chip is the primary readability mechanism; the universal text-halo above is defence-in-depth.
+<!-- (former "Label chip backgrounds" section removed in v2 — labels are
+text-only with knockout halo; no chip rects anywhere. See Text-border above
+and Labels — default and leader-line below.) -->
 
 ## Semantic component colors
 
@@ -136,52 +153,201 @@ To mask arrows passing behind a semi-transparent box, draw an opaque background 
 
 ```svg
 <!-- Opaque background so arrows don't show through -->
-<rect x="X" y="Y" width="W" height="H" rx="6" fill="#0f172a"/>
+<rect x="X" y="Y" width="W" height="H" rx="2" fill="#0f172a"/>
 <!-- Styled component on top -->
-<rect x="X" y="Y" width="W" height="H" rx="6"
+<rect x="X" y="Y" width="W" height="H" rx="2"
       fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
 ```
 
 ## Shapes
 
-- Component boxes: `rect rx="6"` rounded corners, 1.5 px stroke
+- Component boxes: `rect rx="2"` rounded corners, 1.5 px stroke
 - Storage / database: `shape=cylinder` (or rect with note label)
 - KMS / HSM: hexagon (`<polygon>`) for distinction
 - User / actor: oval (`rx="38"` for pill shape)
 - Note / file: `shape=note` style — small flag corner
 
+## Geometry constants (the small fixed sets)
+
+| Property | Allowed values | Notes |
+|---|---|---|
+| Stroke width | `0.5` / `1` / `1.5` / `2` | 0.5 = grid; 1 = default edge & component border; 1.5 = emphasized edge & cluster border; 2 = critical / key material |
+| Corner radius `rx` | `0` / `2` / `4` | 0 = technical raw boxes; **2 = components (default)**; 4 = clusters / regions |
+| Stroke linecap / linejoin | `round` everywhere | Soft turn-joins read as engineered, not jagged |
+| Arrowhead size | `8` px | Single canonical size across the diagram |
+| Orthogonal edge corner radius | `12` px | Constant across the whole drawing |
+
+If you find yourself reaching for a value outside these sets, the impulse is wrong — re-derive from geometry, don't add a new constant.
+
 ## Boundaries (clusters / regions / security groups)
 
-| Boundary type | Stroke style | Fill | Color |
+| Boundary type | Stroke style | `rx` | Fill |
 |---|---|---|---|
-| Region / cluster (largest) | `stroke-dasharray="10,6"`, `rx="14"` | Very subtle tint of zone color (0.05 opacity) | Match zone semantics |
-| Sub-group within cluster | `stroke-dasharray="6,4"`, `rx="10"` | Very subtle tint (0.04–0.08) | Match group semantics |
-| Security group | `stroke-dasharray="4,4"`, `rx="8"` | Transparent | Rose `#fb7185` |
-| Process group / node-pair | `stroke-dasharray="4,4"`, `rx="10"` | Transparent | Slate `#475569` |
+| Region / cluster (largest) | `stroke-width="1.5"`, `stroke-dasharray="8,4"` | `4` | Subtle tint of zone color (0.05 opacity) |
+| Sub-group within cluster | `stroke-width="1"`, `stroke-dasharray="6,3"` | `4` | Very subtle tint (0.04) |
+| Security group | `stroke-width="1"`, `stroke-dasharray="4,3"` | `4` | Transparent, rose stroke `#fb7185` |
+| Process group / node-pair | `stroke-width="1"`, `stroke-dasharray="4,3"` | `4` | Transparent, slate stroke `#475569` |
 
-Cluster labels go at top-left inside the boundary, with `font-size="10–13"` and bold.
+Cluster labels are placed *on* the dashed boundary at top-left. The universal text-border halo masks the dashed stroke cleanly around the label glyphs — no separate chip needed.
 
-## Arrow styles (semantic)
+## Edge endpoint distribution — fan attachments across the side
 
-Different line styles communicate different flow types. Be consistent across the whole diagram.
+When a single box has **N arrows entering or leaving on the same side**, every arrow must get its own attach point on that side. Stacking N arrows on a single midpoint is illegible — the eye cannot follow any one of them back to its origin.
 
-| Style | Semantic meaning | SVG attributes |
-|---|---|---|
-| Solid | Data plane traffic (HTTPS, mTLS, raw TCP) | `stroke-width="1.5"` |
-| Dashed (5,3), cyan or emerald | Control plane (xDS, gRPC config push) | `stroke-dasharray="5,3"` |
-| Dashed (3,3), rose | Auth / token / key flow | `stroke-dasharray="3,3"` |
-| Dashed (2,3), amber | Egress to upstream / external API | `stroke-dasharray="2,3"` |
-| Dotted (1,3), violet | Audit log stream | `stroke-dasharray="1,3"`, `stroke-width="0.7"` |
-| Bold solid | Key / secret material flow | `stroke-width="2"` |
-| Dashed (4,3), violet thin | Internal store I/O | `stroke-width="1"`, `stroke-dasharray="4,3"` |
+**Algorithm (apply at generation time, no tool needed):**
 
-Always use `marker-end="url(#arrowhead-X)"` where X matches the line color. Define per-color arrowheads in `<defs>`:
+1. For every edge, decide which **side** of each endpoint box it attaches to (`t` / `r` / `b` / `l`). If you can pick, choose the side facing the other endpoint:
+   - if `|target.cx - box.cx| ≥ |target.cy - box.cy|` → `r` if the target is to the right else `l`
+   - else → `b` if the target is below else `t`
+2. **Group edges by `(box, side)`.** Count `N` = number of edges in each group.
+3. For each group, **sort edges by the direction they head toward** so neighbouring slots stay in natural reading order:
+   - sides `l` / `r` → sort by target's `y` (ascending = top-down)
+   - sides `t` / `b` → sort by target's `x` (ascending = left-to-right)
+4. Assign each edge in the group a **slot index** `k = 0..N-1`. The attach point is:
+
+   ```
+   side = l      → (box.x,            box.y + box.h * (k+1) / (N+1))
+   side = r      → (box.right,        box.y + box.h * (k+1) / (N+1))
+   side = t      → (box.x + box.w * (k+1) / (N+1), box.y)
+   side = b      → (box.x + box.w * (k+1) / (N+1), box.bottom)
+   ```
+
+5. For `N = 1` the slot lands exactly at the side midpoint — same as the simple case. For `N = 3` the slots are at `1/4`, `2/4`, `3/4` of the side length; for `N = 4` at `1/5`, `2/5`, `3/5`, `4/5`; and so on.
+
+**Worked example.** A `KAFKA` box at `x=300, y=200, w=180, h=64` has three outbound arrows on its right side (to PROJECTOR, NOTIFIER, AUDIT SINK). Without distribution they'd all leave at `(480, 232)`. With the algorithm:
+
+| edge | target y | k | attach point |
+|---|---|---|---|
+| → PROJECTOR (y=132) | 132 | 0 | (480, 216) |
+| → NOTIFIER  (y=332) | 332 | 1 | (480, 232) |
+| → AUDIT SINK (y=412) | 412 | 2 | (480, 248) |
+
+Three distinct departure points, sorted top-down to match the destinations.
+
+**When you also pass `via_y` / `via_x` (Z-shape routing)**, distribution still uses the side slots — the intermediate waypoint comes from the path generator, not from the attach point.
+
+**Failure mode to watch for.** Two parallel edges to the *same target side* — e.g., two "READ" arrows into a DB's left side. The slot algorithm gives them distinct points, but if their source x-columns differ they may still cross visually. In that case prefer a *single bundled* edge labelled with a multiplicity (`2..*`) over two parallel lines.
+
+## Edge routing — orthogonal only
+
+Default routing is **orthogonal**: edges run horizontal or vertical, never diagonal. Turns are rounded with `r = 12`. The only exceptions are leader lines for displaced labels (see *Labels*).
+
+Path templates:
+
+```
+# straight (no turn)
+M x1 y1 H x2          (when y1 == y2)
+M x1 y1 V y2          (when x1 == x2)
+
+# single turn, H first then V (most common)
+M x1 y1 H (x2 - r·sx) Q x2 y1, x2 (y1 + r·sy) V y2
+# where sx = sign(x2 - x1), sy = sign(y2 - y1), r = 12
+
+# single turn, V first then H
+M x1 y1 V (y2 - r·sy) Q x1 y2, (x1 + r·sx) y2 H x2
+
+# Z-shape (two turns) — split into two single-turn segments at midpoint
+```
+
+Pick H-first when the source is closer to its row neighbour, V-first when closer to its column neighbour. The goal is to keep parallel edges parallel and on shared centrelines so the eye reads them as a bus.
+
+## Arrowhead — open V (chevron), one canonical shape
+
+Every edge ends in an **open V chevron**: two strokes forming a 60° angle. The chevron inherits the edge's stroke colour. Filled-triangle arrowheads are explicitly rejected — too informal for a blueprint.
 
 ```svg
-<marker id="arrowhead-cyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-  <polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee" />
+<marker id="ah-cyan" viewBox="0 0 10 10" markerWidth="8" markerHeight="8"
+        refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+  <path d="M0,0 L9,5 L0,10" fill="none" stroke="#22d3ee"
+        stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
 </marker>
 ```
+
+Define one marker per stroke colour (`ah-cyan`, `ah-emerald`, `ah-violet`, `ah-rose`, `ah-amber`, `ah-slate`). Use `marker-end="url(#ah-X)"` matching the edge's stroke colour.
+
+## UML line endings — opt-in when the relationship is real
+
+Use a semantic ending **only when it carries meaning**. Default to the open-V chevron. The semantic endings:
+
+| Ending | UML meaning | When to use |
+|---|---|---|
+| Open V chevron | simple association / data flow | default |
+| Open triangle | generalization / inheritance | "is-a" hierarchy |
+| Dashed + open triangle | realization | interface implementation |
+| Filled diamond | composition | child cannot exist without parent (lifecycle owned) |
+| Open diamond | aggregation | parent references child but child can outlive it |
+| Dashed + open V | dependency | "uses" without owning |
+| Filled circle | flow start / terminus | activity / state diagrams |
+
+Marker definitions (defined once in `<defs>`, sized 8×8):
+
+```svg
+<marker id="end-tri-open"     viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+  <path d="M0,0 L9,5 L0,10 Z" fill="#020617" stroke="#94a3b8" stroke-width="1.2"/>
+</marker>
+<marker id="end-diamond-filled" viewBox="0 0 10 10" markerWidth="10" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+  <path d="M0,5 L5,0 L10,5 L5,10 Z" fill="#94a3b8" stroke="#94a3b8" stroke-width="1"/>
+</marker>
+<marker id="end-diamond-open"   viewBox="0 0 10 10" markerWidth="10" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+  <path d="M0,5 L5,0 L10,5 L5,10 Z" fill="#020617" stroke="#94a3b8" stroke-width="1"/>
+</marker>
+<marker id="end-dot-filled"     viewBox="0 0 10 10" markerWidth="6" markerHeight="6" refX="5" refY="5" orient="auto" markerUnits="strokeWidth">
+  <circle cx="5" cy="5" r="3" fill="#94a3b8"/>
+</marker>
+```
+
+The `fill="#020617"` on open shapes is the canvas colour, so the marker reads as outline-only against the dark background.
+
+## Edge dash semantics
+
+| Dash | Semantic | `stroke-dasharray` | `stroke-width` |
+|---|---|---|---|
+| Solid | data plane / synchronous call | none | 1 |
+| Dashed (5,3) | control plane (config push, xDS, gRPC config) | `5,3` | 1 |
+| Dashed (3,3) | auth / token / credential flow | `3,3` | 1 |
+| Dashed (2,3) | egress / external API call | `2,3` | 1 |
+| Dotted (1,3) | audit / observability log | `1,3` | 0.5 |
+| Bold solid | key / secret material flow | none | 2 |
+| Dashed (4,3) | internal store I/O | `4,3` | 1 |
+
+Colour the line by destination role (cyan to a frontend, emerald to a service, etc.) unless the semantic dash already implies a colour (rose for auth/key, violet for audit).
+
+## Labels — default and leader-line
+
+Two styles. Pick by whether the label can fit *on* the line it labels.
+
+**No chip rects, no rounded boxes around text — ever.** The universal text-border halo (solid canvas-colour stroke, 4 px wide) is what creates the visible background. Two styles below use the same halo and differ only in how they associate the label with its referent.
+
+### Default — inline with underline
+
+The label sits directly ON its edge. The text-border halo masks the edge line cleanly through the glyphs (no separate gap rect needed — the halo IS the gap). A short horizontal underline 2–3 px below the text anchors the label to its line:
+
+```svg
+<!-- centred label on a horizontal edge at y=190 -->
+<text x="cx" y="y - 1" text-anchor="middle" fill="#cbd5e1" font-size="11">HTTPS</text>
+<line x1="cx - w/2" y1="y + 3" x2="cx + w/2" y2="y + 3"
+      stroke="#94a3b8" stroke-width="0.75"/>
+<!-- where w = len(text) × font-size × 0.6 -->
+```
+
+The universal `text { paint-order: stroke fill; stroke: #020617; stroke-width: 4 }` rule does the line-masking for free. No `<rect>` behind the text.
+
+### Leader-line — when the label can't fit on the edge
+
+When the edge is too short, too crowded, or the label refers to a distant element, use a leader: text in clear space + two short strokes forming an elbow that points at the target (image #4 in the v2 brief).
+
+```svg
+<!-- "LABEL" sitting in clear space, pointing at target (tx, ty) -->
+<text x="lx" y="ly" font-size="11">LABEL</text>
+<line x1="lx"     y1="ly + 3" x2="lx + w" y2="ly + 3" stroke="#94a3b8" stroke-width="0.75"/>
+<line x1="lx + w" y1="ly + 3" x2="tx"     y2="ty"     stroke="#94a3b8" stroke-width="0.75"/>
+```
+
+Use leader-lines sparingly — when more than 2–3 appear in a diagram, the layout is wrong, not the labelling.
+
+### Titles, legends, zone headings — same rule
+
+Free-floating labels at top of the diagram or at zone boundaries also use text-only with the halo. No chips. Use `class="title"` for the heading-weight halo (6 px stroke) and `class="sub"` for the smaller subtitle (3 px).
 
 ## Spacing rules (the most violated, the most important)
 

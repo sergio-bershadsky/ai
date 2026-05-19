@@ -84,29 +84,35 @@
 
        NOTE: this is defence-in-depth. Correct placement remains primary.
        See resources/label-placement.md for the placement algorithm. */
+    /* Text-border (knockout halo). Every text element gets a solid canvas-
+       colour stroke painted behind the fill, wide enough to mask 1–1.5 px
+       lines that pass behind. This replaces v1's chip-rect labels — labels
+       are now just text with this background, no rounded boxes. */
     svg text {
       paint-order: stroke fill;
-      stroke: rgba(2, 6, 23, 0.75);
-      stroke-width: 1;
+      stroke: #020617;
+      stroke-width: 4;
       stroke-linejoin: round;
       stroke-linecap: round;
     }
+    svg text.title   { stroke-width: 6; }
+    svg text.sub     { stroke-width: 3; }
 
-    /* Hover interactivity — each component box glows in its accent colour.
+    /* Hover interactivity — subtle blueprint-style glow.
        Opt-in: add class="component <color>" to each component <rect>. */
     svg rect.component {
       transition: filter 220ms ease;
       cursor: pointer;
     }
     svg rect.component:hover {
-      filter: drop-shadow(0 0 12px var(--glow, rgba(255,255,255,0.3))) brightness(1.15);
+      filter: drop-shadow(0 0 8px var(--glow, rgba(255,255,255,0.2)));
     }
-    svg rect.cyan    { --glow: rgba( 34, 211, 238, 0.65); }
-    svg rect.emerald { --glow: rgba( 52, 211, 153, 0.65); }
-    svg rect.violet  { --glow: rgba(167, 139, 250, 0.65); }
-    svg rect.rose    { --glow: rgba(251, 113, 133, 0.65); }
-    svg rect.amber   { --glow: rgba(251, 191, 36, 0.65); }
-    svg rect.slate   { --glow: rgba(148, 163, 184, 0.50); }
+    svg rect.cyan    { --glow: rgba( 34, 211, 238, 0.50); }
+    svg rect.emerald { --glow: rgba( 52, 211, 153, 0.50); }
+    svg rect.violet  { --glow: rgba(167, 139, 250, 0.50); }
+    svg rect.rose    { --glow: rgba(251, 113, 133, 0.50); }
+    svg rect.amber   { --glow: rgba(251, 191, 36, 0.50); }
+    svg rect.slate   { --glow: rgba(148, 163, 184, 0.40); }
 
     .cards {
       display: grid;
