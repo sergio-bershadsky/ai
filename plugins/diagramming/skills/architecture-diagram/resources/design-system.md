@@ -100,6 +100,63 @@ The width is sized to **cover the widest edge line in the diagram plus 2 px of h
 
 No chip rects. No rounded boxes around text. The text-border is the only label background mechanism.
 
+## Icon disc (corner-anchored, opt-in)
+
+Some diagrams call for a glyph attached to a component box — a database icon on the storage box, a key icon on the KMS, a monitor on the client. The blueprint style here is a **coloured disc anchored to a corner of the box, half visible past the corner, with a line-art glyph inside**.
+
+**Default position: top-left corner.**
+
+```
+disc.center.x = box.x + 20          # 20 px from the box's left edge
+disc.center.y = box.y                # centered ON the top border
+disc.r        = 12                   # canonical disc radius
+disc.fill     = box.stroke           # disc takes the box's accent colour
+disc.stroke   = none
+```
+
+The disc is half above the top border and half inside the box. The glyph inside the disc is centred on the disc and drawn in **canvas colour (`#020617`)** so it reads as a stencil against the coloured disc:
+
+```svg
+<rect class="component cyan" x="50" y="200" width="140" height="80" rx="2"
+      fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+<!-- Corner disc + glyph -->
+<circle cx="70" cy="200" r="12" fill="#22d3ee"/>
+<g transform="translate(70,200)" stroke="#020617" stroke-width="1.4"
+   stroke-linecap="round" stroke-linejoin="round" fill="none">
+  <!-- example: monitor glyph in a 14×14 view, centred at origin -->
+  <rect x="-6" y="-4" width="12" height="8" rx="1"/>
+  <line x1="-3" y1="6" x2="3" y2="6"/>
+  <line x1="0" y1="4" x2="0" y2="6"/>
+</g>
+```
+
+**Icon-space integration — required.** With a disc at top-left, the inside-box label still respects the icon-space rule: the disc's effective right edge inside the box is `box.x + 32` (centre + radius). The centred label sits to the right of that:
+
+```
+disc_right    = box.x + 32
+label_text_x  = (disc_right + 8 + box.right) / 2
+text-anchor   = "middle"
+```
+
+For a 140 px box at `x=50` this gives `text_x = (82 + 8 + 190) / 2 = 140` (vs. the un-iconned centre `x=120`). The 20 px right-shift keeps glyph and label cleanly separated.
+
+**Alternate positions** (when top-left would conflict with another diagram element):
+
+| position | `disc.center` |
+|---|---|
+| top-right | `(box.right - 20, box.y)` |
+| bottom-left | `(box.x + 20, box.bottom)` |
+| bottom-right | `(box.right - 20, box.bottom)` |
+| left-middle | `(box.x, box.y + box.h / 2)` — disc straddles left border |
+
+Same fill / glyph rules apply; mirror the icon-space adjustment.
+
+**Discs are opt-in.** Never emit them by default. Only draw a disc when the user explicitly asks for an icon on a specific box (e.g. "add a database icon to Postgres"). For diagrams without explicit icon requests the box stays bare — the colour palette and the box name carry the role.
+
+**Discs must never overlap label text or another disc.** Verify after placement:
+- `disc.bounds` (12 px from centre in every direction) ∩ `text.bounds` must be empty
+- Two discs on the same box go on opposite corners; never on adjacent corners
+
 ## Icon + text layout (component boxes)
 
 When a component box has an icon in its left padding, the box's label **must not centre on the full box width** — the centred text slides under the icon and intersects it. Two correct patterns:

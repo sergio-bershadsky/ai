@@ -38,6 +38,12 @@ The strongest stress-test of the design system: nested control-plane / data-plan
 
 ![Multi-tenant KMS](./examples/05-multi-tenant-kms.svg?v=4)
 
+### 6. Corner-disc icon annotations
+
+Opt-in glyphs anchored to the top-left of selected component boxes. The disc fill matches the box's stroke colour; the stencil glyph inside is drawn in canvas colour. Inside-box label is right-shifted per the icon-space rule. Discs are never emitted by default — the user must request them per box.
+
+![Icon annotations](./examples/06-icon-annotations.svg?v=5)
+
 ---
 
 ## What you get
