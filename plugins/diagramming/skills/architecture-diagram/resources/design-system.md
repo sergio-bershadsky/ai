@@ -130,15 +130,20 @@ The disc is half above the top border and half inside the box. The glyph inside 
 </g>
 ```
 
-**Icon-space integration — required.** With a disc at top-left, the inside-box label still respects the icon-space rule: the disc's effective right edge inside the box is `box.x + 32` (centre + radius). The centred label sits to the right of that:
+**Top inside margin = icon size — the single guardrail.** Rather than conditional right-shifts, the simpler rule is: **when an icon is present on a box, reserve a top inside margin equal to the icon's full height.** The disc/glyph sits in this margin; the box's text content lives below it.
 
 ```
-disc_right    = box.x + 32
-label_text_x  = (disc_right + 8 + box.right) / 2
-text-anchor   = "middle"
+top_margin = icon_size              # disc diameter (= 2 * r = 24) for a corner disc
+                                    # or the `size` attr for a lucide-icon
+content_top = box.y + top_margin    # text/sub-labels start here
+text_x      = box.cx                # centre horizontally — no shift needed
+text_y      = content_top + (box.h - top_margin) / 2 + 4   # vertically centre
+                                                            # the remaining area
 ```
 
-For a 140 px box at `x=50` this gives `text_x = (82 + 8 + 190) / 2 = 140` (vs. the un-iconned centre `x=120`). The 20 px right-shift keeps glyph and label cleanly separated.
+The horizontal centre is preserved; the vertical centre shifts down to live entirely below the icon's reserved band. For two-line content (name + sub-label), centre both lines around the same content-area midpoint, ~9 px apart.
+
+This works for both corner discs (icon_size = 24 = `2r`) and in-box lucide-icons (icon_size = the `size` attribute) without case-splitting. If you have no icon, `icon_size = 0` and the rule collapses to "centre vertically in the full box height".
 
 **Alternate positions** (when top-left would conflict with another diagram element):
 
