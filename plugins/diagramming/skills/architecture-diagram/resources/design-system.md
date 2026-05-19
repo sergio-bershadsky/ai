@@ -30,6 +30,51 @@ Result: re-plan box positions with the new gaps before drawing anything. Same al
 
 **Cluster boundaries must also be re-checked.** When you widen a gap, the parent cluster's width grows; re-derive `cluster.right` and `cluster.width` from `max(child.right) + pad` before validation.
 
+## Block sizing — the single formula
+
+Every component box is sized from its content, not picked from a vibe.
+
+```
+padding   = 12                            # standard, all sides
+gap_line  = 6                             # gap between adjacent text lines
+
+content_h = sum(line_heights) + (N - 1) * gap_line     # N lines
+            where line_heights are: 12 (name), 10 (sub-label), 10 (sub-label), ...
+content_w = max(line_widths)                            # widest line
+            where line_w = len(text) * font_size * 0.6  # JetBrains Mono
+
+box.h     = content_h + 2 * padding
+box.w     = max(content_w + 2 * padding, role_min_width)
+```
+
+Canonical values:
+
+| Content | line heights | content_h | box.h |
+|---|---|---|---|
+| 1 line (name only) | 12 | 12 | **36** |
+| 2 lines (name + sub) | 12, 10 | 28 | **52** |
+| 3 lines (name + 2 sub) | 12, 10, 10 | 44 | **68** |
+
+`role_min_width` is whatever the diagram's same-role components agreed on (every "service" in a mesh shares a width; every "control plane element" shares a width). The formula gives the floor.
+
+### Icon margin — derived, not separate
+
+With `padding = 12` and a canonical corner disc (`r = 12`, `icon_h = 24`):
+
+```
+intrusion = icon_h / 2 = 12 = padding     # equal → no extra space needed
+```
+
+The disc's inside-box half (12 px deep) fits inside the top padding band exactly. **No extra top margin required for canonical discs.** Add extra margin only when the icon's intrusion exceeds the standard padding:
+
+```
+extra_top = max(0, icon_h / 2 - padding)
+```
+
+For `icon_h = 32` (a bigger disc with `r = 16`): `extra_top = max(0, 16 - 12) = 4`. Add 4 px to `box.h` and shift content down by 4 px. For a canonical 24 px disc this is zero — leave the box alone.
+
+The block sizing formula handles the icon implicitly: as long as the standard padding ≥ half the icon height, the icon nests inside the top padding band and the box stays at its content-derived height.
+
 ## Workflow — layout first, content second (foundational)
 
 Drawing a diagram in two phases prevents almost every class of mistake the earlier versions of this plugin produced (text overlapping icons, edges cutting through boxes, labels colliding, cluster borders intersecting components).
@@ -130,20 +175,23 @@ The disc is half above the top border and half inside the box. The glyph inside 
 </g>
 ```
 
-**Top inside margin = icon size — the single guardrail.** Rather than conditional right-shifts, the simpler rule is: **when an icon is present on a box, reserve a top inside margin equal to the icon's full height.** The disc/glyph sits in this margin; the box's text content lives below it.
+**Extra top margin = `icon_height / 2` — single guardrail. All other margins identical to a pure-text block.**
+
+When a box has an icon, push the top inside edge of its content area down by `icon_height / 2`. The disc/glyph occupies that pushed-down band. Everything else — left, right, and bottom padding, and the way text is centred within the remaining content area — is computed exactly as for a pure-text box of the same width and the remaining height.
 
 ```
-top_margin = icon_size              # disc diameter (= 2 * r = 24) for a corner disc
-                                    # or the `size` attr for a lucide-icon
-content_top = box.y + top_margin    # text/sub-labels start here
-text_x      = box.cx                # centre horizontally — no shift needed
-text_y      = content_top + (box.h - top_margin) / 2 + 4   # vertically centre
-                                                            # the remaining area
+top_margin       = icon_height / 2          # corner disc r=12 → 12
+                                            # lucide-icon size=20 → 10
+                                            # no icon → 0
+effective_top    = box.y + top_margin
+effective_h      = box.h - top_margin
+text_x           = box.cx                   # horizontal centre — never shifted
+text_cy          = effective_top + effective_h / 2
+text_y_baseline  = text_cy + 4              # +4 to convert centre → baseline
+sub_y            = text_y_baseline + 16     # for two-line content
 ```
 
-The horizontal centre is preserved; the vertical centre shifts down to live entirely below the icon's reserved band. For two-line content (name + sub-label), centre both lines around the same content-area midpoint, ~9 px apart.
-
-This works for both corner discs (icon_size = 24 = `2r`) and in-box lucide-icons (icon_size = the `size` attribute) without case-splitting. If you have no icon, `icon_size = 0` and the rule collapses to "centre vertically in the full box height".
+For a 140 × 80 box with a corner disc (icon_height = 24): `top_margin = 12`, `effective_h = 68`, `text_cy = box.y + 12 + 34 = box.y + 46`, `text_y_baseline = box.y + 50`, `sub_y = box.y + 66`. The disc occupies y = `box.y` to `box.y + 12`, the text sits just below it, and the bottom padding is computed against the un-shifted box edges — the right, left, and bottom of the content read the same as a pure-text block.
 
 **Alternate positions** (when top-left would conflict with another diagram element):
 
@@ -317,6 +365,21 @@ Three distinct departure points, sorted top-down to match the destinations.
 **When you also pass `via_y` / `via_x` (Z-shape routing)**, distribution still uses the side slots — the intermediate waypoint comes from the path generator, not from the attach point.
 
 **Failure mode to watch for.** Two parallel edges to the *same target side* — e.g., two "READ" arrows into a DB's left side. The slot algorithm gives them distinct points, but if their source x-columns differ they may still cross visually. In that case prefer a *single bundled* edge labelled with a multiplicity (`2..*`) over two parallel lines.
+
+## Edge audit checklist — apply after every path is written
+
+Before declaring an edge final, run this check on the `d` attribute string. The check exists because the most common diagramming bug is "arrow line overlaps the source box's border for the first 10-20 px because the path starts with the wrong direction".
+
+For each emitted path:
+
+| src side | First SVG command after `M x y` MUST be | Last SVG command before end MUST be |
+|---|---|---|
+| `r` or `l` | `H` (horizontal — perpendicular to the vertical side) | `H` |
+| `t` or `b` | `V` (vertical — perpendicular to the horizontal side) | `V` |
+
+If the first command is wrong, the path overlaps the source-box border. If the last is wrong, it overlaps the destination-box border. **Both are non-recoverable visual bugs** — you must reroute the path, not paper over with halos.
+
+The shape rule below derives from this audit:
 
 ## Departure and arrival are perpendicular to the box side (non-negotiable)
 

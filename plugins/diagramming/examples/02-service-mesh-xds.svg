@@ -1,43 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600">
-<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern><marker id="ah-cyan" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-emerald" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-violet" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-rose" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-amber" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-slate" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="end-tri-open" viewBox="0 0 10 10" markerWidth="9" markerHeight="9" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10 Z" fill="#020617" stroke="#94a3b8" stroke-width="1.2"/></marker><marker id="end-diamond-filled" viewBox="0 0 10 10" markerWidth="10" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,5 L5,0 L10,5 L5,10 Z" fill="#94a3b8" stroke="#94a3b8" stroke-width="1"/></marker><marker id="end-diamond-open" viewBox="0 0 10 10" markerWidth="10" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,5 L5,0 L10,5 L5,10 Z" fill="#020617" stroke="#94a3b8" stroke-width="1"/></marker><marker id="end-dot" viewBox="0 0 10 10" markerWidth="6" markerHeight="6" refX="5" refY="5" orient="auto" markerUnits="strokeWidth"><circle cx="5" cy="5" r="3" fill="#94a3b8"/></marker></defs>
-<style>text{paint-order:stroke fill;stroke:#020617;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;fill:#e2e8f0;font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace;}text.title{stroke-width:6;font-size:16px;font-weight:700;fill:#f1f5f9;}text.sub{stroke-width:3;font-size:10px;fill:#94a3b8;}text.lbl{font-size:11px;fill:#cbd5e1;}text.cluster{stroke-width:5;font-size:11px;font-weight:600;fill:#cbd5e1;}rect.component{transition:filter 220ms ease;cursor:pointer;}rect.component:hover{filter:drop-shadow(0 0 8px var(--glow,rgba(255,255,255,0.2)));}rect.cyan{--glow:rgba(34,211,238,0.5);}rect.emerald{--glow:rgba(52,211,153,0.5);}rect.violet{--glow:rgba(167,139,250,0.5);}rect.rose{--glow:rgba(251,113,133,0.5);}rect.amber{--glow:rgba(251,191,36,0.5);}rect.slate{--glow:rgba(148,163,184,0.4);}</style>
-<rect width="960" height="600" fill="#020617"/>
-<rect width="960" height="600" fill="url(#grid)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 510">
+<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern><marker id="ah-cyan" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-emerald" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-violet" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<style>text{paint-order:stroke fill;stroke:#020617;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;fill:#e2e8f0;font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace;}text.title{stroke-width:6;font-size:16px;font-weight:700;fill:#f1f5f9;}text.sub{stroke-width:3;font-size:10px;fill:#94a3b8;}text.lbl{font-size:11px;fill:#cbd5e1;}text.cluster{stroke-width:5;font-size:11px;font-weight:600;fill:#cbd5e1;}rect.component{transition:filter 220ms ease;cursor:pointer;}rect.component:hover{filter:drop-shadow(0 0 8px var(--glow,rgba(255,255,255,0.2)));}rect.cyan{--glow:rgba(34,211,238,0.5);}rect.emerald{--glow:rgba(52,211,153,0.5);}rect.violet{--glow:rgba(167,139,250,0.5);}</style>
+<rect width="960" height="510" fill="#020617"/>
+<rect width="960" height="510" fill="url(#grid)"/>
 <text class="title" x="32" y="44">SERVICE MESH — xDS CONTROL PLANE / ENVOY DATA PLANE</text>
-<text class="sub" x="32" y="64">dashed cyan = xDS config push · solid emerald = mTLS · solid violet = sidecar→app</text>
-<rect x="380" y="110" width="200" height="80" rx="4" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="8,4"/>
+<text class="sub" x="32" y="64">dashed cyan = config push · solid emerald = mTLS · solid violet = sidecar→app</text>
+<rect x="380" y="110" width="200" height="90" rx="4" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="8,4"/>
 <text class="cluster" x="396" y="116">CONTROL PLANE</text>
-<rect x="60" y="270" width="840" height="240" rx="4" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="8,4"/>
+<rect x="60" y="270" width="840" height="200" rx="4" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="8,4"/>
 <text class="cluster" x="76" y="276">DATA PLANE — pods</text>
-<rect class="component cyan" x="400" y="138" width="160" height="44" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
-<text x="480" y="164" text-anchor="middle">xDS SERVER</text>
-<text class="sub" x="480" y="180" text-anchor="middle">config</text>
-<rect class="component cyan" x="110" y="310" width="180" height="44" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
-<text x="200" y="336" text-anchor="middle">ENVOY A</text>
-<text class="sub" x="200" y="352" text-anchor="middle">sidecar</text>
-<rect class="component emerald" x="110" y="410" width="180" height="44" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
-<text x="200" y="436" text-anchor="middle">SERVICE A</text>
-<text class="sub" x="200" y="452" text-anchor="middle">app</text>
-<rect class="component cyan" x="390" y="310" width="180" height="44" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
-<text x="480" y="336" text-anchor="middle">ENVOY B</text>
-<text class="sub" x="480" y="352" text-anchor="middle">sidecar</text>
-<rect class="component emerald" x="390" y="410" width="180" height="44" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
-<text x="480" y="436" text-anchor="middle">SERVICE B</text>
-<text class="sub" x="480" y="452" text-anchor="middle">app</text>
-<rect class="component cyan" x="670" y="310" width="180" height="44" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
-<text x="760" y="336" text-anchor="middle">ENVOY C</text>
-<text class="sub" x="760" y="352" text-anchor="middle">sidecar</text>
-<rect class="component emerald" x="670" y="410" width="180" height="44" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
-<text x="760" y="436" text-anchor="middle">SERVICE C</text>
-<text class="sub" x="760" y="452" text-anchor="middle">app</text>
-<path d="M440,182 V234 Q440,246 428,246 H212 Q200,246 200,258 V310" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
-<path d="M480,182 V310" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
-<path d="M520,182 V234 Q520,246 532,246 H748 Q760,246 760,258 V310" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
-<path d="M200,354 V410" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
-<path d="M480,354 V410" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
-<path d="M760,354 V410" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
-<path d="M290,332 H390" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-emerald)"/>
-<text class="lbl" x="340" y="326" text-anchor="middle">mTLS</text>
-<path d="M570,332 H670" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-emerald)"/>
-<text class="lbl" x="620" y="326" text-anchor="middle">mTLS</text>
+<rect class="component cyan" x="400" y="130" width="160" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+<text x="480" y="152" text-anchor="middle">xDS SERVER</text>
+<text class="sub" x="480" y="168" text-anchor="middle">config</text>
+<rect class="component cyan" x="110" y="300" width="180" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+<text x="200" y="322" text-anchor="middle">ENVOY A</text>
+<text class="sub" x="200" y="338" text-anchor="middle">sidecar</text>
+<rect class="component cyan" x="390" y="300" width="180" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+<text x="480" y="322" text-anchor="middle">ENVOY B</text>
+<text class="sub" x="480" y="338" text-anchor="middle">sidecar</text>
+<rect class="component cyan" x="670" y="300" width="180" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+<text x="760" y="322" text-anchor="middle">ENVOY C</text>
+<text class="sub" x="760" y="338" text-anchor="middle">sidecar</text>
+<rect class="component emerald" x="110" y="400" width="180" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="200" y="422" text-anchor="middle">SERVICE A</text>
+<text class="sub" x="200" y="438" text-anchor="middle">app</text>
+<rect class="component emerald" x="390" y="400" width="180" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="480" y="422" text-anchor="middle">SERVICE B</text>
+<text class="sub" x="480" y="438" text-anchor="middle">app</text>
+<rect class="component emerald" x="670" y="400" width="180" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="760" y="422" text-anchor="middle">SERVICE C</text>
+<text class="sub" x="760" y="438" text-anchor="middle">app</text>
+<path d="M440,182 V223 Q440,235 428,235 H212 Q200,235 200,247 V300" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<path d="M480,182 V300" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<path d="M520,182 V223 Q520,235 532,235 H748 Q760,235 760,247 V300" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<path d="M290,326 H390" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<text class="lbl" x="340" y="320" text-anchor="middle">mTLS</text>
+<path d="M570,326 H670" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<text class="lbl" x="620" y="320" text-anchor="middle">mTLS</text>
+<path d="M200,352 V400" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M480,352 V400" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M760,352 V400" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
 </svg>
