@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 920">
+<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern><marker id="ah-cyan" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-emerald" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-violet" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-rose" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-amber" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-slate" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<style>text{paint-order:stroke fill;stroke:#020617;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;fill:#e2e8f0;font-size:11px;font-family:'JetBrains Mono',ui-monospace,monospace;}text.title{stroke-width:6;font-size:16px;font-weight:700;fill:#f1f5f9;}text.sub{stroke-width:3;font-size:9px;fill:#94a3b8;}text.lbl{font-size:10px;fill:#cbd5e1;}text.cluster{stroke-width:5;font-size:11px;font-weight:600;fill:#cbd5e1;}rect.component{transition:filter 220ms ease;cursor:pointer;}rect.component:hover{filter:drop-shadow(0 0 8px var(--glow,rgba(255,255,255,0.2)));}rect.cyan{--glow:rgba(34,211,238,0.5);}rect.emerald{--glow:rgba(52,211,153,0.5);}rect.violet{--glow:rgba(167,139,250,0.5);}rect.rose{--glow:rgba(251,113,133,0.5);}rect.amber{--glow:rgba(251,191,36,0.5);}rect.slate{--glow:rgba(148,163,184,0.4);}</style>
+<rect width="1600" height="920" fill="#020617"/>
+<rect width="1600" height="920" fill="url(#grid)"/>
+<text class="title" x="32" y="44">4-TIER ENTERPRISE (40 elements)</text>
+<text class="sub" x="32" y="64">edge · web · business · data + observability — representative edges (not exhaustive) so structure stays legible</text>
+<!-- Tier clusters (4 tiers + observability) -->
+<rect x="40" y="100" width="1520" height="92" rx="4" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="8,4"/>
+<text class="cluster" x="56" y="106">TIER 1 — EDGE / PRESENTATION</text>
+<rect x="40" y="220" width="1520" height="92" rx="4" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="8,4"/>
+<text class="cluster" x="56" y="226">TIER 2 — WEB / FRONTEND</text>
+<rect x="40" y="340" width="1520" height="92" rx="4" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="8,4"/>
+<text class="cluster" x="56" y="346">TIER 3 — BUSINESS LOGIC</text>
+<rect x="40" y="460" width="1520" height="92" rx="4" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="8,4"/>
+<text class="cluster" x="56" y="466">TIER 4 — DATA</text>
+<rect x="40" y="600" width="1520" height="92" rx="4" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="8,4"/>
+<text class="cluster" x="56" y="606">CROSS-CUTTING — OBSERVABILITY · SECURITY · AUDIT</text>
+<!-- Tier 1: 8 components, w=120 h=52, gap=40. Total 8*120+7*40=1240. Start x=180. -->
+<rect class="component slate" x="180" y="130" width="120" height="52" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="240" y="152" text-anchor="middle">USER</text><text class="sub" x="240" y="168" text-anchor="middle">browser/app</text>
+<rect class="component amber" x="340" y="130" width="120" height="52" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="400" y="152" text-anchor="middle">CDN</text><text class="sub" x="400" y="168" text-anchor="middle">CloudFront</text>
+<rect class="component amber" x="500" y="130" width="120" height="52" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="560" y="152" text-anchor="middle">WAF</text><text class="sub" x="560" y="168" text-anchor="middle">filters</text>
+<rect class="component amber" x="660" y="130" width="120" height="52" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="720" y="152" text-anchor="middle">BOT DETECT</text><text class="sub" x="720" y="168" text-anchor="middle">heuristic</text>
+<rect class="component amber" x="820" y="130" width="120" height="52" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="880" y="152" text-anchor="middle">RATE LIMIT</text><text class="sub" x="880" y="168" text-anchor="middle">token bucket</text>
+<rect class="component amber" x="980" y="130" width="120" height="52" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="1040" y="152" text-anchor="middle">LB</text><text class="sub" x="1040" y="168" text-anchor="middle">HAProxy</text>
+<rect class="component amber" x="1140" y="130" width="120" height="52" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="1200" y="152" text-anchor="middle">API-GW</text><text class="sub" x="1200" y="168" text-anchor="middle">kong</text>
+<rect class="component rose" x="1300" y="130" width="120" height="52" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="1360" y="152" text-anchor="middle">AUTH PROXY</text><text class="sub" x="1360" y="168" text-anchor="middle">OAuth2</text>
+<!-- Tier 2: 8 components -->
+<rect class="component cyan" x="180" y="250" width="120" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="240" y="272" text-anchor="middle">WEB-1</text><text class="sub" x="240" y="288" text-anchor="middle">nginx</text>
+<rect class="component cyan" x="340" y="250" width="120" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="400" y="272" text-anchor="middle">WEB-2</text><text class="sub" x="400" y="288" text-anchor="middle">nginx</text>
+<rect class="component cyan" x="500" y="250" width="120" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="560" y="272" text-anchor="middle">WEB-3</text><text class="sub" x="560" y="288" text-anchor="middle">nginx</text>
+<rect class="component cyan" x="660" y="250" width="120" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="720" y="272" text-anchor="middle">FRONT-API</text><text class="sub" x="720" y="288" text-anchor="middle">REST</text>
+<rect class="component cyan" x="820" y="250" width="120" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="880" y="272" text-anchor="middle">BFF</text><text class="sub" x="880" y="288" text-anchor="middle">backend-for-FE</text>
+<rect class="component cyan" x="980" y="250" width="120" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1040" y="272" text-anchor="middle">STATIC-API</text><text class="sub" x="1040" y="288" text-anchor="middle">graphql</text>
+<rect class="component cyan" x="1140" y="250" width="120" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1200" y="272" text-anchor="middle">ASSET PIPE</text><text class="sub" x="1200" y="288" text-anchor="middle">image proc</text>
+<rect class="component cyan" x="1300" y="250" width="120" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1360" y="272" text-anchor="middle">SSR</text><text class="sub" x="1360" y="288" text-anchor="middle">next.js</text>
+<!-- Tier 3: 9 components, w=120 gap=20. Total 9*120+8*20=1240. Start x=180. -->
+<rect class="component emerald" x="180" y="370" width="120" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="240" y="392" text-anchor="middle">USER-SVC</text><text class="sub" x="240" y="408" text-anchor="middle">accounts</text>
+<rect class="component emerald" x="320" y="370" width="120" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="380" y="392" text-anchor="middle">ORDER-SVC</text><text class="sub" x="380" y="408" text-anchor="middle">orders</text>
+<rect class="component emerald" x="460" y="370" width="120" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="520" y="392" text-anchor="middle">INV-SVC</text><text class="sub" x="520" y="408" text-anchor="middle">inventory</text>
+<rect class="component emerald" x="600" y="370" width="120" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="660" y="392" text-anchor="middle">PAY-SVC</text><text class="sub" x="660" y="408" text-anchor="middle">payments</text>
+<rect class="component emerald" x="740" y="370" width="120" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="800" y="392" text-anchor="middle">NOTIF-SVC</text><text class="sub" x="800" y="408" text-anchor="middle">email/push</text>
+<rect class="component emerald" x="880" y="370" width="120" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="940" y="392" text-anchor="middle">SEARCH-SVC</text><text class="sub" x="940" y="408" text-anchor="middle">queries</text>
+<rect class="component emerald" x="1020" y="370" width="120" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1080" y="392" text-anchor="middle">FRAUD-SVC</text><text class="sub" x="1080" y="408" text-anchor="middle">ML-scored</text>
+<rect class="component emerald" x="1160" y="370" width="120" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1220" y="392" text-anchor="middle">SCHEDULER</text><text class="sub" x="1220" y="408" text-anchor="middle">cron jobs</text>
+<rect class="component emerald" x="1300" y="370" width="120" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1360" y="392" text-anchor="middle">CONFIG-SVC</text><text class="sub" x="1360" y="408" text-anchor="middle">feature flags</text>
+<!-- Tier 4: 8 components -->
+<rect class="component violet" x="180" y="490" width="120" height="52" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="240" y="512" text-anchor="middle">PG-PRIM</text><text class="sub" x="240" y="528" text-anchor="middle">postgres</text>
+<rect class="component violet" x="340" y="490" width="120" height="52" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="400" y="512" text-anchor="middle">PG-REPL</text><text class="sub" x="400" y="528" text-anchor="middle">read-only</text>
+<rect class="component rose" x="500" y="490" width="120" height="52" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="560" y="512" text-anchor="middle">REDIS</text><text class="sub" x="560" y="528" text-anchor="middle">cache+session</text>
+<rect class="component violet" x="660" y="490" width="120" height="52" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="720" y="512" text-anchor="middle">MONGO</text><text class="sub" x="720" y="528" text-anchor="middle">document</text>
+<rect class="component violet" x="820" y="490" width="120" height="52" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="880" y="512" text-anchor="middle">ES</text><text class="sub" x="880" y="528" text-anchor="middle">elasticsearch</text>
+<rect class="component violet" x="980" y="490" width="120" height="52" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="1040" y="512" text-anchor="middle">S3</text><text class="sub" x="1040" y="528" text-anchor="middle">blobs</text>
+<rect class="component amber" x="1140" y="490" width="120" height="52" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="1200" y="512" text-anchor="middle">KAFKA</text><text class="sub" x="1200" y="528" text-anchor="middle">event bus</text>
+<rect class="component violet" x="1300" y="490" width="120" height="52" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="1360" y="512" text-anchor="middle">CLICKHOUSE</text><text class="sub" x="1360" y="528" text-anchor="middle">olap</text>
+<!-- Cross-cutting: 7 components -->
+<rect class="component rose" x="180" y="630" width="120" height="52" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="240" y="652" text-anchor="middle">VAULT</text><text class="sub" x="240" y="668" text-anchor="middle">secrets</text>
+<rect class="component rose" x="340" y="630" width="120" height="52" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="400" y="652" text-anchor="middle">IDP</text><text class="sub" x="400" y="668" text-anchor="middle">keycloak</text>
+<rect class="component slate" x="500" y="630" width="120" height="52" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="560" y="652" text-anchor="middle">PROMETHEUS</text><text class="sub" x="560" y="668" text-anchor="middle">metrics</text>
+<rect class="component slate" x="660" y="630" width="120" height="52" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="720" y="652" text-anchor="middle">GRAFANA</text><text class="sub" x="720" y="668" text-anchor="middle">dashboards</text>
+<rect class="component slate" x="820" y="630" width="120" height="52" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="880" y="652" text-anchor="middle">JAEGER</text><text class="sub" x="880" y="668" text-anchor="middle">traces</text>
+<rect class="component slate" x="980" y="630" width="120" height="52" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="1040" y="652" text-anchor="middle">LOKI</text><text class="sub" x="1040" y="668" text-anchor="middle">logs</text>
+<rect class="component slate" x="1140" y="630" width="120" height="52" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="1200" y="652" text-anchor="middle">AUDIT-LOG</text><text class="sub" x="1200" y="668" text-anchor="middle">SIEM feed</text>
+<rect class="component slate" x="1300" y="630" width="120" height="52" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="1360" y="652" text-anchor="middle">ALERTMGR</text><text class="sub" x="1360" y="668" text-anchor="middle">pagerduty</text>
+<!-- Representative edges only (full mesh would be unreadable) -->
+<!-- Tier 1 → Tier 2: a few main flows -->
+<path d="M240,182 V236" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<path d="M400,182 V236" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<path d="M560,182 V236" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<path d="M720,182 V236" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<path d="M880,182 V236" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<path d="M1040,182 V236" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<path d="M1200,182 V236" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<path d="M1360,182 V236" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<!-- Tier 2 → Tier 3 -->
+<path d="M240,302 V356" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<path d="M400,302 V356" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<path d="M560,302 V356" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<path d="M720,302 V356" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<path d="M880,302 V356" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<path d="M1040,302 V356" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<path d="M1200,302 V356" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<path d="M1360,302 V356" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<!-- Tier 3 → Tier 4 -->
+<path d="M240,422 V476" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M380,422 V476" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M520,422 V476" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M660,422 V476" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M800,422 V476" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M940,422 V476" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M1080,422 V476" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M1220,422 V476" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M1360,422 V476" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<!-- A few representative cross-tier callouts: KAFKA → CLICKHOUSE, PG-PRIM → PG-REPL -->
+<path d="M1260,516 H1300" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" marker-end="url(#ah-amber)"/>
+<path d="M300,516 H340" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<text class="lbl" x="320" y="510" text-anchor="middle">repl</text>
+<!-- Footer note -->
+<text class="sub" x="800" y="740" text-anchor="middle">Each component in tiers 3 and 4 routes through one or more cross-cutting services (VAULT, IDP, PROMETHEUS, JAEGER) — omitted for clarity.</text>
+</svg>
