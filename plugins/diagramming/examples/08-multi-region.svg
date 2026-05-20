@@ -76,8 +76,8 @@
 <text x="1040" y="682" text-anchor="middle">EU S3</text>
 <text class="sub" x="1040" y="698" text-anchor="middle">eu-west-1</text>
 <!-- DNS bottom: 2 outbound (US LB, EU LB). Slots: 677, 723. via_y=261. -->
-<path d="M677,232 V249 Q677,261 665,261 H372 Q360,261 360,273 V290" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
-<path d="M723,232 V249 Q723,261 735,261 H1028 Q1040,261 1040,273 V290" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
+<path d="M677,232 V263 Q677,275 665,275 H372 Q360,275 360,287 V290" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
+<path d="M723,232 V263 Q723,275 735,275 H1028 Q1040,275 1040,287 V290" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
 <!-- US LB bottom: 2 outbound. Slots: 337, 383. via_y=361. -->
 <path d="M337,342 V349 Q337,361 325,361 H292 Q280,361 280,373 V380" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
 <path d="M383,342 V349 Q383,361 395,361 H428 Q440,361 440,373 V380" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
@@ -88,13 +88,13 @@
 <!-- US APP-2 → US REDIS (same row, H direct) -->
 <path d="M420,496 H460" fill="none" stroke="#fb7185" stroke-width="1.0" stroke-dasharray="3,3" stroke-linecap="round" marker-end="url(#ah-rose)"/>
 <!-- US APP-1, APP-2 → US PG-PRIM (b→t). PG-PRIM has 2 incoming on top; slots: 260, 300. -->
-<path d="M200,522 V541 Q200,553 212,553 H248 Q260,553 260,565 V560" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
-<path d="M360,522 V541 Q360,553 348,553 H312 Q300,553 300,565 V560" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
+<path d="M200,522 V541 Q200,553 212,553 H248 Q260,553 260,560" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
+<path d="M340,522 V541 Q340,553 328,553 H312 Q300,553 300,560" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
 <!-- US PG-PRIM → US PG-REPL (same row, H direct) -->
 <path d="M340,586 H380" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
 <text class="lbl" x="360" y="580" text-anchor="middle">repl</text>
 <!-- US APP-2 → US S3 (b→t). APP-2 cx=360, S3 cx=360. Straight V. -->
-<path d="M360,522 V660" fill="none" stroke="#a78bfa" stroke-width="0.75" stroke-dasharray="1,3" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M380,522 V540 Q380,552 368,552 H192 Q180,552 180,564 V680 Q180,692 192,692 H290" fill="none" stroke="#a78bfa" stroke-width="0.75" stroke-dasharray="1,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
 <!-- EU LB bottom: 2 outbound. Slots: 1017, 1063. via_y=361. -->
 <path d="M1017,342 V349 Q1017,361 1005,361 H972 Q960,361 960,373 V380" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
 <path d="M1063,342 V349 Q1063,361 1075,361 H1108 Q1120,361 1120,373 V380" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
@@ -104,13 +104,13 @@
 <!-- EU APP-2 → EU REDIS -->
 <path d="M1100,496 H1140" fill="none" stroke="#fb7185" stroke-width="1.0" stroke-dasharray="3,3" stroke-linecap="round" marker-end="url(#ah-rose)"/>
 <!-- EU APP → PG-PRIM -->
-<path d="M880,522 V541 Q880,553 892,553 H928 Q940,553 940,565 V560" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
-<path d="M1040,522 V541 Q1040,553 1028,553 H992 Q980,553 980,565 V560" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
+<path d="M880,522 V541 Q880,553 892,553 H928 Q940,553 940,560" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
+<path d="M1020,522 V541 Q1020,553 1008,553 H992 Q980,553 980,560" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
 <!-- EU PG-PRIM → EU PG-REPL -->
 <path d="M1020,586 H1060" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
 <text class="lbl" x="1040" y="580" text-anchor="middle">repl</text>
 <!-- EU APP-2 → EU S3 -->
-<path d="M1040,522 V660" fill="none" stroke="#a78bfa" stroke-width="0.75" stroke-dasharray="1,3" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M1060,522 V540 Q1060,552 1072,552 H1228 Q1240,552 1240,564 V680 Q1240,692 1228,692 H1110" fill="none" stroke="#a78bfa" stroke-width="0.75" stroke-dasharray="1,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
 <!-- Cross-region: US PG-PRIM → EU PG-PRIM (async replication). via_y=635 (below both clusters' content). -->
 <path d="M280,612 V623 Q280,635 292,635 H948 Q960,635 960,623 V612" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-dasharray="2,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
 <text class="lbl" x="620" y="629">async repl (cross-region)</text>

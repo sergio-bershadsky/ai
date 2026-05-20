@@ -2,7 +2,7 @@
 
 Polished dark-themed architecture diagrams as self-contained HTML+SVG, with the right defaults baked in: text halos, Bezier-correct label placement with **clean-background priority**, leader lines for distant labels, semantic component colors, and a built-in export toolbar (PNG / PDF / Copy).
 
-Built on the [Cocoon AI architecture-diagram](https://github.com/Cocoon-AI/architecture-diagram-generator) design language (MIT), extended with production-tested label-placement rules and tooling.
+An original design language and toolchain for blueprint-style technical diagrams: hand-placed components with Q-filleted Bezier paths, semantic color palette, halo text rendering, and a deterministic geometry linter that blocks releases with overlapping or misrouted elements.
 
 ## Demo gallery
 
@@ -142,4 +142,4 @@ Every diagram produced by this skill:
 
 ## License
 
-Unlicense (this plugin). The underlying Cocoon AI design system is MIT-licensed.
+Unlicense.

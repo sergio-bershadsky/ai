@@ -8,3 +8,6 @@ docs/.vitepress/dist/
 .claude/
 __pycache__/
 *.pyc
+.env
+TELEGRAM_RELEASE.md
+.images/

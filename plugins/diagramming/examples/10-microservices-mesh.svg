@@ -7,8 +7,8 @@
 <text class="sub" x="32" y="64">12 service+sidecar pods · control plane · message bus · data stores · observability — h=36 dense layout</text>
 <!-- Band clusters -->
 <rect x="40" y="100" width="1720" height="60" rx="4" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="106">EDGE</text>
-<rect x="40" y="200" width="1720" height="240" rx="4" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="206">DATA PLANE — 12 pods (service + envoy sidecar)</text>
-<rect x="40" y="480" width="1720" height="60" rx="4" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="486">CONTROL PLANE — istio + utilities</text>
+<rect x="40" y="200" width="1720" height="240" rx="4" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="206">DATA PLANE</text>
+<rect x="40" y="480" width="1720" height="60" rx="4" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="486">CONTROL PLANE</text>
 <rect x="40" y="580" width="1720" height="60" rx="4" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="586">MESSAGE BUS</text>
 <rect x="40" y="680" width="1720" height="60" rx="4" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="686">DATA STORES</text>
 <rect x="40" y="780" width="1720" height="60" rx="4" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="786">OBSERVABILITY</text>
@@ -85,13 +85,13 @@
 <path d="M340,152 V216" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
 <path d="M940,152 V216" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
 <path d="M1140,152 V216" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
-<!-- Control plane → envoys (dashed cyan, representative for SVC-A/F/L) -->
-<path d="M260,492 V446 Q260,434 248,434 H152 Q140,434 140,422 V306" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
-<path d="M440,492 V446 Q440,434 452,434 H828 Q840,434 840,422 V306" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
-<path d="M620,492 V446 Q620,434 632,434 H1668 Q1680,434 1680,422 V306" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
-<!-- Services → message bus (representative) -->
-<path d="M140,256 V550 Q140,562 152,562 H248 Q260,562 260,574 V596" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
-<path d="M700,256 V550 Q700,562 712,562 H788 Q800,562 800,574 V596" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
+<!-- Control plane → envoys (dashed cyan, representative for ENVOY-A/F/L). H lanes y=320/350/380 sit above corridor 2 to avoid envoy→bus verticals. -->
+<path d="M260,496 V332 Q260,320 248,320 H152 Q140,320 140,306" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<path d="M440,496 V362 Q440,350 452,350 H828 Q840,350 840,338 V306" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<path d="M620,496 V392 Q620,380 632,380 H1668 Q1680,380 1680,368 V306" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<!-- Envoys → message bus (representative ENVOY-B → KAFKA-2 via CP gap x=350; ENVOY-K → SQS via CP gap x=1690) -->
+<path d="M280,306 V330 Q280,342 292,342 H338 Q350,342 350,354 V550 Q350,562 362,562 H428 Q440,562 440,574 V596" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
+<path d="M1540,306 V330 Q1540,342 1552,342 H1678 Q1690,342 1690,354 V550 Q1690,562 1678,562 H1532 Q1520,562 1520,574 V596" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
 <!-- Message bus → data stores (representative) -->
 <path d="M260,632 V696" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
 <path d="M1160,632 V696" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>

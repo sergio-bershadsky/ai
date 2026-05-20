@@ -43,8 +43,8 @@
 <text x="570" y="548" text-anchor="middle">PG REPLICA</text>
 <text class="sub" x="570" y="564" text-anchor="middle">read-only</text>
 <!-- USER bottom (2 outbound: CDN, LB). Slots: 457, 503. via_y=130. -->
-<path d="M457,100 V118 Q457,130 445,130 H402 Q390,130 390,142 V160" fill="none" stroke="#94a3b8" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
-<path d="M503,100 V118 Q503,130 515,130 H558 Q570,130 570,142 V160" fill="none" stroke="#94a3b8" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
+<path d="M457,100 V132 Q457,144 445,144 H402 Q390,144 390,156 V160" fill="none" stroke="#94a3b8" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
+<path d="M503,100 V132 Q503,144 515,144 H558 Q570,144 570,156 V160" fill="none" stroke="#94a3b8" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
 <!-- LB bottom (2 outbound: WEB-1, WEB-2). Slots: 547, 593. via_y=247. -->
 <path d="M547,212 V235 Q547,247 535,247 H402 Q390,247 390,259 V282" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
 <path d="M593,212 V282" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
@@ -55,9 +55,9 @@
 <path d="M550,430 H640" fill="none" stroke="#fb7185" stroke-width="1.0" stroke-dasharray="3,3" stroke-linecap="round" marker-end="url(#ah-rose)"/>
 <text class="lbl" x="595" y="424" text-anchor="middle">cache</text>
 <!-- APP-1 → PG PRIMARY, APP-2 → PG PRIMARY (b→t). PG PRIMARY has 2 incoming on top; slots at 367 and 413. -->
-<path d="M250,456 V479 Q250,491 262,491 H355 Q367,491 367,503 V526" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
+<path d="M250,456 V470 Q250,482 262,482 H355 Q367,482 367,494 V526" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
 <path d="M480,456 V479 Q480,491 468,491 H425 Q413,491 413,503 V526" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
 <!-- PG PRIMARY → PG REPLICA (same row, H direct). -->
 <path d="M460,552 H500" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
-<text class="lbl" x="480" y="546" text-anchor="middle">replicate</text>
+<text class="lbl" x="480" y="520" text-anchor="middle">repl</text>
 </svg>

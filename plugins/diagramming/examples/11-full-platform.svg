@@ -118,8 +118,8 @@
 <path d="M880,316 V376" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
 <path d="M1300,316 V376" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
 <!-- (xDS → envoy edge omitted: high-density layout makes individual cross-band callouts unreadable at this scale) -->
-<path d="M880,466 V632" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" marker-end="url(#ah-amber)"/>
-<path d="M1300,466 V632" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" marker-end="url(#ah-amber)"/>
+<path d="M880,466 V518 Q880,530 892,530 H958 Q970,530 970,542 V578 Q970,590 958,590 H892 Q880,590 880,602 V632" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
+<path d="M1300,466 V518 Q1300,530 1312,530 H1318 Q1330,530 1330,542 V578 Q1330,590 1318,590 H1312 Q1300,590 1300,602 V632" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
 <path d="M340,672 V736" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
 <path d="M880,672 V736" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
 <path d="M1240,672 V736" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
