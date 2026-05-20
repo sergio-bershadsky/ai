@@ -7,7 +7,7 @@ description: Use when the user asks for a system, infrastructure, cloud, securit
 
 Generate professional technical architecture diagrams as self-contained HTML files with inline SVG graphics, CSS styling, and a built-in export toolbar (PNG / PDF / Copy-to-clipboard).
 
-Built on top of the Cocoon-AI architecture-diagram design system (MIT licensed), extended with hard-won label-placement rules from real diagram production work.
+Blueprint aesthetic: dashed cluster boundaries, halo text, semantic palette, Q-filleted orthogonal edges, and a deterministic geometry-audit linter that gates release.
 
 ## What triggers this skill
 
@@ -34,7 +34,7 @@ See `resources/template.html` for the canonical starting point.
 
 This skill is **self-contained markdown**. Every algorithm needed to produce a correct blueprint diagram lives in `resources/design-system.md` and the rule list below. When the user asks for a diagram, the model applies those algorithms inline in the conversation and emits HTML+SVG directly — there is no build step, no Python generator, no `make` target. The maintainer never writes per-diagram code.
 
-The only Python in `resources/` is genuinely-generic post-production tooling: `audit-labels.py` lints any rendered diagram for placement issues, `coordinate-shifter.py` bulk-shifts y-coordinates in any HTML+SVG file. Neither produces diagrams; both operate on already-rendered output.
+The only Python in `resources/` is genuinely-generic post-production tooling: `geometry-audit.py` deterministically detects intersections/overlaps/overflows (blocking — must pass before a diagram is done), `audit-labels.py` lints label placement vs arrow midpoints, `coordinate-shifter.py` bulk-shifts y-coordinates in any HTML+SVG file. None produce diagrams; all operate on already-rendered output.
 
 Examples under `examples/` are hand-committed SVG artifacts that demonstrate the rules in their current form. They are evidence, not infrastructure.
 
@@ -64,9 +64,10 @@ These rules describe the v2 (blueprint) aesthetic. They are inspired by **ISO 12
 4. **Build from `template.html`** — copy and customise. Always preserve the header, toolbar, capture script, halo CSS.
 5. **Place components** with adequate padding (40 px between boxes, 80 px between sub-groups).
 6. **Place arrows** with proper labels: compute Bezier midpoint first, then look for clean background nearby. If clean space is far from midpoint, use leader line.
-7. **Run the audit** — `resources/audit-labels.py <file>.html` reports any label > 50 px from its arrow's midpoint and lacking a leader line.
-8. **Render in browser** to verify visually. Iterate on placements.
-9. **Output the final file** as `<name>-architecture.html` in the user's docs directory.
+7. **Run the geometry audit (REQUIRED, blocking)** — `resources/geometry-audit.py <file>.html` must exit `0` before the diagram is considered done. It deterministically reports component-overlap, component-outside-cluster, edge-crosses-component, edge-crosses-edge, label-overlaps-component, and edge-crosses-label. Iterate fixes and re-run until clean. Only pass `--ignore-edge-edge` when the diagram is an intentional mesh.
+8. **Run the label audit** — `resources/audit-labels.py <file>.html` reports any label > 50 px from its arrow's midpoint and lacking a leader line.
+9. **Render in browser** to verify visually. Iterate on placements.
+10. **Output the final file** as `<name>-architecture.html` in the user's docs directory.
 
 ## Design system summary (see `resources/design-system.md` for full)
 
@@ -144,17 +145,36 @@ The principle: **fight for clean visual space**. Geometric midpoint accuracy is 
 
 ## Audit workflow
 
-After generating a diagram, run the audit script:
+Two audit scripts. **Both must be run.** The geometry audit is **blocking** — a diagram is not done until it exits 0.
+
+### 1. Geometry audit (blocking, required)
+
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/architecture-diagram/resources/geometry-audit.py <file>.html
+```
+
+Deterministically reports six classes of collision, each with SVG line numbers:
+
+| Kind | Meaning | Typical fix |
+|---|---|---|
+| `component-overlap` | Two component rects overlap | Move one box; widen row spacing |
+| `component-overflow-cluster` | Component pokes outside its parent cluster | Resize cluster or move box inward |
+| `edge-crosses-component` | Path segment passes through a box that is not its endpoint | Re-route via clear corridor (V-H-V or H-V-H) |
+| `edge-crosses-edge` | Two paths cross outside their shared endpoints | Re-route the shorter/less-important one; or use `--ignore-edge-edge` for intentional meshes |
+| `label-overlaps-component` | Text bbox sits on a box it does not label | Shorten label, move it, or promote to a callout with a leader line |
+| `edge-crosses-label` | Path runs through a foreign label's bbox | Shift label off the corridor, or shift the corridor |
+| `arrowhead-reversed` | Path ends on a rect edge but the tangent at the endpoint points *away* from the rect interior, so `orient="auto"` rotates the arrowhead 180° | Make the path's last segment travel **into** the rect (e.g. for top-edge entry, end the path with a downward V or a Q whose endpoint is at the target y). Common bug: ending with `Q X,via X,via+12 V target` where `target < via+12` — the final V draws upward. |
+| `edge-on-cluster-border` | A path's H/V segment runs within ~2 px of a cluster's dashed boundary for ≥8 px, so the two lines visually merge into one cluttered band | Move the path's via_y / via_x further inside the cluster (≥10 px from the border) |
+
+Iterate: fix one class, re-run, repeat until "clean — no geometry issues".
+
+### 2. Label distance audit
 
 ```bash
 python3 ${CLAUDE_PLUGIN_ROOT}/skills/architecture-diagram/resources/audit-labels.py <file>.html
 ```
 
-Output flags any arrow label whose position is > 50 px from its arrow's curve midpoint **without** a connecting leader line. Each flag is either:
-- Fixable: move label closer or add leader line
-- By design: endpoint annotation (label sits near arrow head, separate leader line connects them)
-
-The audit reports each issue with the distance and the relevant line numbers.
+Flags any arrow label > 50 px from its curve midpoint without a leader line. Each flag is either fixable (move label closer or add a leader line) or by design (endpoint annotation — add the leader line and move on).
 
 ## Coordinate shifter (for fixing spacing)
 
@@ -192,4 +212,4 @@ The script shifts y-coordinates in tiers by editing the SVG directly: top row st
 
 ## Attribution
 
-This skill is derived from and extends the [Cocoon AI architecture-diagram skill](https://github.com/Cocoon-AI/architecture-diagram-generator) (MIT license), with significant additions for label placement, audit tooling, and coordinate manipulation based on production diagram work for Socket0 Connect.
+Original work.

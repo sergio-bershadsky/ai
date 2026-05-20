@@ -273,4 +273,4 @@ If the audit flags labels for being far from the arrow midpoint without a leader
 
 ## Attribution
 
-This skill is the React/inline-SVG embedding companion to the `architecture-diagram` skill (which itself extends the [Cocoon AI architecture-diagram skill](https://github.com/Cocoon-AI/architecture-diagram-generator), MIT). All design-system rules — colors, fonts, halos, label placement, spacing — come from the parent skill; this skill only documents the format conversion and consumer contract.
+This skill is the React/inline-SVG embedding companion to the `architecture-diagram` skill. All design-system rules — colors, fonts, halos, label placement, spacing — come from the parent skill; this skill only documents the format conversion and consumer contract.

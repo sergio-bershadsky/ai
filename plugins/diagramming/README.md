@@ -2,7 +2,7 @@
 
 Polished dark-themed architecture diagrams as self-contained HTML+SVG, with the right defaults baked in: text halos, Bezier-correct label placement with **clean-background priority**, leader lines for distant labels, semantic component colors, and a built-in export toolbar (PNG / PDF / Copy).
 
-Built on the [Cocoon AI architecture-diagram](https://github.com/Cocoon-AI/architecture-diagram-generator) design language (MIT), extended with production-tested label-placement rules and tooling.
+An original design language and toolchain for blueprint-style technical diagrams: hand-placed components with Q-filleted Bezier paths, semantic color palette, halo text rendering, and a deterministic geometry linter that blocks releases with overlapping or misrouted elements.
 
 ## Demo gallery
 
@@ -74,6 +74,24 @@ Eight horizontal bands × 8–10 components — edge, two regions (US/EU) with f
 
 ![Full platform crash test](./examples/11-full-platform.svg?v=1)
 
+### 12. Mindmap — outbound proxy core concerns (radial, 5 × 3)
+
+Different output mode: a **radial mindmap** produced by the sibling `mindmap` skill. Same blueprint aesthetic (dark, JetBrains Mono, halo text, semantic palette), but with a central root + branches radiating in all directions. Demonstrates the auto-computed angular sectors, outward-bowing Q-curves, and per-branch colour ownership.
+
+![Outbound proxy mindmap](./examples/12-mindmap-outbound-proxy.svg?v=1)
+
+### 13. Mindmap — OSS project marketing (radial, 7 × 3)
+
+Stress test of the mindmap skill at the upper end of typical complexity: 7 branches × 3 leaves = 21 leaves + central root. Tests automatic angular sector packing when N approaches the recommended cap, full palette utilization (cyan/emerald/violet/amber/rose/orange/slate — every semantic colour used once), and outward-bowing Q-curves at all radial directions.
+
+![OSS marketing mindmap](./examples/13-mindmap-oss-marketing.svg?v=1)
+
+### 14. Sequence — OAuth 2.0 authorization code flow + PKCE
+
+Different output mode again: a **sequence diagram** produced by the sibling `sequence-diagram` skill. Five actors (USER → SPA → IDP → DB → API) across the top, lifelines descending, ten messages in temporal order — solid arrows for synchronous calls, dashed for returns, right-side bumps for IDP self-loops. Demonstrates the `class="lifeline"` audit exemption (every message crosses every lifeline by design; the audit knows to skip those pairs).
+
+![OAuth code flow sequence](./examples/14-sequence-oauth-code-flow.svg?v=1)
+
 ---
 
 ## What you get
@@ -142,4 +160,4 @@ Every diagram produced by this skill:
 
 ## License
 
-Unlicense (this plugin). The underlying Cocoon AI design system is MIT-licensed.
+Unlicense.
