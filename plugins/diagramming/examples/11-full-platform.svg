@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1900 1100">
+<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern><marker id="ah-cyan" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-emerald" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-violet" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-rose" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-amber" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-slate" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<style>text{paint-order:stroke fill;stroke:#020617;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;fill:#e2e8f0;font-size:10px;font-family:'JetBrains Mono',ui-monospace,monospace;}text.title{stroke-width:6;font-size:16px;font-weight:700;fill:#f1f5f9;}text.sub{stroke-width:3;font-size:9px;fill:#94a3b8;}text.lbl{font-size:10px;fill:#cbd5e1;}text.cluster{stroke-width:5;font-size:11px;font-weight:600;fill:#cbd5e1;}rect.component{transition:filter 220ms ease;cursor:pointer;}rect.component:hover{filter:drop-shadow(0 0 8px var(--glow,rgba(255,255,255,0.2)));}rect.cyan{--glow:rgba(34,211,238,0.5);}rect.emerald{--glow:rgba(52,211,153,0.5);}rect.violet{--glow:rgba(167,139,250,0.5);}rect.rose{--glow:rgba(251,113,133,0.5);}rect.amber{--glow:rgba(251,191,36,0.5);}rect.slate{--glow:rgba(148,163,184,0.4);}</style>
+<rect width="1900" height="1100" fill="#020617"/>
+<rect width="1900" height="1100" fill="url(#grid)"/>
+<text class="title" x="32" y="44">FULL PLATFORM — MULTI-REGION (80 elements)</text>
+<text class="sub" x="32" y="64">edge · 2 regions × 10-pod mesh · global control · message bus · data · observability — h=36 high-density layout</text>
+<!-- Band clusters at y=100, 200, 320, 440, 560, 680, 800, 920 -->
+<rect x="40" y="100" width="1820" height="60" rx="4" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="106">EDGE — 8</text>
+<rect x="40" y="200" width="1820" height="120" rx="4" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="206">REGION-US — 10 pods (service + envoy)</text>
+<rect x="40" y="360" width="1820" height="120" rx="4" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="366">REGION-EU — 10 pods</text>
+<rect x="40" y="520" width="1820" height="60" rx="4" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="526">GLOBAL CONTROL PLANE — 8</text>
+<rect x="40" y="620" width="1820" height="60" rx="4" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="626">MESSAGE BUS — 8</text>
+<rect x="40" y="720" width="1820" height="60" rx="4" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="726">DATA STORES — 8</text>
+<rect x="40" y="820" width="1820" height="60" rx="4" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="826">OBSERVABILITY — 8</text>
+<rect x="40" y="920" width="1820" height="60" rx="4" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="826" visibility="hidden"></text><text class="cluster" x="56" y="926">SECURITY · COMPLIANCE — 8</text>
+<!-- EDGE (8 components y=116). 8 boxes w=120, gap=20. Total 8*120+7*20=1100. Margin (1900-1100)/2=400. x positions: 400,540,680,820,960,1100,1240,1380. -->
+<rect class="component slate" x="400" y="116" width="120" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="460" y="138" text-anchor="middle">USER</text>
+<rect class="component amber" x="540" y="116" width="120" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="600" y="138" text-anchor="middle">CDN</text>
+<rect class="component amber" x="680" y="116" width="120" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="740" y="138" text-anchor="middle">WAF</text>
+<rect class="component amber" x="820" y="116" width="120" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="880" y="138" text-anchor="middle">BOT-DETECT</text>
+<rect class="component amber" x="960" y="116" width="120" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="1020" y="138" text-anchor="middle">RATE-LIMIT</text>
+<rect class="component amber" x="1100" y="116" width="120" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="1160" y="138" text-anchor="middle">GLOBAL-LB</text>
+<rect class="component amber" x="1240" y="116" width="120" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="1300" y="138" text-anchor="middle">API-GW</text>
+<rect class="component rose" x="1380" y="116" width="120" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="1440" y="138" text-anchor="middle">AUTH-PROXY</text>
+<!-- REGION-US: 10 svc + 10 envoy. 10 boxes w=120 gap=20: 10*120+9*20=1380. Start x=260. -->
+<rect class="component emerald" x="260" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="320" y="242" text-anchor="middle">US-SVC-A</text>
+<rect class="component cyan" x="260" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="320" y="292" text-anchor="middle">US-ENV-A</text>
+<rect class="component emerald" x="400" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="460" y="242" text-anchor="middle">US-SVC-B</text>
+<rect class="component cyan" x="400" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="460" y="292" text-anchor="middle">US-ENV-B</text>
+<rect class="component emerald" x="540" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="600" y="242" text-anchor="middle">US-SVC-C</text>
+<rect class="component cyan" x="540" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="600" y="292" text-anchor="middle">US-ENV-C</text>
+<rect class="component emerald" x="680" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="740" y="242" text-anchor="middle">US-SVC-D</text>
+<rect class="component cyan" x="680" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="740" y="292" text-anchor="middle">US-ENV-D</text>
+<rect class="component emerald" x="820" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="880" y="242" text-anchor="middle">US-SVC-E</text>
+<rect class="component cyan" x="820" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="880" y="292" text-anchor="middle">US-ENV-E</text>
+<rect class="component emerald" x="960" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1020" y="242" text-anchor="middle">US-SVC-F</text>
+<rect class="component cyan" x="960" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1020" y="292" text-anchor="middle">US-ENV-F</text>
+<rect class="component emerald" x="1100" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1160" y="242" text-anchor="middle">US-SVC-G</text>
+<rect class="component cyan" x="1100" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1160" y="292" text-anchor="middle">US-ENV-G</text>
+<rect class="component emerald" x="1240" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1300" y="242" text-anchor="middle">US-SVC-H</text>
+<rect class="component cyan" x="1240" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1300" y="292" text-anchor="middle">US-ENV-H</text>
+<rect class="component emerald" x="1380" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1440" y="242" text-anchor="middle">US-SVC-I</text>
+<rect class="component cyan" x="1380" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1440" y="292" text-anchor="middle">US-ENV-I</text>
+<rect class="component emerald" x="1520" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1580" y="242" text-anchor="middle">US-SVC-J</text>
+<rect class="component cyan" x="1520" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1580" y="292" text-anchor="middle">US-ENV-J</text>
+<!-- REGION-EU: 10 svc + 10 envoy. Same x positions. -->
+<rect class="component emerald" x="260" y="380" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="320" y="402" text-anchor="middle">EU-SVC-A</text>
+<rect class="component cyan" x="260" y="430" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="320" y="452" text-anchor="middle">EU-ENV-A</text>
+<rect class="component emerald" x="400" y="380" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="460" y="402" text-anchor="middle">EU-SVC-B</text>
+<rect class="component cyan" x="400" y="430" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="460" y="452" text-anchor="middle">EU-ENV-B</text>
+<rect class="component emerald" x="540" y="380" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="600" y="402" text-anchor="middle">EU-SVC-C</text>
+<rect class="component cyan" x="540" y="430" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="600" y="452" text-anchor="middle">EU-ENV-C</text>
+<rect class="component emerald" x="680" y="380" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="740" y="402" text-anchor="middle">EU-SVC-D</text>
+<rect class="component cyan" x="680" y="430" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="740" y="452" text-anchor="middle">EU-ENV-D</text>
+<rect class="component emerald" x="820" y="380" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="880" y="402" text-anchor="middle">EU-SVC-E</text>
+<rect class="component cyan" x="820" y="430" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="880" y="452" text-anchor="middle">EU-ENV-E</text>
+<rect class="component emerald" x="960" y="380" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1020" y="402" text-anchor="middle">EU-SVC-F</text>
+<rect class="component cyan" x="960" y="430" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1020" y="452" text-anchor="middle">EU-ENV-F</text>
+<rect class="component emerald" x="1100" y="380" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1160" y="402" text-anchor="middle">EU-SVC-G</text>
+<rect class="component cyan" x="1100" y="430" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1160" y="452" text-anchor="middle">EU-ENV-G</text>
+<rect class="component emerald" x="1240" y="380" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1300" y="402" text-anchor="middle">EU-SVC-H</text>
+<rect class="component cyan" x="1240" y="430" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1300" y="452" text-anchor="middle">EU-ENV-H</text>
+<rect class="component emerald" x="1380" y="380" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1440" y="402" text-anchor="middle">EU-SVC-I</text>
+<rect class="component cyan" x="1380" y="430" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1440" y="452" text-anchor="middle">EU-ENV-I</text>
+<rect class="component emerald" x="1520" y="380" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1580" y="402" text-anchor="middle">EU-SVC-J</text>
+<rect class="component cyan" x="1520" y="430" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1580" y="452" text-anchor="middle">EU-ENV-J</text>
+<!-- GLOBAL CONTROL PLANE (8) y=536 -->
+<rect class="component cyan" x="260" y="536" width="160" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="340" y="558" text-anchor="middle">XDS-SERVER</text>
+<rect class="component cyan" x="440" y="536" width="160" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="520" y="558" text-anchor="middle">ISTIO-PILOT</text>
+<rect class="component cyan" x="620" y="536" width="160" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="700" y="558" text-anchor="middle">MIXER</text>
+<rect class="component rose" x="800" y="536" width="160" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="880" y="558" text-anchor="middle">CITADEL</text>
+<rect class="component cyan" x="980" y="536" width="160" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1060" y="558" text-anchor="middle">GALLEY</text>
+<rect class="component cyan" x="1160" y="536" width="160" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1240" y="558" text-anchor="middle">CONFIG-SVC</text>
+<rect class="component cyan" x="1340" y="536" width="160" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1420" y="558" text-anchor="middle">FEATURE-FLAGS</text>
+<rect class="component cyan" x="1520" y="536" width="160" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1600" y="558" text-anchor="middle">SCHEDULER</text>
+<!-- MESSAGE BUS (8) y=636 -->
+<rect class="component amber" x="260" y="636" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="340" y="658" text-anchor="middle">KAFKA-US</text>
+<rect class="component amber" x="440" y="636" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="520" y="658" text-anchor="middle">KAFKA-EU</text>
+<rect class="component amber" x="620" y="636" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="700" y="658" text-anchor="middle">NATS</text>
+<rect class="component amber" x="800" y="636" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="880" y="658" text-anchor="middle">PULSAR</text>
+<rect class="component amber" x="980" y="636" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="1060" y="658" text-anchor="middle">RABBITMQ</text>
+<rect class="component amber" x="1160" y="636" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="1240" y="658" text-anchor="middle">REDIS-STREAM</text>
+<rect class="component amber" x="1340" y="636" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="1420" y="658" text-anchor="middle">EVENTBRIDGE</text>
+<rect class="component amber" x="1520" y="636" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="1600" y="658" text-anchor="middle">SQS</text>
+<!-- DATA STORES (8) y=736 -->
+<rect class="component violet" x="260" y="736" width="160" height="36" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="340" y="758" text-anchor="middle">PG-US-PRIM</text>
+<rect class="component violet" x="440" y="736" width="160" height="36" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="520" y="758" text-anchor="middle">PG-EU-PRIM</text>
+<rect class="component rose" x="620" y="736" width="160" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="700" y="758" text-anchor="middle">REDIS</text>
+<rect class="component violet" x="800" y="736" width="160" height="36" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="880" y="758" text-anchor="middle">MONGO</text>
+<rect class="component violet" x="980" y="736" width="160" height="36" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="1060" y="758" text-anchor="middle">ES</text>
+<rect class="component violet" x="1160" y="736" width="160" height="36" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="1240" y="758" text-anchor="middle">CLICKHOUSE</text>
+<rect class="component violet" x="1340" y="736" width="160" height="36" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="1420" y="758" text-anchor="middle">S3</text>
+<rect class="component violet" x="1520" y="736" width="160" height="36" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="1600" y="758" text-anchor="middle">CASSANDRA</text>
+<!-- OBSERVABILITY (8) y=836 -->
+<rect class="component slate" x="260" y="836" width="160" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="340" y="858" text-anchor="middle">PROMETHEUS</text>
+<rect class="component slate" x="440" y="836" width="160" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="520" y="858" text-anchor="middle">GRAFANA</text>
+<rect class="component slate" x="620" y="836" width="160" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="700" y="858" text-anchor="middle">JAEGER</text>
+<rect class="component slate" x="800" y="836" width="160" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="880" y="858" text-anchor="middle">LOKI</text>
+<rect class="component slate" x="980" y="836" width="160" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="1060" y="858" text-anchor="middle">FLUENTD</text>
+<rect class="component slate" x="1160" y="836" width="160" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="1240" y="858" text-anchor="middle">ALERTMGR</text>
+<rect class="component slate" x="1340" y="836" width="160" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="1420" y="858" text-anchor="middle">PAGERDUTY</text>
+<rect class="component slate" x="1520" y="836" width="160" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="1600" y="858" text-anchor="middle">DATADOG</text>
+<!-- SECURITY · COMPLIANCE (8) y=936 -->
+<rect class="component rose" x="260" y="936" width="160" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="340" y="958" text-anchor="middle">VAULT</text>
+<rect class="component rose" x="440" y="936" width="160" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="520" y="958" text-anchor="middle">KMS</text>
+<rect class="component rose" x="620" y="936" width="160" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="700" y="958" text-anchor="middle">IDP</text>
+<rect class="component rose" x="800" y="936" width="160" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="880" y="958" text-anchor="middle">OPA</text>
+<rect class="component rose" x="980" y="936" width="160" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="1060" y="958" text-anchor="middle">CERT-MGR</text>
+<rect class="component rose" x="1160" y="936" width="160" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="1240" y="958" text-anchor="middle">SIEM</text>
+<rect class="component rose" x="1340" y="936" width="160" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="1420" y="958" text-anchor="middle">AUDIT-LOG</text>
+<rect class="component rose" x="1520" y="936" width="160" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="1600" y="958" text-anchor="middle">DLP</text>
+<!-- Representative band-to-band edges (deliberately sparse for legibility) -->
+<path d="M460,152 V216" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<path d="M1160,152 V216" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<path d="M1440,152 V216" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<path d="M460,316 V376" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<path d="M880,316 V376" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<path d="M1300,316 V376" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<!-- (xDS → envoy edge omitted: high-density layout makes individual cross-band callouts unreadable at this scale) -->
+<path d="M880,466 V632" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" marker-end="url(#ah-amber)"/>
+<path d="M1300,466 V632" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" marker-end="url(#ah-amber)"/>
+<path d="M340,672 V736" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M880,672 V736" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M1240,672 V736" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M520,772 V836" fill="none" stroke="#94a3b8" stroke-width="0.75" stroke-dasharray="1,3" stroke-linecap="round" marker-end="url(#ah-slate)"/>
+<path d="M1060,772 V836" fill="none" stroke="#94a3b8" stroke-width="0.75" stroke-dasharray="1,3" stroke-linecap="round" marker-end="url(#ah-slate)"/>
+<path d="M520,872 V936" fill="none" stroke="#fb7185" stroke-width="0.75" stroke-dasharray="3,3" stroke-linecap="round" marker-end="url(#ah-rose)"/>
+<text class="sub" x="900" y="1040" text-anchor="middle">Crash-test maximum scale. Full mesh has hundreds of edges (every service emits to bus + observability, every envoy talks to xDS, …) — representatives only.</text>
+</svg>

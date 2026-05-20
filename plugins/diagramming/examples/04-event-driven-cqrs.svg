@@ -1,82 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="JetBrains Mono, ui-monospace, monospace">
-  <defs>
-    <marker id="ah" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"/>
-    </marker>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
-    </pattern>
-  </defs>
-  <style>
-    text { paint-order: stroke fill; stroke: rgba(2, 6, 23, 0.75); stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; fill: #e2e8f0; font-size: 12px; }
-    .title { font-size: 16px; font-weight: 700; fill: #f1f5f9; }
-    .lbl { font-size: 11px; fill: #cbd5e1; }
-    .lbl-audit { font-size: 11px; fill: #c4b5fd; }
-    .sub { font-size: 10px; fill: #94a3b8; stroke-width: 2; }
-  
-    /* Hover glow */
-    rect.component { transition: filter 220ms ease; cursor: pointer; }
-    rect.component:hover { filter: drop-shadow(0 0 12px var(--glow, rgba(255,255,255,0.3))) brightness(1.15); }
-    rect.cyan    { --glow: rgba( 34, 211, 238, 0.65); }
-    rect.emerald { --glow: rgba( 52, 211, 153, 0.65); }
-    rect.violet  { --glow: rgba(167, 139, 250, 0.65); }
-    rect.rose    { --glow: rgba(251, 113, 133, 0.65); }
-    rect.amber   { --glow: rgba(251, 191, 36, 0.65); }
-    rect.slate   { --glow: rgba(148, 163, 184, 0.50); }
-  </style>
-  <rect width="900" height="520" fill="#020617"/>
-  <rect width="900" height="520" fill="url(#grid)"/>
-
-  <rect x="34.0" y="23.4" width="348.0" height="22.8" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="40" y="40" class="title">Event-driven CQRS with audit stream</text>
-  <text x="40" y="60" class="sub">solid = command path; amber dashed = pub/sub; violet dotted thin = audit log fan-out</text>
-
-  <!-- Command Service -->
-  <rect class="component emerald" x="40" y="200" width="160" height="70" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
-  <text x="120" y="230" text-anchor="middle">COMMAND SVC</text>
-  <text x="120" y="250" class="sub" text-anchor="middle">write side</text>
-
-  <!-- Broker -->
-  <rect class="component amber" x="290" y="200" width="180" height="70" rx="6" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1.5"/>
-  <text x="380" y="230" text-anchor="middle">KAFKA</text>
-  <text x="380" y="250" class="sub" text-anchor="middle">orders.events</text>
-
-  <!-- Projection consumer -->
-  <rect class="component emerald" x="560" y="120" width="160" height="70" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
-  <text x="640" y="150" text-anchor="middle">PROJECTOR</text>
-  <text x="640" y="170" class="sub" text-anchor="middle">build read model</text>
-
-  <!-- Notifier consumer -->
-  <rect class="component emerald" x="560" y="280" width="160" height="70" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
-  <text x="640" y="310" text-anchor="middle">NOTIFIER</text>
-  <text x="640" y="330" class="sub" text-anchor="middle">email / push</text>
-
-  <!-- Read DB -->
-  <rect class="component violet" x="760" y="120" width="120" height="70" rx="6" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1.5"/>
-  <text x="820" y="150" text-anchor="middle">READ DB</text>
-  <text x="820" y="170" class="sub" text-anchor="middle">denorm</text>
-
-  <!-- Audit sink -->
-  <rect class="component violet" x="290" y="400" width="180" height="70" rx="6" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1.5"/>
-  <text x="380" y="430" text-anchor="middle">AUDIT SINK</text>
-  <text x="380" y="450" class="sub" text-anchor="middle">S3 cold storage</text>
-
-  <!-- Edges -->
-  <!-- Command -> Kafka -->
-  <line x1="200" y1="235" x2="288" y2="235" stroke="#34d399" stroke-width="1.5" marker-end="url(#ah)"/>
-  <rect x="214.9" y="212.7" width="58.2" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="244" y="225" class="lbl" text-anchor="middle">produce</text>
-
-  <!-- Kafka -> projector -->
-  <path d="M 470 220 Q 520 155 558 155" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ah)"/>
-  <rect x="470.9" y="165.7" width="58.2" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="500" y="178" class="lbl" text-anchor="middle">consume</text>
-
-  <!-- Kafka -> notifier -->
-  <path d="M 470 250 Q 520 315 558 315" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ah)"/>
-  <rect x="470.9" y="285.6" width="58.2" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="500" y="298" class="lbl" text-anchor="middle">consume</text>
-
-  <!-- Projector -> read DB -->
-  <line x1="720" y1="155" x2="758" y2="155" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#ah)"/>
-
-  <!-- Kafka -> audit -->
-  <path d="M 380 270 L 380 398" fill="none" stroke="#a78bfa" stroke-width="0.8" stroke-dasharray="1,3" marker-end="url(#ah)"/>
-  <rect x="389.0" y="327.6" width="71.4" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="395" y="340" class="lbl-audit">audit tap</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470">
+<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern><marker id="ah-emerald" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-violet" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-amber" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<style>text{paint-order:stroke fill;stroke:#020617;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;fill:#e2e8f0;font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace;}text.title{stroke-width:6;font-size:16px;font-weight:700;fill:#f1f5f9;}text.sub{stroke-width:3;font-size:10px;fill:#94a3b8;}text.lbl{font-size:11px;fill:#cbd5e1;}rect.component{transition:filter 220ms ease;cursor:pointer;}rect.component:hover{filter:drop-shadow(0 0 8px var(--glow,rgba(255,255,255,0.2)));}rect.emerald{--glow:rgba(52,211,153,0.5);}rect.violet{--glow:rgba(167,139,250,0.5);}rect.amber{--glow:rgba(251,191,36,0.5);}</style>
+<rect width="960" height="470" fill="#020617"/>
+<rect width="960" height="470" fill="url(#grid)"/>
+<text class="title" x="32" y="44">EVENT-DRIVEN CQRS WITH AUDIT STREAM</text>
+<text class="sub" x="32" y="64">solid = command · amber dashed = pub/sub · violet dotted = audit</text>
+<rect class="component emerald" x="60" y="200" width="160" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="140" y="222" text-anchor="middle">COMMAND SVC</text>
+<text class="sub" x="140" y="238" text-anchor="middle">write side</text>
+<rect class="component amber" x="300" y="200" width="180" height="52" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/>
+<text x="390" y="222" text-anchor="middle">KAFKA</text>
+<text class="sub" x="390" y="238" text-anchor="middle">orders.events</text>
+<rect class="component emerald" x="560" y="100" width="160" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="640" y="122" text-anchor="middle">PROJECTOR</text>
+<text class="sub" x="640" y="138" text-anchor="middle">build read model</text>
+<rect class="component violet" x="760" y="100" width="140" height="52" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/>
+<text x="830" y="122" text-anchor="middle">READ DB</text>
+<text class="sub" x="830" y="138" text-anchor="middle">denorm</text>
+<rect class="component emerald" x="560" y="300" width="160" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="640" y="322" text-anchor="middle">NOTIFIER</text>
+<text class="sub" x="640" y="338" text-anchor="middle">email / push</text>
+<rect class="component violet" x="300" y="380" width="180" height="52" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/>
+<text x="390" y="402" text-anchor="middle">AUDIT SINK</text>
+<text class="sub" x="390" y="418" text-anchor="middle">S3 cold storage</text>
+<path d="M220,226 H300" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<text class="lbl" x="260" y="220" text-anchor="middle">produce</text>
+<!-- KAFKA r → PROJECTOR l: both sides vertical → H-V-H Z-shape via via_x=520 -->
+<path d="M480,217 H508 Q520,217 520,205 V138 Q520,126 532,126 H560" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
+<text class="lbl" x="520" y="172" text-anchor="middle">consume</text>
+<!-- KAFKA r → NOTIFIER l: same H-V-H shape via via_x=520 -->
+<path d="M480,235 H508 Q520,235 520,247 V314 Q520,326 532,326 H560" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
+<text class="lbl" x="520" y="280" text-anchor="middle">consume</text>
+<path d="M720,126 H760" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-dasharray="4,3" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M390,252 V380" fill="none" stroke="#a78bfa" stroke-width="0.75" stroke-dasharray="1,3" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<text class="lbl" x="408" y="320">audit tap</text>
 </svg>

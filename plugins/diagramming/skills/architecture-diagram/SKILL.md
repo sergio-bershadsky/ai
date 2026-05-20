@@ -30,13 +30,31 @@ Always produce **a single self-contained `.html` file** that:
 
 See `resources/template.html` for the canonical starting point.
 
-## The four most important rules
+## How this skill is used (no generator scripts)
 
-1. **Label placement: clean background beats geometric midpoint.** Don't put labels at the Bezier midpoint just because the math says so. Find empty visual space the size of the label and put the label there. Use leader lines if needed. See `resources/label-placement.md` for the full algorithm. This rule comes from real user feedback after generating diagrams where strict-midpoint placement produced unreadable visual chaos.
-2. **3× spacing between root-level blocks.** Generous padding around every cluster. Default gap between major bands is 100–200 px, not 30 px. Visual hierarchy depends on whitespace.
-3. **Floating labels sit in chip rects.** Every label that does not live inside a coloured component box (titles, edge labels, cluster names, annotations) needs an explicit background `<rect>` drawn just before the `<text>`: `fill="rgba(15, 23, 42, 0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1" rx="3"`. The universal text halo (`paint-order: stroke fill; stroke: rgba(2, 6, 23, 0.75); stroke-width: 1`) stays as defence-in-depth. See `resources/design-system.md` § *Label chip backgrounds*.
-4. **Sub-group clusters within larger clusters.** When a logical group has more than ~4 components, partition them into 2–4 named sub-groups with their own dashed boundaries.
-5. **Reserve icon space before placing text.** When a component box has an icon in the left padding, the label must NOT centre on the full box — it will slide under the icon. Either centre the text in the space *right of the icon* (`text_x = (icon_right + 8 + box_right) / 2`, `text-anchor="middle"`) or left-align at `icon_right + 8`. Required guard: `icon_size + 16 px` of horizontal space before any text glyph. Same rule mirrored for right-/top-positioned icons. See `resources/design-system.md` § *Icon + text layout*.
+This skill is **self-contained markdown**. Every algorithm needed to produce a correct blueprint diagram lives in `resources/design-system.md` and the rule list below. When the user asks for a diagram, the model applies those algorithms inline in the conversation and emits HTML+SVG directly — there is no build step, no Python generator, no `make` target. The maintainer never writes per-diagram code.
+
+The only Python in `resources/` is genuinely-generic post-production tooling: `audit-labels.py` lints any rendered diagram for placement issues, `coordinate-shifter.py` bulk-shifts y-coordinates in any HTML+SVG file. Neither produces diagrams; both operate on already-rendered output.
+
+Examples under `examples/` are hand-committed SVG artifacts that demonstrate the rules in their current form. They are evidence, not infrastructure.
+
+## The blueprint rules (read in order)
+
+These rules describe the v2 (blueprint) aesthetic. They are inspired by **ISO 128** (technical drawings — line grammar, weight series, terminator shape) and **ISO/IEC 19505** (UML 2.x — relationship notation). Every rule below is an algorithm the model applies at generation time — no external tool needed.
+
+1. **Layout first, content second.** Before emitting any SVG, compute and validate the bounding-box geometry of every component, cluster, and floating label. No two boxes may intersect; every component must fit inside its parent cluster; same-role boxes share width; row/column centrelines align across the diagram. Only after this validation passes do you draw rects, place icons, place labels, and route edges. See `resources/design-system.md` § *Workflow — layout first, content second*.
+2. **Label placement: clean background beats geometric midpoint.** Don't put labels at the Bezier/edge midpoint just because the math says so. Find empty visual space the size of the label and put the label there. Use leader lines if needed.
+3. **Knockout text-border for labels — no chip rects.** Every text element gets a wide solid canvas-colour stroke via `paint-order: stroke fill` (4 px for body, 6 px for titles, 3 px for sublabels). This masks underlying lines cleanly through each glyph; the universal halo IS the background. Never wrap labels in rounded-corner rect "chips".
+4. **Reserve icon space before placing text.** When a component box has an icon in the left padding, the label must NOT centre on the full box — it will slide under the icon. Centre the text in the space *right of the icon* (`text_x = (icon_right + 8 + box_right) / 2`) or left-align at `icon_right + 8`. Required guard: `icon_size + 16 px` of horizontal clearance.
+5. **Distribute attach points across a box side when multiple arrows share it.** Group edges by `(box, side)`. For N edges in a group, give each a distinct attach point at fraction `(k+1)/(N+1)` of the side length (`k = 0..N-1`, sorted by direction toward target). Single-arrow case lands at the midpoint — backward-compatible. See `resources/design-system.md` § *Edge endpoint distribution*.
+6. **Orthogonal routing with rounded corners.** Edges are horizontal or vertical only, with `r = 12` rounded turns. Route horizontal legs in CLEAR corridors between rows of components — never through a row of components. For cross-band edges use a `Z`-shape via an intermediate y (V-H-V) or x (H-V-H). Diagonals are forbidden.
+7. **Open-V chevron arrowhead; UML endings semantic.** Default arrowhead is an open V chevron (ISO 128). For real UML relationships use the semantic endings: open triangle (inheritance), dashed + open triangle (realization), filled diamond (composition), open diamond (aggregation), dashed + open V (dependency). Never use a filled triangle as the default arrowhead.
+8. **Quiet geometry.** Stroke widths from `{0.5, 1, 1.5, 2}` only. Corner radii from `{0, 2, 4}` only. Same width / rx for the same role across the whole diagram.
+9. **Gaps must fit the label between them.** For every edge sitting between two adjacent boxes (same row or same column), measure `label_w = len * font_size * 0.6` and ensure the gap is `≥ label_w + 24 px`. If not, widen the gap (default), shorten the label, or promote to a callout. Done in Phase 1 layout, not after.
+10. **Labels are text-only with the knockout halo.** No underline beneath text by default — the halo does the line-masking. Underlines + diagonal leaders are reserved for **callouts** (text in clear space pointing at a distant referent, ISO 128-24).
+11. **Icon discs are opt-in.** Only emit a corner-anchored coloured disc with a stencil glyph when the user explicitly asks for an icon on a specific box. Default position is top-left (`center = (box.x + 20, box.y)`, `r = 12`, fill = box stroke colour). The disc straddles the top border (half outside, half inside). Apply the icon-space rule to the box's label. See `resources/design-system.md` § *Icon disc (corner-anchored, opt-in)*.
+12. **3× spacing between root-level blocks.** Generous padding around every cluster. Default gap between major bands is 100–200 px, not 30 px. Visual hierarchy depends on whitespace.
+13. **Sub-group clusters within larger clusters.** When a logical group has more than ~4 components, partition them into 2–4 named sub-groups with their own dashed boundaries.
 
 ## Workflow
 

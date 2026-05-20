@@ -1,79 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 540" font-family="JetBrains Mono, ui-monospace, monospace">
-  <defs>
-    <marker id="ah" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"/>
-    </marker>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
-    </pattern>
-  </defs>
-  <style>
-    text { paint-order: stroke fill; stroke: rgba(2, 6, 23, 0.75); stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; fill: #e2e8f0; font-size: 12px; }
-    .title { font-size: 16px; font-weight: 700; fill: #f1f5f9; }
-    .lbl { font-size: 11px; fill: #cbd5e1; }
-    .lbl-ctrl { font-size: 11px; fill: #67e8f9; }
-    .sub { font-size: 10px; fill: #94a3b8; stroke-width: 2; }
-    .cluster { font-size: 11px; fill: #cbd5e1; }
-  
-    /* Hover glow */
-    rect.component { transition: filter 220ms ease; cursor: pointer; }
-    rect.component:hover { filter: drop-shadow(0 0 12px var(--glow, rgba(255,255,255,0.3))) brightness(1.15); }
-    rect.cyan    { --glow: rgba( 34, 211, 238, 0.65); }
-    rect.emerald { --glow: rgba( 52, 211, 153, 0.65); }
-    rect.violet  { --glow: rgba(167, 139, 250, 0.65); }
-    rect.rose    { --glow: rgba(251, 113, 133, 0.65); }
-    rect.amber   { --glow: rgba(251, 191, 36, 0.65); }
-    rect.slate   { --glow: rgba(148, 163, 184, 0.50); }
-  </style>
-  <rect width="900" height="540" fill="#020617"/>
-  <rect width="900" height="540" fill="url(#grid)"/>
-
-  <rect x="34.0" y="23.4" width="501.6" height="22.8" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="40" y="40" class="title">Service mesh — xDS control plane / Envoy data plane</text>
-  <text x="40" y="60" class="sub">dashed cyan = control plane (config push); solid emerald = data plane (request traffic)</text>
-
-  <!-- Control plane cluster -->
-  <rect x="280" y="90" width="340" height="100" rx="14" fill="rgba(8,51,68,0.05)" stroke="#22d3ee" stroke-width="1" stroke-dasharray="10,6"/>
-  <rect x="294.0" y="99.7" width="97.8" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="300" y="112" class="cluster">CONTROL PLANE</text>
-  <rect class="component cyan" x="380" y="125" width="140" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
-  <text x="450" y="155" text-anchor="middle">xDS SERVER</text>
-
-  <!-- Data plane cluster -->
-  <rect x="40" y="240" width="820" height="260" rx="14" fill="rgba(6,78,59,0.04)" stroke="#34d399" stroke-width="1" stroke-dasharray="10,6"/>
-  <rect x="54.0" y="249.7" width="124.2" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="60" y="262" class="cluster">DATA PLANE — pods</text>
-
-  <!-- Pod A -->
-  <rect x="80"  y="290" width="200" height="180" rx="10" fill="transparent" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
-  <text x="180" y="312" class="sub" text-anchor="middle">pod-a</text>
-  <rect class="component emerald" x="100" y="330" width="160" height="50" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
-  <text x="180" y="360" text-anchor="middle">SERVICE A</text>
-  <rect class="component cyan" x="100" y="400" width="160" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
-  <text x="180" y="430" text-anchor="middle">ENVOY</text>
-
-  <!-- Pod B -->
-  <rect x="350" y="290" width="200" height="180" rx="10" fill="transparent" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
-  <text x="450" y="312" class="sub" text-anchor="middle">pod-b</text>
-  <rect class="component emerald" x="370" y="330" width="160" height="50" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
-  <text x="450" y="360" text-anchor="middle">SERVICE B</text>
-  <rect class="component cyan" x="370" y="400" width="160" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
-  <text x="450" y="430" text-anchor="middle">ENVOY</text>
-
-  <!-- Pod C -->
-  <rect x="620" y="290" width="200" height="180" rx="10" fill="transparent" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
-  <text x="720" y="312" class="sub" text-anchor="middle">pod-c</text>
-  <rect class="component emerald" x="640" y="330" width="160" height="50" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
-  <text x="720" y="360" text-anchor="middle">SERVICE C</text>
-  <rect class="component cyan" x="640" y="400" width="160" height="50" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
-  <text x="720" y="430" text-anchor="middle">ENVOY</text>
-
-  <!-- xDS dashed control plane lines to each Envoy -->
-  <path d="M 420 175 Q 200 230 180 400" fill="none" stroke="#22d3ee" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#ah)"/>
-  <line x1="450" y1="175" x2="450" y2="400" stroke="#22d3ee" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#ah)"/>
-  <path d="M 480 175 Q 700 230 720 400" fill="none" stroke="#22d3ee" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#ah)"/>
-  <rect x="534.0" y="207.7" width="64.8" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="540" y="220" class="lbl-ctrl">xDS push</text>
-
-  <!-- Data plane solid arrows Envoy-to-Envoy -->
-  <line x1="260" y1="425" x2="368" y2="425" stroke="#34d399" stroke-width="1.5" marker-end="url(#ah)"/>
-  <rect x="294.8" y="402.6" width="38.4" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="314" y="415" class="lbl" text-anchor="middle">mTLS</text>
-  <line x1="530" y1="425" x2="638" y2="425" stroke="#34d399" stroke-width="1.5" marker-end="url(#ah)"/>
-  <rect x="564.8" y="402.6" width="38.4" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="584" y="415" class="lbl" text-anchor="middle">mTLS</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 510">
+<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern><marker id="ah-cyan" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-emerald" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-violet" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<style>text{paint-order:stroke fill;stroke:#020617;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;fill:#e2e8f0;font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace;}text.title{stroke-width:6;font-size:16px;font-weight:700;fill:#f1f5f9;}text.sub{stroke-width:3;font-size:10px;fill:#94a3b8;}text.lbl{font-size:11px;fill:#cbd5e1;}text.cluster{stroke-width:5;font-size:11px;font-weight:600;fill:#cbd5e1;}rect.component{transition:filter 220ms ease;cursor:pointer;}rect.component:hover{filter:drop-shadow(0 0 8px var(--glow,rgba(255,255,255,0.2)));}rect.cyan{--glow:rgba(34,211,238,0.5);}rect.emerald{--glow:rgba(52,211,153,0.5);}rect.violet{--glow:rgba(167,139,250,0.5);}</style>
+<rect width="960" height="510" fill="#020617"/>
+<rect width="960" height="510" fill="url(#grid)"/>
+<text class="title" x="32" y="44">SERVICE MESH — xDS CONTROL PLANE / ENVOY DATA PLANE</text>
+<text class="sub" x="32" y="64">dashed cyan = config push · solid emerald = mTLS · solid violet = sidecar→app</text>
+<rect x="380" y="110" width="200" height="90" rx="4" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="8,4"/>
+<text class="cluster" x="396" y="116">CONTROL PLANE</text>
+<rect x="60" y="270" width="840" height="200" rx="4" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="8,4"/>
+<text class="cluster" x="76" y="276">DATA PLANE — pods</text>
+<rect class="component cyan" x="400" y="130" width="160" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+<text x="480" y="152" text-anchor="middle">xDS SERVER</text>
+<text class="sub" x="480" y="168" text-anchor="middle">config</text>
+<rect class="component cyan" x="110" y="300" width="180" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+<text x="200" y="322" text-anchor="middle">ENVOY A</text>
+<text class="sub" x="200" y="338" text-anchor="middle">sidecar</text>
+<rect class="component cyan" x="390" y="300" width="180" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+<text x="480" y="322" text-anchor="middle">ENVOY B</text>
+<text class="sub" x="480" y="338" text-anchor="middle">sidecar</text>
+<rect class="component cyan" x="670" y="300" width="180" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+<text x="760" y="322" text-anchor="middle">ENVOY C</text>
+<text class="sub" x="760" y="338" text-anchor="middle">sidecar</text>
+<rect class="component emerald" x="110" y="400" width="180" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="200" y="422" text-anchor="middle">SERVICE A</text>
+<text class="sub" x="200" y="438" text-anchor="middle">app</text>
+<rect class="component emerald" x="390" y="400" width="180" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="480" y="422" text-anchor="middle">SERVICE B</text>
+<text class="sub" x="480" y="438" text-anchor="middle">app</text>
+<rect class="component emerald" x="670" y="400" width="180" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="760" y="422" text-anchor="middle">SERVICE C</text>
+<text class="sub" x="760" y="438" text-anchor="middle">app</text>
+<path d="M440,182 V223 Q440,235 428,235 H212 Q200,235 200,247 V300" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<path d="M480,182 V300" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<path d="M520,182 V223 Q520,235 532,235 H748 Q760,235 760,247 V300" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<path d="M290,326 H390" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<text class="lbl" x="340" y="320" text-anchor="middle">mTLS</text>
+<path d="M570,326 H670" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-emerald)"/>
+<text class="lbl" x="620" y="320" text-anchor="middle">mTLS</text>
+<path d="M200,352 V400" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M480,352 V400" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M760,352 V400" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
 </svg>

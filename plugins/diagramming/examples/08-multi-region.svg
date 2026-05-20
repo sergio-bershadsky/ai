@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 800">
+<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern><marker id="ah-cyan" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-emerald" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-violet" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-rose" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-amber" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-slate" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<style>text{paint-order:stroke fill;stroke:#020617;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;fill:#e2e8f0;font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace;}text.title{stroke-width:6;font-size:16px;font-weight:700;fill:#f1f5f9;}text.sub{stroke-width:3;font-size:10px;fill:#94a3b8;}text.lbl{font-size:11px;fill:#cbd5e1;}text.cluster{stroke-width:5;font-size:11px;font-weight:600;fill:#cbd5e1;}rect.component{transition:filter 220ms ease;cursor:pointer;}rect.component:hover{filter:drop-shadow(0 0 8px var(--glow,rgba(255,255,255,0.2)));}rect.cyan{--glow:rgba(34,211,238,0.5);}rect.emerald{--glow:rgba(52,211,153,0.5);}rect.violet{--glow:rgba(167,139,250,0.5);}rect.rose{--glow:rgba(251,113,133,0.5);}rect.amber{--glow:rgba(251,191,36,0.5);}rect.slate{--glow:rgba(148,163,184,0.4);}</style>
+<rect width="1400" height="800" fill="#020617"/>
+<rect width="1400" height="800" fill="url(#grid)"/>
+<text class="title" x="32" y="44">MULTI-REGION 3-TIER (20 elements)</text>
+<text class="sub" x="32" y="64">two mirrored regions · cross-region replication on data tier · crash-test at medium scale</text>
+<!-- Global elements -->
+<rect class="component slate" x="630" y="100" width="140" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/>
+<text x="700" y="122" text-anchor="middle">USER</text>
+<rect class="component amber" x="630" y="180" width="140" height="52" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/>
+<text x="700" y="202" text-anchor="middle">GLOBAL DNS</text>
+<text class="sub" x="700" y="218" text-anchor="middle">geo-routing</text>
+<!-- USER → DNS (b→t, same column straight V) -->
+<path d="M700,136 V180" fill="none" stroke="#94a3b8" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-amber)"/>
+<!-- US-EAST region cluster -->
+<rect x="40" y="260" width="640" height="500" rx="4" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="8,4"/>
+<text class="cluster" x="56" y="266">US-EAST</text>
+<!-- EU-WEST region cluster -->
+<rect x="720" y="260" width="640" height="500" rx="4" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="8,4"/>
+<text class="cluster" x="736" y="266">EU-WEST</text>
+<!-- US-EAST: 9 components -->
+<rect class="component amber" x="290" y="290" width="140" height="52" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/>
+<text x="360" y="312" text-anchor="middle">US LB</text>
+<text class="sub" x="360" y="328" text-anchor="middle">HAProxy</text>
+<rect class="component cyan" x="220" y="380" width="120" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+<text x="280" y="402" text-anchor="middle">US WEB-1</text>
+<text class="sub" x="280" y="418" text-anchor="middle">nginx</text>
+<rect class="component cyan" x="380" y="380" width="120" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+<text x="440" y="402" text-anchor="middle">US WEB-2</text>
+<text class="sub" x="440" y="418" text-anchor="middle">nginx</text>
+<rect class="component emerald" x="140" y="470" width="120" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="200" y="492" text-anchor="middle">US APP-1</text>
+<text class="sub" x="200" y="508" text-anchor="middle">node.js</text>
+<rect class="component emerald" x="300" y="470" width="120" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="360" y="492" text-anchor="middle">US APP-2</text>
+<text class="sub" x="360" y="508" text-anchor="middle">node.js</text>
+<rect class="component rose" x="460" y="470" width="120" height="52" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/>
+<text x="520" y="492" text-anchor="middle">US REDIS</text>
+<text class="sub" x="520" y="508" text-anchor="middle">cache</text>
+<rect class="component violet" x="220" y="560" width="120" height="52" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/>
+<text x="280" y="582" text-anchor="middle">US PG-PRIM</text>
+<text class="sub" x="280" y="598" text-anchor="middle">postgres</text>
+<rect class="component violet" x="380" y="560" width="120" height="52" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/>
+<text x="440" y="582" text-anchor="middle">US PG-REPL</text>
+<text class="sub" x="440" y="598" text-anchor="middle">read-only</text>
+<rect class="component violet" x="290" y="660" width="140" height="52" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/>
+<text x="360" y="682" text-anchor="middle">US S3</text>
+<text class="sub" x="360" y="698" text-anchor="middle">us-east-1</text>
+<!-- EU-WEST: 9 components (mirror of US-EAST), offset by 680 -->
+<rect class="component amber" x="970" y="290" width="140" height="52" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/>
+<text x="1040" y="312" text-anchor="middle">EU LB</text>
+<text class="sub" x="1040" y="328" text-anchor="middle">HAProxy</text>
+<rect class="component cyan" x="900" y="380" width="120" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+<text x="960" y="402" text-anchor="middle">EU WEB-1</text>
+<text class="sub" x="960" y="418" text-anchor="middle">nginx</text>
+<rect class="component cyan" x="1060" y="380" width="120" height="52" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+<text x="1120" y="402" text-anchor="middle">EU WEB-2</text>
+<text class="sub" x="1120" y="418" text-anchor="middle">nginx</text>
+<rect class="component emerald" x="820" y="470" width="120" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="880" y="492" text-anchor="middle">EU APP-1</text>
+<text class="sub" x="880" y="508" text-anchor="middle">node.js</text>
+<rect class="component emerald" x="980" y="470" width="120" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="1040" y="492" text-anchor="middle">EU APP-2</text>
+<text class="sub" x="1040" y="508" text-anchor="middle">node.js</text>
+<rect class="component rose" x="1140" y="470" width="120" height="52" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/>
+<text x="1200" y="492" text-anchor="middle">EU REDIS</text>
+<text class="sub" x="1200" y="508" text-anchor="middle">cache</text>
+<rect class="component violet" x="900" y="560" width="120" height="52" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/>
+<text x="960" y="582" text-anchor="middle">EU PG-PRIM</text>
+<text class="sub" x="960" y="598" text-anchor="middle">postgres</text>
+<rect class="component violet" x="1060" y="560" width="120" height="52" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/>
+<text x="1120" y="582" text-anchor="middle">EU PG-REPL</text>
+<text class="sub" x="1120" y="598" text-anchor="middle">read-only</text>
+<rect class="component violet" x="970" y="660" width="140" height="52" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/>
+<text x="1040" y="682" text-anchor="middle">EU S3</text>
+<text class="sub" x="1040" y="698" text-anchor="middle">eu-west-1</text>
+<!-- DNS bottom: 2 outbound (US LB, EU LB). Slots: 677, 723. via_y=261. -->
+<path d="M677,232 V249 Q677,261 665,261 H372 Q360,261 360,273 V290" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
+<path d="M723,232 V249 Q723,261 735,261 H1028 Q1040,261 1040,273 V290" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
+<!-- US LB bottom: 2 outbound. Slots: 337, 383. via_y=361. -->
+<path d="M337,342 V349 Q337,361 325,361 H292 Q280,361 280,373 V380" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<path d="M383,342 V349 Q383,361 395,361 H428 Q440,361 440,373 V380" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<!-- US WEB-1 → US APP-1 (b→t). Aligned at cx=280 (WEB-1) and 200 (APP-1). via_y=451. -->
+<path d="M280,432 V439 Q280,451 268,451 H212 Q200,451 200,463 V470" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-emerald)"/>
+<!-- US WEB-2 → US APP-2. WEB-2 cx=440, APP-2 cx=360. via_y=451. -->
+<path d="M440,432 V439 Q440,451 428,451 H372 Q360,451 360,463 V470" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-emerald)"/>
+<!-- US APP-2 → US REDIS (same row, H direct) -->
+<path d="M420,496 H460" fill="none" stroke="#fb7185" stroke-width="1.0" stroke-dasharray="3,3" stroke-linecap="round" marker-end="url(#ah-rose)"/>
+<!-- US APP-1, APP-2 → US PG-PRIM (b→t). PG-PRIM has 2 incoming on top; slots: 260, 300. -->
+<path d="M200,522 V541 Q200,553 212,553 H248 Q260,553 260,565 V560" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
+<path d="M360,522 V541 Q360,553 348,553 H312 Q300,553 300,565 V560" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
+<!-- US PG-PRIM → US PG-REPL (same row, H direct) -->
+<path d="M340,586 H380" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<text class="lbl" x="360" y="580" text-anchor="middle">repl</text>
+<!-- US APP-2 → US S3 (b→t). APP-2 cx=360, S3 cx=360. Straight V. -->
+<path d="M360,522 V660" fill="none" stroke="#a78bfa" stroke-width="0.75" stroke-dasharray="1,3" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<!-- EU LB bottom: 2 outbound. Slots: 1017, 1063. via_y=361. -->
+<path d="M1017,342 V349 Q1017,361 1005,361 H972 Q960,361 960,373 V380" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<path d="M1063,342 V349 Q1063,361 1075,361 H1108 Q1120,361 1120,373 V380" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<!-- EU WEB → APP -->
+<path d="M960,432 V439 Q960,451 948,451 H892 Q880,451 880,463 V470" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-emerald)"/>
+<path d="M1120,432 V439 Q1120,451 1108,451 H1052 Q1040,451 1040,463 V470" fill="none" stroke="#34d399" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-emerald)"/>
+<!-- EU APP-2 → EU REDIS -->
+<path d="M1100,496 H1140" fill="none" stroke="#fb7185" stroke-width="1.0" stroke-dasharray="3,3" stroke-linecap="round" marker-end="url(#ah-rose)"/>
+<!-- EU APP → PG-PRIM -->
+<path d="M880,522 V541 Q880,553 892,553 H928 Q940,553 940,565 V560" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
+<path d="M1040,522 V541 Q1040,553 1028,553 H992 Q980,553 980,565 V560" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
+<!-- EU PG-PRIM → EU PG-REPL -->
+<path d="M1020,586 H1060" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<text class="lbl" x="1040" y="580" text-anchor="middle">repl</text>
+<!-- EU APP-2 → EU S3 -->
+<path d="M1040,522 V660" fill="none" stroke="#a78bfa" stroke-width="0.75" stroke-dasharray="1,3" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<!-- Cross-region: US PG-PRIM → EU PG-PRIM (async replication). via_y=635 (below both clusters' content). -->
+<path d="M280,612 V623 Q280,635 292,635 H948 Q960,635 960,623 V612" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-dasharray="2,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-violet)"/>
+<text class="lbl" x="620" y="629">async repl (cross-region)</text>
+<!-- Cross-region: US S3 → EU S3 (cross-region replication). Same row. H direct. -->
+<path d="M430,686 H970" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-dasharray="2,3" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<text class="lbl" x="700" y="680" text-anchor="middle">S3 cross-region replication</text>
+</svg>

@@ -12,31 +12,67 @@ Five patterns the skill produces, rendered to SVG with the canonical design syst
 
 The minimum viable diagram — external user, edge, compute, storage — illustrating semantic palette (slate / cyan / emerald / violet) and edge dash semantics (solid HTTPS, solid gRPC, dashed SQL).
 
-![Three-tier request flow](./examples/01-client-api-db.svg?v=3)
+![Three-tier request flow](./examples/01-client-api-db.svg?v=6)
 
 ### 2. Service mesh — xDS control plane / Envoy data plane
 
 Two-cluster layout demonstrating **control plane vs data plane** convention: dashed cyan lines push xDS config, solid emerald lines carry mTLS request traffic. Sub-groups (`pod-a/b/c`) inside the data-plane cluster show two-level nesting.
 
-![Service mesh — xDS / Envoy](./examples/02-service-mesh-xds.svg?v=3)
+![Service mesh — xDS / Envoy](./examples/02-service-mesh-xds.svg?v=6)
 
 ### 3. OAuth2 / JWT flow with security boundary
 
 Rose dashed lines mark every auth/token edge; a rose-bordered dashed cluster wraps the server-side trust zone. Shows how to keep many short same-coloured edges legible by alternating label sides (above the line / below the line).
 
-![OAuth2 / JWT flow](./examples/03-oauth-flow.svg?v=3)
+![OAuth2 / JWT flow](./examples/03-oauth-flow.svg?v=6)
 
 ### 4. Event-driven CQRS with audit stream
 
 Demonstrates three edge semantics in one diagram: solid emerald (synchronous command), amber dashed (pub/sub fan-out), and violet dotted-thin (audit tap). The audit stream visibly recedes — exactly what the dotted-thin convention is for.
 
-![Event-driven CQRS](./examples/04-event-driven-cqrs.svg?v=3)
+![Event-driven CQRS](./examples/04-event-driven-cqrs.svg?v=6)
 
 ### 5. Multi-tenant credentials — KMS-wrapped at rest
 
 The strongest stress-test of the design system: nested control-plane / data-plane regions, **bold rose** lines reserved for key material (KMS Encrypt/Decrypt), an inner rose dashed boundary marking the *only* place plaintext lives (RAM-only xDS agent). Label routing avoids cluster borders and the central KMS box.
 
-![Multi-tenant KMS](./examples/05-multi-tenant-kms.svg?v=3)
+![Multi-tenant KMS](./examples/05-multi-tenant-kms.svg?v=6)
+
+### 6. Corner-disc icon annotations
+
+Opt-in glyphs anchored to the top-left of selected component boxes. The disc fill matches the box's stroke colour; the stencil glyph inside is drawn in canvas colour. Inside-box label is right-shifted per the icon-space rule. Discs are never emitted by default — the user must request them per box.
+
+![Icon annotations](./examples/06-icon-annotations.svg?v=6)
+
+### 7. Classic 3-tier web app (crash-test, ~10 elements)
+
+Smallest crash test — edge / web / app / data with two nodes per tier and a cache. Verifies the new sizing formula (`h = content_h + 24`), multi-arrow distribution from LB / USER, perpendicular-departure routing, and cluster nesting at small scale.
+
+![3-tier web crash test](./examples/07-three-tier-web.svg?v=1)
+
+### 8. Multi-region 3-tier (crash-test, ~20 elements)
+
+Two mirrored regions (US-EAST / EU-WEST) under a global DNS, with cross-region replication on the data tier. Verifies layout symmetry, very long edges (S3 cross-region replication spans the canvas), and label-fits-gap on the cross-region routes.
+
+![Multi-region crash test](./examples/08-multi-region.svg?v=1)
+
+### 9. 4-tier enterprise (crash-test, ~40 elements)
+
+Five horizontal bands — edge / web / business / data / observability — eight components each. Verifies dense-row alignment, that all tier-to-tier edges pass the perpendicular audit, and that cluster boundaries stay clean at this density. Most edges are representative-only; the footer notes which are omitted.
+
+![4-tier enterprise crash test](./examples/09-four-tier-enterprise.svg?v=1)
+
+### 10. Microservices mesh (crash-test, ~60 elements)
+
+12 service+sidecar pods on a control plane, with message bus, data stores, and observability tiers. Uses one-line boxes (`h=36`) for density. Exercises the rules at a scale where individual edge precision matters less than band-level structure.
+
+![Microservices mesh crash test](./examples/10-microservices-mesh.svg?v=1)
+
+### 11. Full platform — multi-region (crash-test, ~80 elements)
+
+Eight horizontal bands × 8–10 components — edge, two regions (US/EU) with full pod meshes, global control plane, message bus, data, observability, security/compliance. Maximum scale; representative inter-band edges only. Tests whether the v2 rules produce a readable diagram at the upper end of typical architecture-doc complexity.
+
+![Full platform crash test](./examples/11-full-platform.svg?v=1)
 
 ---
 

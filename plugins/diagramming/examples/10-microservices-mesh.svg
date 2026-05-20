@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 980">
+<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern><marker id="ah-cyan" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-emerald" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-violet" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-rose" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-amber" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-slate" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<style>text{paint-order:stroke fill;stroke:#020617;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;fill:#e2e8f0;font-size:11px;font-family:'JetBrains Mono',ui-monospace,monospace;}text.title{stroke-width:6;font-size:16px;font-weight:700;fill:#f1f5f9;}text.sub{stroke-width:3;font-size:9px;fill:#94a3b8;}text.lbl{font-size:10px;fill:#cbd5e1;}text.cluster{stroke-width:5;font-size:11px;font-weight:600;fill:#cbd5e1;}rect.component{transition:filter 220ms ease;cursor:pointer;}rect.component:hover{filter:drop-shadow(0 0 8px var(--glow,rgba(255,255,255,0.2)));}rect.cyan{--glow:rgba(34,211,238,0.5);}rect.emerald{--glow:rgba(52,211,153,0.5);}rect.violet{--glow:rgba(167,139,250,0.5);}rect.rose{--glow:rgba(251,113,133,0.5);}rect.amber{--glow:rgba(251,191,36,0.5);}rect.slate{--glow:rgba(148,163,184,0.4);}</style>
+<rect width="1800" height="980" fill="#020617"/>
+<rect width="1800" height="980" fill="url(#grid)"/>
+<text class="title" x="32" y="44">MICROSERVICES MESH (60 elements)</text>
+<text class="sub" x="32" y="64">12 service+sidecar pods · control plane · message bus · data stores · observability — h=36 dense layout</text>
+<!-- Band clusters -->
+<rect x="40" y="100" width="1720" height="60" rx="4" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="106">EDGE</text>
+<rect x="40" y="200" width="1720" height="240" rx="4" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="206">DATA PLANE — 12 pods (service + envoy sidecar)</text>
+<rect x="40" y="480" width="1720" height="60" rx="4" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="486">CONTROL PLANE — istio + utilities</text>
+<rect x="40" y="580" width="1720" height="60" rx="4" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="586">MESSAGE BUS</text>
+<rect x="40" y="680" width="1720" height="60" rx="4" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="686">DATA STORES</text>
+<rect x="40" y="780" width="1720" height="60" rx="4" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="8,4"/><text class="cluster" x="56" y="786">OBSERVABILITY</text>
+<!-- EDGE row (6 elements). x positions: 280, 480, 680, 880, 1080, 1280. w=120 h=36. -->
+<rect class="component slate" x="280" y="116" width="120" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="340" y="138" text-anchor="middle">USER</text>
+<rect class="component amber" x="480" y="116" width="120" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="540" y="138" text-anchor="middle">CDN</text>
+<rect class="component amber" x="680" y="116" width="120" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="740" y="138" text-anchor="middle">WAF</text>
+<rect class="component amber" x="880" y="116" width="120" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="940" y="138" text-anchor="middle">LB</text>
+<rect class="component amber" x="1080" y="116" width="120" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="1140" y="138" text-anchor="middle">API-GW</text>
+<rect class="component rose" x="1280" y="116" width="120" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="1340" y="138" text-anchor="middle">AUTH-PROXY</text>
+<!-- DATA PLANE: 12 pods × 2 (24 boxes). Pod rows at y=220 (svc), y=260 (envoy). 6 pods per row × 2 rows. -->
+<!-- Row A (services y=220, envoys y=270). 6 pods. Pod width 120+10+120 + gap 40 = 290 per pod group. 6 pods = 6*250 + 5*30 = 1650. Start x=75. -->
+<!-- Simpler: just place service and envoy in adjacent columns. 12 services + 12 envoys = 24 boxes. Use 12 columns × 2 rows. -->
+<!-- Row A: 6 services (svc-A..F) at y=220, 6 envoys at y=270. Pod groups in pairs. -->
+<rect class="component emerald" x="80" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="140" y="242" text-anchor="middle">SVC-A</text>
+<rect class="component cyan" x="80" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="140" y="292" text-anchor="middle">ENVOY-A</text>
+<rect class="component emerald" x="220" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="280" y="242" text-anchor="middle">SVC-B</text>
+<rect class="component cyan" x="220" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="280" y="292" text-anchor="middle">ENVOY-B</text>
+<rect class="component emerald" x="360" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="420" y="242" text-anchor="middle">SVC-C</text>
+<rect class="component cyan" x="360" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="420" y="292" text-anchor="middle">ENVOY-C</text>
+<rect class="component emerald" x="500" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="560" y="242" text-anchor="middle">SVC-D</text>
+<rect class="component cyan" x="500" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="560" y="292" text-anchor="middle">ENVOY-D</text>
+<rect class="component emerald" x="640" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="700" y="242" text-anchor="middle">SVC-E</text>
+<rect class="component cyan" x="640" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="700" y="292" text-anchor="middle">ENVOY-E</text>
+<rect class="component emerald" x="780" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="840" y="242" text-anchor="middle">SVC-F</text>
+<rect class="component cyan" x="780" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="840" y="292" text-anchor="middle">ENVOY-F</text>
+<rect class="component emerald" x="920" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="980" y="242" text-anchor="middle">SVC-G</text>
+<rect class="component cyan" x="920" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="980" y="292" text-anchor="middle">ENVOY-G</text>
+<rect class="component emerald" x="1060" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1120" y="242" text-anchor="middle">SVC-H</text>
+<rect class="component cyan" x="1060" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1120" y="292" text-anchor="middle">ENVOY-H</text>
+<rect class="component emerald" x="1200" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1260" y="242" text-anchor="middle">SVC-I</text>
+<rect class="component cyan" x="1200" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1260" y="292" text-anchor="middle">ENVOY-I</text>
+<rect class="component emerald" x="1340" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1400" y="242" text-anchor="middle">SVC-J</text>
+<rect class="component cyan" x="1340" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1400" y="292" text-anchor="middle">ENVOY-J</text>
+<rect class="component emerald" x="1480" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1540" y="242" text-anchor="middle">SVC-K</text>
+<rect class="component cyan" x="1480" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1540" y="292" text-anchor="middle">ENVOY-K</text>
+<rect class="component emerald" x="1620" y="220" width="120" height="36" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/><text x="1680" y="242" text-anchor="middle">SVC-L</text>
+<rect class="component cyan" x="1620" y="270" width="120" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1680" y="292" text-anchor="middle">ENVOY-L</text>
+<!-- Control plane (8 elements) y=496 -->
+<rect class="component cyan" x="180" y="496" width="160" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="260" y="518" text-anchor="middle">ISTIO-PILOT</text>
+<rect class="component cyan" x="360" y="496" width="160" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="440" y="518" text-anchor="middle">XDS-SERVER</text>
+<rect class="component cyan" x="540" y="496" width="160" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="620" y="518" text-anchor="middle">MIXER</text>
+<rect class="component rose" x="720" y="496" width="160" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="800" y="518" text-anchor="middle">CITADEL</text>
+<rect class="component cyan" x="900" y="496" width="160" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="980" y="518" text-anchor="middle">GALLEY</text>
+<rect class="component cyan" x="1080" y="496" width="160" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1160" y="518" text-anchor="middle">KIALI</text>
+<rect class="component rose" x="1260" y="496" width="160" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="1340" y="518" text-anchor="middle">CERT-MGR</text>
+<rect class="component cyan" x="1440" y="496" width="160" height="36" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/><text x="1520" y="518" text-anchor="middle">ISTIO-OPER</text>
+<!-- Message bus (8 elements) y=596 -->
+<rect class="component amber" x="180" y="596" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="260" y="618" text-anchor="middle">KAFKA-1</text>
+<rect class="component amber" x="360" y="596" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="440" y="618" text-anchor="middle">KAFKA-2</text>
+<rect class="component amber" x="540" y="596" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="620" y="618" text-anchor="middle">NATS</text>
+<rect class="component amber" x="720" y="596" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="800" y="618" text-anchor="middle">PULSAR</text>
+<rect class="component amber" x="900" y="596" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="980" y="618" text-anchor="middle">RABBITMQ</text>
+<rect class="component amber" x="1080" y="596" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="1160" y="618" text-anchor="middle">REDIS-STREAM</text>
+<rect class="component amber" x="1260" y="596" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="1340" y="618" text-anchor="middle">EVENTBRIDGE</text>
+<rect class="component amber" x="1440" y="596" width="160" height="36" rx="2" fill="rgba(120,53,15,0.3)" stroke="#fbbf24" stroke-width="1"/><text x="1520" y="618" text-anchor="middle">SQS</text>
+<!-- Data stores (8 elements) y=696 -->
+<rect class="component violet" x="180" y="696" width="160" height="36" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="260" y="718" text-anchor="middle">PG-PRIM</text>
+<rect class="component violet" x="360" y="696" width="160" height="36" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="440" y="718" text-anchor="middle">PG-REPL</text>
+<rect class="component rose" x="540" y="696" width="160" height="36" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/><text x="620" y="718" text-anchor="middle">REDIS</text>
+<rect class="component violet" x="720" y="696" width="160" height="36" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="800" y="718" text-anchor="middle">MONGO</text>
+<rect class="component violet" x="900" y="696" width="160" height="36" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="980" y="718" text-anchor="middle">ES</text>
+<rect class="component violet" x="1080" y="696" width="160" height="36" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="1160" y="718" text-anchor="middle">CLICKHOUSE</text>
+<rect class="component violet" x="1260" y="696" width="160" height="36" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="1340" y="718" text-anchor="middle">S3</text>
+<rect class="component violet" x="1440" y="696" width="160" height="36" rx="2" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/><text x="1520" y="718" text-anchor="middle">CASSANDRA</text>
+<!-- Observability (6 elements) y=796 -->
+<rect class="component slate" x="280" y="796" width="160" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="360" y="818" text-anchor="middle">PROMETHEUS</text>
+<rect class="component slate" x="460" y="796" width="160" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="540" y="818" text-anchor="middle">GRAFANA</text>
+<rect class="component slate" x="640" y="796" width="160" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="720" y="818" text-anchor="middle">JAEGER</text>
+<rect class="component slate" x="820" y="796" width="160" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="900" y="818" text-anchor="middle">LOKI</text>
+<rect class="component slate" x="1000" y="796" width="160" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="1080" y="818" text-anchor="middle">FLUENTD</text>
+<rect class="component slate" x="1180" y="796" width="160" height="36" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/><text x="1260" y="818" text-anchor="middle">ALERTMGR</text>
+<!-- Representative edges: Edge → first pod row, control plane → envoys, services → bus, services → data -->
+<path d="M340,152 V216" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<path d="M940,152 V216" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<path d="M1140,152 V216" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<!-- Control plane → envoys (dashed cyan, representative for SVC-A/F/L) -->
+<path d="M260,492 V446 Q260,434 248,434 H152 Q140,434 140,422 V306" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<path d="M440,492 V446 Q440,434 452,434 H828 Q840,434 840,422 V306" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<path d="M620,492 V446 Q620,434 632,434 H1668 Q1680,434 1680,422 V306" fill="none" stroke="#22d3ee" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-cyan)"/>
+<!-- Services → message bus (representative) -->
+<path d="M140,256 V550 Q140,562 152,562 H248 Q260,562 260,574 V596" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
+<path d="M700,256 V550 Q700,562 712,562 H788 Q800,562 800,574 V596" fill="none" stroke="#fbbf24" stroke-width="1.0" stroke-dasharray="5,3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-amber)"/>
+<!-- Message bus → data stores (representative) -->
+<path d="M260,632 V696" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<path d="M1160,632 V696" fill="none" stroke="#a78bfa" stroke-width="1.0" stroke-linecap="round" marker-end="url(#ah-violet)"/>
+<!-- Data stores → observability (representative) -->
+<path d="M620,732 V796" fill="none" stroke="#94a3b8" stroke-width="0.75" stroke-dasharray="1,3" stroke-linecap="round" marker-end="url(#ah-slate)"/>
+<!-- Footnote -->
+<text class="sub" x="900" y="940" text-anchor="middle">Full mesh has ~120+ edges (every envoy talks to xDS, every service emits metrics, …) — representative edges only.</text>
+</svg>

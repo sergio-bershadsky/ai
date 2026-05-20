@@ -1,82 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" font-family="JetBrains Mono, ui-monospace, monospace">
-  <defs>
-    <marker id="ah" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"/>
-    </marker>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
-    </pattern>
-  </defs>
-  <style>
-    text { paint-order: stroke fill; stroke: rgba(2, 6, 23, 0.75); stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; fill: #e2e8f0; font-size: 12px; }
-    .title { font-size: 16px; font-weight: 700; fill: #f1f5f9; }
-    .lbl { font-size: 11px; fill: #cbd5e1; }
-    .lbl-auth { font-size: 11px; fill: #fda4af; }
-    .sub { font-size: 10px; fill: #94a3b8; stroke-width: 2; }
-    .cluster { font-size: 11px; fill: #fda4af; }
-  
-    /* Hover glow */
-    rect.component { transition: filter 220ms ease; cursor: pointer; }
-    rect.component:hover { filter: drop-shadow(0 0 12px var(--glow, rgba(255,255,255,0.3))) brightness(1.15); }
-    rect.cyan    { --glow: rgba( 34, 211, 238, 0.65); }
-    rect.emerald { --glow: rgba( 52, 211, 153, 0.65); }
-    rect.violet  { --glow: rgba(167, 139, 250, 0.65); }
-    rect.rose    { --glow: rgba(251, 113, 133, 0.65); }
-    rect.amber   { --glow: rgba(251, 191, 36, 0.65); }
-    rect.slate   { --glow: rgba(148, 163, 184, 0.50); }
-  </style>
-  <rect width="900" height="480" fill="#020617"/>
-  <rect width="900" height="480" fill="url(#grid)"/>
-
-  <rect x="34.0" y="23.4" width="396.0" height="22.8" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="40" y="40" class="title">OAuth2 / JWT flow with security boundary</text>
-  <text x="40" y="60" class="sub">rose dashed = auth/token material; rose-bordered cluster = security trust zone</text>
-
-  <!-- Client -->
-  <rect class="component slate" x="40" y="200" width="140" height="70" rx="6" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="110" y="230" text-anchor="middle">SPA CLIENT</text>
-  <text x="110" y="250" class="sub" text-anchor="middle">browser</text>
-
-  <!-- Security trust zone -->
-  <rect x="260" y="120" width="600" height="280" rx="8" fill="transparent" stroke="#fb7185" stroke-width="1" stroke-dasharray="4,4"/>
-  <rect x="274.0" y="129.7" width="170.4" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="280" y="142" class="cluster">TRUST ZONE — server-side</text>
-
-  <!-- API -->
-  <rect class="component emerald" x="300" y="200" width="140" height="70" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
-  <text x="370" y="230" text-anchor="middle">API</text>
-  <text x="370" y="250" class="sub" text-anchor="middle">resource server</text>
-
-  <!-- AuthZ Service -->
-  <rect class="component rose" x="520" y="200" width="140" height="70" rx="6" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1.5"/>
-  <text x="590" y="230" text-anchor="middle">AUTHZ</text>
-  <text x="590" y="250" class="sub" text-anchor="middle">policy decision</text>
-
-  <!-- IdP -->
-  <rect class="component rose" x="700" y="200" width="140" height="70" rx="6" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1.5"/>
-  <text x="770" y="230" text-anchor="middle">IDP</text>
-  <text x="770" y="250" class="sub" text-anchor="middle">Keycloak / Auth0</text>
-
-  <!-- Edges -->
-  <!-- Client -> API: bearer token -->
-  <line x1="180" y1="235" x2="298" y2="235" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#ah)"/>
-  <rect x="200.0" y="212.7" width="78.0" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="239" y="225" class="lbl-auth" text-anchor="middle">Bearer JWT</text>
-
-  <!-- API -> AuthZ: introspect -->
-  <line x1="440" y1="235" x2="518" y2="235" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#ah)"/>
-  <rect x="440.0" y="212.7" width="78.0" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="479" y="225" class="lbl-auth" text-anchor="middle">introspect</text>
-
-  <!-- AuthZ -> IdP: fetch JWKS -->
-  <line x1="660" y1="225" x2="698" y2="225" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#ah)"/>
-  <rect x="659.8" y="202.7" width="38.4" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="679" y="215" class="lbl-auth" text-anchor="middle">JWKS</text>
-
-  <!-- IdP -> AuthZ: public key -->
-  <line x1="700" y1="248" x2="662" y2="248" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#ah)"/>
-  <rect x="649.9" y="257.6" width="58.2" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="679" y="270" class="lbl-auth" text-anchor="middle">pub key</text>
-
-  <!-- Client login redirect -->
-  <path d="M 110 200 Q 110 100 770 100 Q 770 100 770 198" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#ah)"/>
-  <rect x="358.1" y="79.7" width="163.8" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="440" y="92" class="lbl-auth" text-anchor="middle">OAuth2 redirect (login)</text>
-
-  <!-- API -> client response -->
-  <path d="M 300 250 Q 240 320 180 270" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#ah)"/>
-  <rect x="207.6" y="307.6" width="64.8" height="17.6" rx="3" fill="rgba(15,23,42,0.92)" stroke="rgba(148, 163, 184, 0.75)" stroke-width="1"/><text x="240" y="320" class="lbl" text-anchor="middle">resource</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 400">
+<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern><marker id="ah-emerald" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-rose" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-slate" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<style>text{paint-order:stroke fill;stroke:#020617;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;fill:#e2e8f0;font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace;}text.title{stroke-width:6;font-size:16px;font-weight:700;fill:#f1f5f9;}text.sub{stroke-width:3;font-size:10px;fill:#94a3b8;}text.lbl{font-size:11px;fill:#cbd5e1;}text.cluster{stroke-width:5;font-size:11px;font-weight:600;fill:#cbd5e1;}rect.component{transition:filter 220ms ease;cursor:pointer;}rect.component:hover{filter:drop-shadow(0 0 8px var(--glow,rgba(255,255,255,0.2)));}rect.emerald{--glow:rgba(52,211,153,0.5);}rect.rose{--glow:rgba(251,113,133,0.5);}rect.slate{--glow:rgba(148,163,184,0.4);}</style>
+<rect width="960" height="400" fill="#020617"/>
+<rect width="960" height="400" fill="url(#grid)"/>
+<text class="title" x="32" y="44">OAUTH2 / JWT FLOW WITH SECURITY BOUNDARY</text>
+<text class="sub" x="32" y="64">rose dashed = auth / token material · rose cluster = trust zone</text>
+<rect x="260" y="140" width="660" height="140" rx="4" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="8,4"/>
+<text class="cluster" x="276" y="146">TRUST ZONE — server-side</text>
+<rect class="component slate" x="60" y="190" width="140" height="52" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/>
+<text x="130" y="212" text-anchor="middle">SPA CLIENT</text>
+<text class="sub" x="130" y="228" text-anchor="middle">browser</text>
+<rect class="component emerald" x="290" y="190" width="140" height="52" rx="2" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+<text x="360" y="212" text-anchor="middle">API</text>
+<text class="sub" x="360" y="228" text-anchor="middle">resource svr</text>
+<rect class="component rose" x="520" y="190" width="140" height="52" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/>
+<text x="590" y="212" text-anchor="middle">AUTHZ</text>
+<text class="sub" x="590" y="228" text-anchor="middle">policy decision</text>
+<rect class="component rose" x="750" y="190" width="140" height="52" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/>
+<text x="820" y="212" text-anchor="middle">IDP</text>
+<text class="sub" x="820" y="228" text-anchor="middle">Keycloak / Auth0</text>
+<path d="M200,216 H290" fill="none" stroke="#fb7185" stroke-width="1.0" stroke-dasharray="3,3" stroke-linecap="round" marker-end="url(#ah-rose)"/>
+<text class="lbl" x="245" y="210" text-anchor="middle">Bearer JWT</text>
+<path d="M430,216 H520" fill="none" stroke="#fb7185" stroke-width="1.0" stroke-dasharray="3,3" stroke-linecap="round" marker-end="url(#ah-rose)"/>
+<text class="lbl" x="475" y="210" text-anchor="middle">introspect</text>
+<path d="M660,216 H750" fill="none" stroke="#fb7185" stroke-width="1.0" stroke-dasharray="3,3" stroke-linecap="round" marker-end="url(#ah-rose)"/>
+<text class="lbl" x="705" y="210" text-anchor="middle">JWKS</text>
 </svg>
