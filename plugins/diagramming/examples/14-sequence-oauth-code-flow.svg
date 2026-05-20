@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1173 604">
+<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern><marker id="ah-rose" viewBox="0 0 10 10" markerWidth="9" markerHeight="9" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-emerald" viewBox="0 0 10 10" markerWidth="9" markerHeight="9" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-violet" viewBox="0 0 10 10" markerWidth="9" markerHeight="9" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-amber" viewBox="0 0 10 10" markerWidth="9" markerHeight="9" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-cyan" viewBox="0 0 10 10" markerWidth="9" markerHeight="9" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ah-slate" viewBox="0 0 10 10" markerWidth="9" markerHeight="9" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<style>
+text{paint-order:stroke fill;stroke:#020617;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;fill:#e2e8f0;font-size:11px;font-family:'JetBrains Mono',ui-monospace,monospace;}
+text.title{stroke-width:6;font-size:16px;font-weight:700;fill:#f1f5f9;}
+text.sub{stroke-width:3;font-size:10px;fill:#94a3b8;}
+text.lbl{font-size:11px;fill:#cbd5e1;}
+text.note{stroke-width:3;font-size:9px;fill:#94a3b8;font-style:italic;}
+rect.component{transition:filter 220ms ease;cursor:pointer;}
+rect.component:hover{filter:drop-shadow(0 0 8px var(--glow,rgba(255,255,255,0.2)));}
+rect.cyan{--glow:rgba(34,211,238,0.5);}
+rect.emerald{--glow:rgba(52,211,153,0.5);}
+rect.violet{--glow:rgba(167,139,250,0.5);}
+rect.rose{--glow:rgba(251,113,133,0.5);}
+rect.amber{--glow:rgba(251,191,36,0.5);}
+rect.slate{--glow:rgba(148,163,184,0.4);}
+</style>
+<rect width="1173" height="604" fill="#020617"/>
+<rect width="1173" height="604" fill="url(#grid)"/>
+<text class="title" x="32" y="36">OAUTH 2.0 AUTHORIZATION CODE FLOW + PKCE</text>
+<text class="sub" x="32" y="56">5 actors · 10 messages · sync solid · return dashed · self-loop on IDP</text>
+<line class="lifeline" x1="160.0" y1="144" x2="160.0" y2="564" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
+<line class="lifeline" x1="360.0" y1="144" x2="360.0" y2="564" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
+<line class="lifeline" x1="578.5" y1="144" x2="578.5" y2="564" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
+<line class="lifeline" x1="805.0" y1="144" x2="805.0" y2="564" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
+<line class="lifeline" x1="1013.0" y1="144" x2="1013.0" y2="564" stroke="#475569" stroke-width="1" stroke-dasharray="4,4"/>
+<rect class="component slate" x="80.0" y="80" width="160" height="56" rx="4" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1.2"/>
+<text x="160.0" y="106" text-anchor="middle" font-weight="600">USER</text>
+<text class="sub" x="160.0" y="124" text-anchor="middle">browser</text>
+<rect class="component cyan" x="280.0" y="80" width="160" height="56" rx="4" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.2"/>
+<text x="360.0" y="106" text-anchor="middle" font-weight="600">SPA</text>
+<text class="sub" x="360.0" y="124" text-anchor="middle">react · pkce</text>
+<rect class="component rose" x="498.5" y="80" width="160" height="56" rx="4" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1.2"/>
+<text x="578.5" y="106" text-anchor="middle" font-weight="600">IDP</text>
+<text class="sub" x="578.5" y="124" text-anchor="middle">keycloak</text>
+<rect class="component violet" x="725.0" y="80" width="160" height="56" rx="4" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1.2"/>
+<text x="805.0" y="106" text-anchor="middle" font-weight="600">DB</text>
+<text class="sub" x="805.0" y="124" text-anchor="middle">code store</text>
+<rect class="component emerald" x="933.0" y="80" width="160" height="56" rx="4" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.2"/>
+<text x="1013.0" y="106" text-anchor="middle" font-weight="600">API</text>
+<text class="sub" x="1013.0" y="124" text-anchor="middle">go · rest</text>
+<path d="M160.0,168 L352.0,168" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round" marker-end="url(#ah-slate)"/>
+<text class="lbl" x="256.0" y="162.0" text-anchor="middle">click login</text>
+<path d="M360.0,206 L570.5,206" fill="none" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<text class="lbl" x="465.2" y="200.0" text-anchor="middle">redirect /authorize + S256</text>
+<path d="M578.5,244 h36 v18 h-36" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-rose)"/>
+<text class="lbl" x="622.5" y="256.0">authenticate user</text>
+<path d="M578.5,282 L797.0,282" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" marker-end="url(#ah-rose)"/>
+<text class="lbl" x="687.8" y="276.0" text-anchor="middle">store code → verifier_S</text>
+<path d="M578.5,320 L368.0,320" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="4,3" marker-end="url(#ah-rose)"/>
+<text class="lbl" x="473.2" y="314.0" text-anchor="middle">302 /callback?code=…</text>
+<path d="M360.0,358 L570.5,358" fill="none" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<text class="lbl" x="465.2" y="352.0" text-anchor="middle">POST /token + verifier</text>
+<path d="M578.5,396 h36 v18 h-36" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-rose)"/>
+<text class="lbl" x="622.5" y="408.0">verify S256(verifier)</text>
+<path d="M578.5,434 L368.0,434" fill="none" stroke="#fb7185" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="4,3" marker-end="url(#ah-rose)"/>
+<text class="lbl" x="473.2" y="428.0" text-anchor="middle">access_token (JWT)</text>
+<path d="M360.0,472 L1005.0,472" fill="none" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" marker-end="url(#ah-cyan)"/>
+<text class="lbl" x="682.5" y="466.0" text-anchor="middle">GET /resource + Bearer</text>
+<path d="M1013.0,510 L368.0,510" fill="none" stroke="#34d399" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="4,3" marker-end="url(#ah-emerald)"/>
+<text class="lbl" x="690.5" y="504.0" text-anchor="middle">200 resource JSON</text>
+</svg>

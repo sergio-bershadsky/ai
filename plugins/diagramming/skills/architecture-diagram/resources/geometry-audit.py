@@ -89,6 +89,14 @@ class PathInfo:
     segments: list[Segment] = field(default_factory=list)
     start: tuple[float, float] = (0, 0)
     end: tuple[float, float] = (0, 0)
+    css_class: str = ""
+
+    @property
+    def is_lifeline(self) -> bool:
+        # Sequence-diagram time axes — decorative, every horizontal message
+        # crosses every lifeline by design. Exempt from edge-edge and
+        # edge-crosses-component checks.
+        return "lifeline" in self.css_class.split()
 
 
 @dataclass
@@ -177,15 +185,44 @@ def find_g_block_lines(svg_text: str) -> set[int]:
 
 def parse_paths(svg_lines: list[str]) -> list[PathInfo]:
     paths = []
-    path_re = re.compile(r'<path\b[^>]*\bd="([^"]+)"')
+    path_re = re.compile(r'<path\b([^>]*)>')
+    line_re = re.compile(r'<line\b([^>]*)/?>')
+    class_re = re.compile(r'\bclass="([^"]*)"')
+    d_re = re.compile(r'\bd="([^"]+)"')
+    coord_re = re.compile(r'\b(x1|y1|x2|y2)="(' + _NUM + r')"')
     for i, line in enumerate(svg_lines, start=1):
+        # <path d="...">
         for m in path_re.finditer(line):
-            d = m.group(1)
-            pi = PathInfo(line=i, d=d)
+            attrs = m.group(1)
+            d_m = d_re.search(attrs)
+            if not d_m:
+                continue
+            d = d_m.group(1)
+            cls_m = class_re.search(attrs)
+            pi = PathInfo(line=i, d=d, css_class=cls_m.group(1) if cls_m else "")
             pi.segments = decompose_path(d, i, len(paths))
             if pi.segments:
                 pi.start = (pi.segments[0].x1, pi.segments[0].y1)
                 pi.end = (pi.segments[-1].x2, pi.segments[-1].y2)
+            paths.append(pi)
+        # <line x1=".." y1=".." x2=".." y2=".."> — single straight segment.
+        # Used for lifelines in sequence diagrams; also a valid way to draw a
+        # simple message arrow.
+        for m in line_re.finditer(line):
+            attrs = m.group(1)
+            coords = {k: float(v) for k, v in coord_re.findall(attrs)}
+            if not all(k in coords for k in ("x1", "y1", "x2", "y2")):
+                continue
+            cls_m = class_re.search(attrs)
+            pi = PathInfo(
+                line=i,
+                d=f'M{coords["x1"]},{coords["y1"]} L{coords["x2"]},{coords["y2"]}',
+                css_class=cls_m.group(1) if cls_m else "",
+            )
+            seg = Segment(coords["x1"], coords["y1"], coords["x2"], coords["y2"], i, len(paths))
+            pi.segments = [seg]
+            pi.start = (seg.x1, seg.y1)
+            pi.end = (seg.x2, seg.y2)
             paths.append(pi)
     return paths
 
@@ -407,6 +444,8 @@ def audit(svg_text: str, ignore_edge_edge: bool = False) -> list[dict]:
 
     # 3. path crosses a component that is not its endpoint
     for p in paths:
+        if p.is_lifeline:
+            continue
         endpoint_rects = set()
         for r_idx, r in enumerate(components):
             if r.point_on_perimeter(*p.start) or r.point_on_perimeter(*p.end):
@@ -431,7 +470,11 @@ def audit(svg_text: str, ignore_edge_edge: bool = False) -> list[dict]:
     if not ignore_edge_edge:
         seen_pairs = set()
         for i, p1 in enumerate(paths):
+            if p1.is_lifeline:
+                continue
             for p2 in paths[i+1:]:
+                if p2.is_lifeline:
+                    continue
                 for s1 in p1.segments:
                     for s2 in p2.segments:
                         x = segs_cross(s1, s2)
