@@ -11,3 +11,4 @@ __pycache__/
 .env
 TELEGRAM_RELEASE.md
 .images/
+.playwright-mcp/
