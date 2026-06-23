@@ -6,7 +6,7 @@ description: |
   class", or mentions Tortoise ORM project structure, model organization, querysets, signals,
   transactions, or testing. Provides opinionated enterprise patterns: model-per-file, abstract
   Base interfaces for mocks/transitions, strict class member ordering, FastAPI lifespan,
-  Aerich migrations, Pydantic v2, pytest.
+  built-in Tortoise migrations (never Aerich), Pydantic v2, pytest.
 ---
 
 # Tortoise ORM Enterprise Patterns
@@ -25,6 +25,21 @@ When advice conflicts, resolve in this order:
 4. **Other internet consensus** (projectrules.ai, blog posts)
 
 If the user states a rule (e.g. "use UUID primary keys"), it wins over everything below.
+
+## Check the LATEST version first (always)
+
+Tortoise ORM moves fast and its tooling has **changed across versions** — most notably, schema
+migrations moved from the separate **Aerich** tool to a **built-in `tortoise` migration CLI in
+≥ 1.1**. So before relying on any version-specific behaviour (migrations above all), **verify the
+current version and confirm against the live docs** — do not trust this skill's version numbers blindly:
+
+- Check the installed + latest release: `python -c "import tortoise; print(tortoise.__version__)"`,
+  `pip index versions tortoise-orm` (or PyPI <https://pypi.org/project/tortoise-orm/>).
+- Read the live docs/changelog: <https://tortoise.github.io/> and the migration page
+  <https://tortoise.github.io/migration.html>. Cross-check with Context7 `/tortoise/tortoise-orm`.
+- **Prefer the latest stable**, pin a known-good version, and when the live docs disagree with this
+  skill, the **live docs win** (Rule Priority #2). If a newer version changes a workflow here, follow
+  the new docs and flag the drift.
 
 ## The Five Hard Rules (non-negotiable)
 
@@ -45,7 +60,7 @@ These come straight from the user's ruleset and override any pattern below. **Ne
 
 - Bootstrapping a new Tortoise ORM project (FastAPI, Starlette, Sanic, Quart, AIOHTTP, Nexios).
 - Adding a model, refactoring an existing single-file `models.py`.
-- Wiring Aerich migrations into CI.
+- Wiring Tortoise's built-in migrations into CI.
 - Writing tests that need DB isolation without slow integration fixtures.
 - Reviewing a PR that touches Tortoise models.
 
@@ -62,7 +77,7 @@ project/
 ├── config/
 │   ├── __init__.py
 │   ├── settings.py               # Dynaconf or pydantic-settings
-│   └── tortoise.py               # TORTOISE_ORM dict (aerich reads this)
+│   └── tortoise.py               # TORTOISE_ORM dict (the `tortoise` CLI reads this via -c)
 ├── apps/
 │   └── billing/                  # one sub-application
 │       ├── __init__.py
@@ -76,7 +91,7 @@ project/
 │       ├── services/             # business logic (depends on Base* interfaces)
 │       ├── repositories/         # optional: data-access abstraction
 │       └── routers/              # FastAPI / framework routes
-├── migrations/                   # aerich-managed
+├── migrations/                   # `tortoise makemigrations` output (built-in, not Aerich)
 └── tests/
 ```
 
@@ -89,8 +104,7 @@ project/
 name = "myproject"
 requires-python = ">=3.12"
 dependencies = [
-    "tortoise-orm[asyncpg]>=0.21",     # use asyncpg for postgres
-    "aerich>=0.8",                      # migrations
+    "tortoise-orm[asyncpg]>=1.1",      # asyncpg for postgres; >=1.1 ships the built-in `tortoise` migration CLI
     "fastapi>=0.115",
     "pydantic>=2.7",
 ]
@@ -98,12 +112,11 @@ dependencies = [
 [dependency-groups]
 dev = ["ruff>=0.5", "mypy>=1.10", "ipython"]
 test = ["pytest>=8", "pytest-asyncio>=0.23", "asynctest", "freezegun"]
-
-[tool.aerich]
-tortoise_orm = "config.tortoise.TORTOISE_ORM"
-location = "./migrations"
-src_folder = "./."
 ```
+
+> **No `aerich`.** Tortoise ≥ 1.1 has a built-in migration system; `aerich`, `aerich.models`,
+> and `[tool.aerich]` must not appear anywhere. The `tortoise` CLI ships with `tortoise-orm`
+> and resolves config from the `-c <dotted.path>` flag (see Migrations below).
 
 ## Models — Rules 0–4 in Practice
 
@@ -216,7 +229,9 @@ class BaseModel(Model):
 
 ## Configuration
 
-Keep the Tortoise config in one place (Aerich reads it; FastAPI lifespan reads it):
+Keep the Tortoise config in one place (the `tortoise` migration CLI reads it via `-c`;
+FastAPI lifespan reads it). The built-in migrator is wired with a per-app `"migrations"`
+package key — **not** an `aerich.models` pseudo-app:
 
 ```python
 # config/tortoise.py
@@ -229,9 +244,9 @@ TORTOISE_ORM = {
             "models": [
                 "apps.billing.models",
                 "apps.users.models",
-                "aerich.models",         # required for migrations
             ],
             "default_connection": "default",
+            "migrations": "migrations",   # built-in migrations package for this app
         }
     },
     "use_tz": True,
@@ -321,34 +336,50 @@ async def _invoice_audit(sender, instance, created, using_db, update_fields):
     await AuditLog.create(entity="invoice", entity_id=instance.id, created=created)
 ```
 
-## Migrations (Aerich)
+## Migrations (built-in Tortoise CLI — never Aerich)
+
+> **Aerich is forbidden here.** Tortoise ORM ≥ 1.1 ships a built-in migration system and
+> `tortoise` CLI, which the official docs call the recommended path (Aerich is "a legacy
+> alternative"). See <https://tortoise.github.io/migration.html>. Do **not** introduce
+> `aerich`, `aerich.models`, `[tool.aerich]`, or `aerich upgrade`.
+
+The global `-c <dotted.path.to.TORTOISE_ORM>` flag comes **before** the subcommand:
 
 ```bash
-# one-time
-uv run aerich init -t config.tortoise.TORTOISE_ORM
-uv run aerich init-db
+# one-time: create the migrations package, generate + apply the initial migration
+uv run tortoise -c config.tortoise.TORTOISE_ORM init
+uv run tortoise -c config.tortoise.TORTOISE_ORM makemigrations
+uv run tortoise -c config.tortoise.TORTOISE_ORM migrate
 
-# per change
-uv run aerich migrate --name add_invoice_due_at
-uv run aerich upgrade
+# per change (app label is the Tortoise app key — here `models`)
+uv run tortoise -c config.tortoise.TORTOISE_ORM makemigrations --name add_invoice_due_at
+uv run tortoise -c config.tortoise.TORTOISE_ORM migrate
+
+# roll back the last applied migration of an app in dev
+uv run tortoise -c config.tortoise.TORTOISE_ORM downgrade models
+
+# inspect: applied history, on-disk heads, or SQL for a migration without running it
+uv run tortoise -c config.tortoise.TORTOISE_ORM history
+uv run tortoise -c config.tortoise.TORTOISE_ORM sqlmigrate models 0001_initial
 ```
 
 - Commit migrations. Review them like code.
-- Use `RunPython` for data migrations; never edit schema and data in the same auto-generated migration.
-- In CI: `aerich upgrade` runs before the app boots.
+- Use `RunPython` / `RunSQL` for data migrations; never edit schema and data in the same auto-generated migration.
+- In CI: `tortoise -c config.tortoise.TORTOISE_ORM migrate` runs before the app boots.
+- `migrate` and `upgrade` are aliases; this skill standardizes on `migrate`.
 
 ### Deployment integration — propose a migration service/hook
 
 **Before adding or modifying models, scan the repo for deployment manifests.** If any of
-these exist, **proactively propose** wiring `aerich upgrade` as a one-shot migration
+these exist, **proactively propose** wiring `tortoise ... migrate` as a one-shot migration
 service/hook so the user never has to remember to run it by hand:
 
 | Detected file(s) | What to propose |
 |---|---|
-| `docker-compose.yml`, `docker-compose.*.yml`, `compose.yaml` | A one-shot `migrate` service that runs `aerich upgrade` and exits; mark `app` as `depends_on: { migrate: { condition: service_completed_successfully } }` |
-| `Chart.yaml`, `helm/`, `charts/`, `values.yaml` | A Helm `pre-install` + `pre-upgrade` Job (or an init container on the Deployment) running `aerich upgrade` |
+| `docker-compose.yml`, `docker-compose.*.yml`, `compose.yaml` | A one-shot `migrate` service that runs `tortoise -c config.tortoise.TORTOISE_ORM migrate` and exits; mark `app` as `depends_on: { migrate: { condition: service_completed_successfully } }` |
+| `Chart.yaml`, `helm/`, `charts/`, `values.yaml` | A Helm `pre-install` + `pre-upgrade` Job (or an init container on the Deployment) running `tortoise ... migrate` |
 | `kustomization.yaml` only | A Kubernetes `Job` resource or an init container — same shape, no Helm hook annotations |
-| `Procfile` (Heroku/Render/Fly) | A `release:` process running `aerich upgrade` |
+| `Procfile` (Heroku/Render/Fly) | A `release:` process running `tortoise ... migrate` |
 | GitHub Actions / GitLab CI manifests | A pre-deploy job step; only after the container-level hook exists, not as a substitute |
 
 Always ask the user before generating these files — they're shared-infra changes. Show a
@@ -361,7 +392,7 @@ draft, list the files you'll add/modify, then wait for approval.
 services:
   migrate:
     build: { context: .., dockerfile: docker/Dockerfile }
-    command: ["uv", "run", "aerich", "upgrade"]
+    command: ["uv", "run", "tortoise", "-c", "config.tortoise.TORTOISE_ORM", "migrate"]
     env_file: ../.env
     depends_on:
       db: { condition: service_healthy }
@@ -395,18 +426,19 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - name: aerich-upgrade
+        - name: tortoise-migrate
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          command: ["uv", "run", "aerich", "upgrade"]
+          command: ["uv", "run", "tortoise", "-c", "config.tortoise.TORTOISE_ORM", "migrate"]
           envFrom:
             - secretRef: { name: {{ include "app.fullname" . }}-db }
 ```
 
-`backoffLimit: 0` makes a failed upgrade abort the release — that's the behavior you want.
+`backoffLimit: 0` makes a failed migration abort the release — that's the behavior you want.
 
-**Init-container alternative** (when you can't add Helm hooks): put `aerich upgrade` in an
-`initContainers` entry on the Deployment. Trade-off: it runs on every pod start instead of
-once per release, so guard against concurrent runners (Aerich uses an advisory lock on PG).
+**Init-container alternative** (when you can't add Helm hooks): put `tortoise ... migrate` in
+an `initContainers` entry on the Deployment. Trade-off: it runs on every pod start instead of
+once per release, so prefer the Job approach — it runs migrations once per release and avoids
+racing concurrent pod starts.
 
 Full migration patterns: `references/migrations.md`.
 
@@ -426,7 +458,8 @@ Use the modern `tortoise_test_context()` pattern (Tortoise 1.0+), **not** the le
 | Concrete model with no `Base*` | Violates Rule 2; untestable in unit tests | Extract abstract interface |
 | `class Meta` not first | Violates Rule 3 | Move it up |
 | `Tortoise.init` per request | Connection storm | Init once in lifespan |
-| `generate_schemas()` in prod | Bypasses migrations | Use Aerich |
+| `generate_schemas()` in prod | Bypasses migrations | Use `tortoise migrate` |
+| `aerich` anywhere (dep, `aerich.models`, `[tool.aerich]`, `aerich upgrade`) | Legacy tool; forbidden in this codebase | Use the built-in `tortoise` migration CLI |
 | Raw f-string SQL | SQL injection | Use ORM / parameterized `.raw()` |
 | `for x in qs: await x.related` | N+1 | `prefetch_related` / `select_related` |
 | Forgetting `await` | Coroutine warnings, silent no-ops | Lint with ruff `ASYNC` rules |
@@ -443,9 +476,9 @@ Use the modern `tortoise_test_context()` pattern (Tortoise 1.0+), **not** the le
 5. **Order members:** Meta → fields → `__str__`/`__repr__`/private → public methods.
 6. **Re-export** `Base<Entity>` and `<Entity>` from `models/__init__.py`.
 7. **Register** the models module in `config/tortoise.py` if it's a new app.
-8. **`aerich migrate --name add_<entity>`** then `aerich upgrade`.
+8. **`tortoise -c config.tortoise.TORTOISE_ORM makemigrations --name add_<entity>`** then `tortoise -c config.tortoise.TORTOISE_ORM migrate`.
 9. **Add tests** against `Base<Entity>` for pure logic; integration test for the concrete model.
-10. **Check for deployment manifests** (Helm chart, docker-compose, Procfile, kustomize). If present and there is no migration service/hook yet, propose adding one (see "Deployment integration" above) so `aerich upgrade` runs automatically before the app starts.
+10. **Check for deployment manifests** (Helm chart, docker-compose, Procfile, kustomize). If present and there is no migration service/hook yet, propose adding one (see "Deployment integration" above) so `tortoise ... migrate` runs automatically before the app starts.
 
 ## Reference Files
 
@@ -453,7 +486,7 @@ Use the modern `tortoise_test_context()` pattern (Tortoise 1.0+), **not** the le
 |------|-------|
 | `references/models.md` | Field types, relations, inheritance, abstract bases, constraints, indexes |
 | `references/queries.md` | QuerySet API, prefetch, F/Q expressions, bulk ops, annotate/aggregate, raw SQL |
-| `references/migrations.md` | Aerich setup, data migrations, downgrade strategy, CI integration |
+| `references/migrations.md` | Built-in `tortoise` CLI setup, data migrations, downgrade strategy, CI integration |
 | `references/testing.md` | pytest + tortoise_test_context, fixtures, mocking via Base* |
 | `references/fastapi.md` | Lifespan, exception handlers, Pydantic creators, dependency-injected sessions |
 
