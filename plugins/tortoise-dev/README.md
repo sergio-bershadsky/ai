@@ -10,7 +10,7 @@ Opinionated, production-ready patterns enforced on every model you touch:
 - **One file == one model** — no exceptions.
 - **Every concrete model has an abstract `Base*` interface** — usable as a mock base or a transition shim during refactors.
 - **Strict class member order** — `class Meta` first, then fields, then class/private methods, then public methods.
-- **Aerich** for migrations, **Pydantic v2** for serialization, **pytest + tortoise_test_context** for tests, **FastAPI lifespan** for app wiring.
+- **Built-in Tortoise migrations** (`tortoise migrate` — never Aerich) for schema evolution, **Pydantic v2** for serialization, **pytest + tortoise_test_context** for tests, **FastAPI lifespan** for app wiring.
 
 ## Skill
 

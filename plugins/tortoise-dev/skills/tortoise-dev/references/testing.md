@@ -142,6 +142,6 @@ or wrap with `factory.use_strategy("build")`.
 - Don't use `unittest.mock.patch("apps.x.models.Invoice")` — mock the **service**, not the
   ORM. If you find yourself patching Tortoise internals, your service has the wrong shape.
 - Don't share DB state across tests. Each test gets a clean DB.
-- Don't run `aerich upgrade` in unit/integration tests — use `generate_schemas()` via the
+- Don't run `tortoise migrate` in unit/integration tests — use `generate_schemas()` via the
   test context. Migrations are tested separately in a deploy-rehearsal job.
 - Don't `asyncio.run()` inside tests — use `pytest-asyncio` with `asyncio_mode = "auto"`.
