@@ -12,3 +12,4 @@ __pycache__/
 TELEGRAM_RELEASE.md
 .images/
 .playwright-mcp/
+.worktrees/
