@@ -78,6 +78,13 @@
       "description": "Polished dark-themed architecture diagrams as self-contained HTML+SVG. Includes design system, Bezier-correct label placement with clean-background priority, halo text, leader lines, and audit + coordinate-shifter scripts.",
       "version": "1.0.0",
       "category": "productivity"
+    },
+    {
+      "name": "working-with-sergey",
+      "source": "./plugins/working-with-sergey",
+      "description": "Team working agreement as a loadable skill: channel/priority ladder, response SLAs, emoji acknowledgement protocol, a morning collaboration window and a protected afternoon coding block, meeting and proposal gates, autonomy boundary, T-shirt estimates, quality bar, and absence policy — plus a checklist for reviewing drafts before they are sent.",
+      "version": "1.0.0",
+      "category": "productivity"
     }
   ]
 }

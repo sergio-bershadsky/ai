@@ -22,6 +22,7 @@ Personal plugin marketplace for Claude Code — skills, hooks, and agents for wo
 |--------|-------------|--------|-------|
 | [**git**](plugins/git/) | Git workflow automation: conventional commits, auto-staging, uncommitted changes protection | /commit, /version | auto-stage, pre-stop-commit |
 | [**settings-sync**](plugins/settings-sync/) | Sync Claude settings across ephemeral VMs via Git backup | — | backup-settings |
+| [**working-with-sergey**](plugins/working-with-sergey/) | Team working agreement as a loadable skill: channel ladder, response SLAs, meeting and proposal gates, autonomy boundary, plus a 13-check review of drafts before they are sent | working-with-sergey | — |
 
 ### Development
 
@@ -78,6 +79,18 @@ Backs up `~/.claude/` to the repo before session ends, excluding sensitive files
 ```
 
 Bootstrap: `curl -fsSL https://raw.githubusercontent.com/sergio-bershadsky/ai/main/plugins/settings-sync/scripts/bootstrap.sh | bash`
+
+---
+
+### [working-with-sergey](plugins/working-with-sergey/)
+
+A team working agreement packaged as a skill, so Claude applies it instead of storing it. Answers "how do I work with Sergey?" for a new teammate, and reviews a draft DM, meeting invite, announcement, proposal, estimate or PR against 13 checks before it is sent. The full agreement is 15 sections, every rule written so it can be checked. Reusable as a template — fork it and replace the rules.
+
+```bash
+/plugin install working-with-sergey@bershadsky-claude-tools
+```
+
+**Skills:** working-with-sergey
 
 ---
 

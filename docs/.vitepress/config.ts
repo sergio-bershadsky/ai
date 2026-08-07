@@ -13,6 +13,7 @@ export default defineConfig({
       { text: 'Secondbrain', link: '/secondbrain/' },
       { text: 'Settings Sync', link: '/settings-sync/' },
       { text: 'Replit Prompts', link: '/replit-prompts/' },
+      { text: 'Working With Sergey', link: '/working-with-sergey/' },
       { text: 'Distribution', link: '/distribution/' },
     ],
 
@@ -69,6 +70,12 @@ export default defineConfig({
           { text: 'replit-prompt', link: '/replit-prompts/replit-prompt' },
           { text: 'replit-prd', link: '/replit-prompts/replit-prd' },
           { text: 'replit-plan', link: '/replit-prompts/replit-plan' },
+        ]
+      },
+      {
+        text: 'Working With Sergey Plugin',
+        items: [
+          { text: 'Overview', link: '/working-with-sergey/' },
         ]
       },
       {
