@@ -1,0 +1,25 @@
+{
+  "tracker": {"name": "Jira"},
+  "codeHost": {"name": "GitLab"},
+  "idPattern": "SHOP-\\d+",
+  "changePrefix": "!",
+  "links": {
+    "item": "https://example.atlassian.net/browse/{id}",
+    "change": "https://gitlab.example.com/shop/web/-/merge_requests/{n}",
+    "commit": "https://gitlab.example.com/shop/web/-/commit/{sha}",
+    "person": "https://gitlab.example.com/{login}"
+  },
+  "statusMap": {
+    "item": {"To Do": "ready", "Selected for Development": "ready", "In Progress": "in_progress",
+             "Code Review": "in_review", "In Review": "in_review", "Blocked": "blocked", "Done": "done",
+             "Won't Do": "canceled", "Duplicate": "duplicate", "Triage": "triage", "Backlog": "backlog"},
+    "change": {"opened": "open", "merged": "merged", "closed": "closed", "approved": "approved"}
+  },
+  "people": {
+    "ana-k": {"name": "Ana K."}, "bo-dev": {"name": "Bo"}, "cy-ui": {"name": "Cy"}, "di-qa": {"name": "Di"}
+  },
+  "eventLanes": [
+    {"name": "Review", "tone": "accent"}, {"name": "Design", "tone": "warn"}, {"name": "Tracker", "tone": "idle"},
+    {"name": "Code", "tone": "ok"}, {"name": "Live", "tone": "bad"}, {"name": "Planning", "tone": "idle"}
+  ]
+}

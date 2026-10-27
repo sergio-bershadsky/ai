@@ -1,0 +1,988 @@
+<title>Epic Observation</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+/* Epic Observation template — PM-tool agnostic. Project specifics come from `config/page`
+   (db) or the seed's `config` (static); see references/data-model.md.
+   Layout: burn-up, a replay console (scrubber + % done), the epic's state at the scrubbed
+   moment (work items · changes · optional evidence grid), the dependency cascade, the log. */
+:root {
+  --bg: #f5f6f8; --panel: #ffffff; --ink: #1b2230; --muted: #5d6676; --line: #dde1e8;
+  --accent: #2f5bd3; --accent-soft: #e4ebfb;
+  --ok: #1d7a4d; --ok-soft: #dff3e8; --warn: #9a5b00; --warn-soft: #fbecd2;
+  --bad: #b3261e; --bad-soft: #f9dedb; --idle: #6b7380; --idle-soft: #eceef2;
+  --f-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11151c; --panel: #181e27; --ink: #e5e9f0; --muted: #98a2b3; --line: #2a3240;
+  --accent: #7d9cff; --accent-soft: #1f2a46;
+  --ok: #5fd39a; --ok-soft: #173326; --warn: #f0b45a; --warn-soft: #3a2a12;
+  --bad: #ff8a80; --bad-soft: #3d1c1a; --idle: #9aa3b2; --idle-soft: #232a35; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11151c; --panel: #181e27; --ink: #e5e9f0; --muted: #98a2b3; --line: #2a3240;
+  --accent: #7d9cff; --accent-soft: #1f2a46;
+  --ok: #5fd39a; --ok-soft: #173326; --warn: #f0b45a; --warn-soft: #3a2a12;
+  --bad: #ff8a80; --bad-soft: #3d1c1a; --idle: #9aa3b2; --idle-soft: #232a35; color-scheme: dark }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 14px; line-height: 1.5; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 24px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 20px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; }
+h1 { font-family: var(--f-display); font-weight: 600; font-size: 26px; margin: 0; letter-spacing: .01em; text-wrap: balance; }
+.sub { color: var(--muted); margin: 2px 0 0; }
+.mono { font-family: var(--f-mono); font-size: 12.5px; }
+h2 { font-family: var(--f-display); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 10px; }
+
+/* scrubber */
+.scrub { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 12px; }
+/* INVARIANT: fixed height — one title line + two detail lines, clipped with an ellipsis, so the
+   scrubber below never jumps while stepping through events (full text in the tooltip). */
+.now { display: grid; grid-template-columns: auto auto minmax(0, 1fr); grid-template-rows: 30px 44px;
+  align-items: baseline; column-gap: 14px; height: 74px; overflow: hidden; }
+.now time { font-family: var(--f-mono); font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.now .lane { white-space: nowrap; }
+.now .ttl { font-family: var(--f-display); font-size: 19px; font-weight: 600; line-height: 30px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.now .det { grid-column: 1 / -1; color: var(--muted); max-width: 75ch; line-height: 22px; height: 44px; align-self: start;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+@media (max-width: 560px) {
+  .now { grid-template-columns: auto minmax(0, 1fr); grid-template-rows: 24px 30px 44px; height: 98px; }
+  .now .ttl { grid-column: 1 / -1; font-size: 17px; }
+}
+.track-wrap { overflow-x: auto; }
+.track { position: relative; height: 112px; min-width: 520px; }
+.track svg { display: block; width: 100%; height: 112px; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+button { font: 500 13px var(--f-body); color: var(--ink); background: var(--panel); border: 1px solid var(--line);
+  border-radius: 7px; padding: 6px 12px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+input[type=range] { flex: 1 1 260px; accent-color: var(--accent); min-width: 0; }
+.count { font-family: var(--f-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* progress */
+.progress { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; align-items: center; padding-top: 4px; border-top: 1px solid var(--line); }
+.pct { font-family: var(--f-display); font-weight: 600; font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; grid-row: span 2; }
+.bar { height: 10px; border-radius: 999px; background: var(--idle-soft); overflow: hidden; display: flex; }
+.bar span { display: block; height: 100%; transition: width .35s ease; }
+.bar .b-done { background: var(--ok); }
+.bar .b-prog { background: var(--accent); opacity: .55; }
+.pmeta { color: var(--muted); font-size: 12.5px; }
+.pmeta b { color: var(--ink); font-weight: 500; }
+
+/* state grid */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; align-items: start; }
+section.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; min-width: 0; }
+.rows { display: grid; gap: 6px; }
+.row { display: grid; grid-template-columns: 84px 1fr auto; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.row:last-child { border-bottom: 0; }
+.row .id { font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); }
+.row .name { min-width: 0; }
+.row.changed { background: var(--accent-soft); border-radius: 6px; padding-inline: 6px; margin-inline: -6px; }
+.chip { font: 500 11.5px var(--f-body); padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.s-done, .s-merged, .s-pass { background: var(--ok-soft); color: var(--ok); }
+.s-progress, .s-open, .s-review { background: var(--accent-soft); color: var(--accent); }
+.s-blocked, .s-changes, .s-fail { background: var(--bad-soft); color: var(--bad); }
+.s-triage, .s-pending, .s-warn { background: var(--warn-soft); color: var(--warn); }
+.s-backlog, .s-idle, .s-approved { background: var(--idle-soft); color: var(--idle); }
+.s-approved { background: var(--ok-soft); color: var(--ok); }
+
+table.matrix { width: 100%; border-collapse: collapse; }
+.matrix th, .matrix td { text-align: left; padding: 7px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.matrix th { font: 500 12px var(--f-body); color: var(--muted); }
+.matrix td.note { color: var(--muted); font-size: 12.5px; }
+.matrix-wrap { overflow-x: auto; }
+
+/* log */
+ol.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+ol.log li { display: grid; grid-template-columns: 128px 92px 1fr; gap: 12px; padding: 8px 6px; border-radius: 6px; cursor: pointer; }
+ol.log li:hover { background: var(--idle-soft); }
+ol.log li > span { min-width: 0; overflow-wrap: anywhere; }
+ol.log li.current { background: var(--accent-soft); }
+ol.log li.future { opacity: .38; }
+ol.log time { font-family: var(--f-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.lane { font: 500 11px var(--f-body); text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.burn { margin-bottom: 12px; }
+.burn-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.legend { font: 500 11.5px var(--f-body); color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+.legend i { display: inline-block; width: 14px; height: 3px; margin-right: 4px; vertical-align: middle; border-radius: 2px; }
+.lg-scope { background: var(--ink); } .lg-done { background: var(--ok); } .lg-prog { background: var(--accent); opacity: .45; }
+.burn-wrap { overflow-x: auto; }
+#burn { width: 100%; min-width: 520px; height: auto; display: block; cursor: pointer; color: var(--ink); }
+#burn .grid { stroke: var(--line); stroke-width: 1; }
+#burn .ax { fill: var(--muted); font: 500 11px var(--f-body); }
+#burn .scope { fill: none; stroke: var(--ink); stroke-width: 2; stroke-dasharray: 5 4; }
+#burn .done { fill: var(--ok-soft); stroke: var(--ok); stroke-width: 2.25; }
+#burn .prog { fill: var(--accent); opacity: .22; stroke: none; }
+#burn .wk { fill: var(--line); opacity: .45; }
+#burn .cur { stroke: var(--accent); stroke-width: 1.5; }
+#burn .fc-exp { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+#burn .fc-opt { stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 3 4; fill: none; }
+#burn .fc-pes { stroke: var(--warn); stroke-width: 1.5; stroke-dasharray: 3 4; fill: none; }
+#burn .fc-now { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 3; }
+#burn .fc-lbl { font: 600 11px var(--f-body); }
+.fc-toggle { display: inline-flex; align-items: center; gap: 5px; margin-left: 10px; color: var(--ink); cursor: pointer; }
+.fc-note { margin: 6px 0 0; font: 500 12.5px var(--f-body); color: var(--muted); }
+.fc-note b { color: var(--ink); }
+#burn .curlbl { fill: var(--accent); font: 600 12px var(--f-body); }
+.evlink { font: 500 11px var(--f-body); margin-left: 8px; }
+.by { font: 500 11px var(--f-body); color: var(--muted); margin-left: 6px; white-space: nowrap; }
+.badges { display: flex; flex-wrap: wrap; gap: 4px 6px; margin: 2px 0 3px; }
+.badge { display: inline-flex; align-items: center; gap: 4px; font: 500 11.5px var(--f-body); padding: 1px 8px 1px 5px; border-radius: 999px; white-space: nowrap; }
+.badge svg { width: 13px; height: 13px; flex: none; }
+.bd-scope-add { background: var(--accent-soft); color: var(--accent); }
+.bd-scope-rm { background: var(--idle-soft); color: var(--idle); }
+.bd-done, .bd-merged, .bd-approved { background: var(--ok-soft); color: var(--ok); }
+.bd-changes { background: var(--bad-soft); color: var(--bad); }
+.bd-opened, .bd-started { background: var(--accent-soft); color: var(--accent); }
+.bd-review { background: var(--warn-soft); color: var(--warn); }
+.bd-decision { background: var(--warn-soft); color: var(--warn); }
+.log-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: -2px 0 10px; }
+.log-filter button { font-size: 12px; padding: 3px 10px; }
+.log-filter button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.approx { font: 500 10.5px var(--f-body); color: var(--warn); margin-left: 6px; text-transform: uppercase; letter-spacing: .06em; }
+.empty { color: var(--muted); padding: 24px 0; text-align: center; }
+@media (max-width: 560px) {
+  ol.log li { grid-template-columns: 1fr; gap: 2px; }
+  .row { grid-template-columns: 72px 1fr; }
+  .row .chip { grid-column: 2; justify-self: start; }
+}
+/* cascade */
+a.id, a.cz-id { color: var(--accent); text-decoration: none; font-family: var(--f-mono); font-size: 12.5px; }
+a.id:hover, a.cz-id:hover { text-decoration: underline; }
+a.inl { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); font-family: var(--f-mono); font-size: .92em; }
+a.inl:hover { border-bottom-color: var(--accent); }
+.refs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+a.ref { font: 500 11.5px var(--f-mono); color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 1px 8px; text-decoration: none; }
+a.ref:hover { text-decoration: underline; }
+.cz-sub { margin: -4px 0 12px; font-size: 12.5px; max-width: 80ch; }
+.cz-scroll { overflow-x: auto; }
+.cz-wrap { position: relative; min-width: 860px; }
+/* arrows sit above the cards (z-index) so every arrowhead is visible where it lands */
+#edges { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; z-index: 2; }
+#edges .edge { fill: none; stroke-width: 1.6; stroke-linecap: round; transition: opacity .15s, stroke-width .15s; }
+#edges .e-done .edge { stroke: var(--ok); opacity: .55; }
+#edges .e-done .tip { fill: var(--ok); opacity: .7; }
+#edges .e-wait .edge { stroke: var(--muted); stroke-dasharray: 5 4; opacity: .75; }
+#edges .e-wait .tip { fill: var(--muted); opacity: .85; }
+#edges .hot.edge { stroke: var(--accent) !important; stroke-width: 2.4; opacity: 1 !important; stroke-dasharray: none; }
+#edges .hot.tip { fill: var(--accent) !important; opacity: 1 !important; }
+#edges .faint { opacity: .12 !important; }
+.cz-grid { display: grid; gap: 12px 44px; align-items: start; position: relative; z-index: 1; }
+.cz-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12px; color: var(--muted); margin: 0 0 12px; }
+.cz-legend svg { vertical-align: middle; margin-right: 6px; }
+.cz-head { font: 500 11px var(--f-body); text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.cz-lane { font-family: var(--f-display); font-weight: 600; font-size: 13px; color: var(--muted); padding-top: 8px; border-top: 1px solid var(--line); }
+.cz-cell { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 8px; min-height: 8px; }
+.cz-card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: grid; gap: 4px; transition: opacity .15s; }
+.cz-card.done { border-color: var(--ok); }
+.cz-card.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.cz-card.waiting { border-style: dashed; }
+.cz-card.changed { background: var(--accent-soft); }
+.cz-card.dim { opacity: .28; }
+.cz-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.cz-title { font-size: 12.5px; line-height: 1.35; }
+.cz-wait { font-size: 11px; color: var(--muted); font-family: var(--f-mono); }
+.cz-owner { font: 500 10.5px var(--f-body); text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.cz-ready { font-size: 11px; color: var(--ok); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1 id="pageTitle">Epic Observation</h1>
+      <p class="sub" id="pageSub">Drag the slider to replay the epic.</p>
+    </div>
+    <span class="count" id="sync">Connecting…</span>
+  </header>
+
+  <section class="card burn">
+    <div class="burn-head"><h2>Burn-up</h2>
+      <span class="legend"><i class="lg-scope"></i>Scope (epic items) <i class="lg-done"></i>Done <i class="lg-prog"></i>In progress / review
+        <label class="fc-toggle"><input type="checkbox" id="fcToggle"> Show forecast</label>
+        <label class="fc-toggle" id="wipWrap" hidden><input type="checkbox" id="wipToggle" checked> Count work in progress</label></span></div>
+    <p class="fc-note" id="fcNote" hidden></p>
+    <div class="burn-wrap"><svg id="burn" role="img" aria-label="Epic items in scope and done over time; the marker is the slider position" viewBox="0 0 1000 190"></svg></div>
+  </section>
+
+  <div class="scrub" aria-label="Timeline scrubber">
+    <div class="now">
+      <time id="nowTime">—</time>
+      <span class="lane" id="nowLane"></span>
+      <span class="ttl" id="nowTitle">Loading events</span>
+      <span class="det" id="nowDetail"></span>
+    </div>
+    <div class="track-wrap"><div class="track"><svg id="track" role="img" aria-label="Events per day by lane; below, the current day's events in order with the current one marked" viewBox="0 0 1000 112"></svg></div></div>
+    <div class="legend" id="laneLegend" aria-hidden="true"></div>
+    <div class="controls">
+      <button id="prev" aria-label="Previous event">◀</button>
+      <button id="play" class="primary">Play</button>
+      <button id="next" aria-label="Next event">▶</button>
+      <input id="slider" type="range" min="0" max="0" value="0" aria-label="Scrub through events">
+      <span class="count" id="count">0 / 0</span>
+      <button id="latest">Latest</button>
+    </div>
+    <div class="progress" aria-live="polite">
+      <span class="pct" id="pct">0%</span>
+      <div class="bar" role="img" id="bar" aria-label="Epic items done and in progress"><span class="b-done" id="barDone" style="width:0%"></span><span class="b-prog" id="barProg" style="width:0%"></span></div>
+      <span class="pmeta" id="pmeta">Share of the epic's work items that are done at this point.</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <section class="card"><h2>Work items</h2><div class="rows" id="tickets"></div></section>
+    <section class="card"><h2>Changes</h2><div class="rows" id="prs"></div></section>
+    <section class="card" id="matrixCard" hidden><h2 id="matrixTitle">Evidence</h2><div class="matrix-wrap"><table class="matrix" id="matrix"></table></div></section>
+  </div>
+
+  <section class="card">
+    <h2 id="czTitle">Cascade: dependencies from the tracker</h2>
+    <p class="sub cz-sub">Each column is a step in the tracker's blocked-by chain; arrows run from a blocker to the item it unblocks. Hover an item to see its whole chain. Status follows the slider.</p>
+    <div class="cz-legend" aria-hidden="true">
+      <span><svg width="34" height="10"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--ok)" stroke-width="1.6" opacity=".7"/><path d="M25,1 L32,5 L25,9 Z" fill="var(--ok)" opacity=".8"/></svg>blocker done</span>
+      <span><svg width="34" height="10"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--muted)" stroke-width="1.6" stroke-dasharray="5 4"/><path d="M25,1 L32,5 L25,9 Z" fill="var(--muted)"/></svg>still waiting</span>
+      <span><svg width="34" height="10"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--accent)" stroke-width="2.4"/><path d="M25,1 L32,5 L25,9 Z" fill="var(--accent)"/></svg>hovered chain</span>
+    </div>
+    <div class="cz-scroll"><div class="cz-wrap" id="cascadeWrap"><svg id="edges" aria-hidden="true"></svg><div class="cz-grid" id="cascade"></div></div></div>
+  </section>
+
+  <section class="card"><h2>Event log</h2><div class="log-filter" id="logFilter" role="group" aria-label="Filter the log"></div><ol class="log" id="log"></ol></section>
+</div>
+
+<script>
+// Canonical statuses. Adapters write these; the tool's own wording rides along as `label`.
+const STATUS_CLASS = {
+  triage: "s-triage", backlog: "s-backlog", ready: "s-warn", in_progress: "s-progress", in_review: "s-review",
+  blocked: "s-blocked", done: "s-done", duplicate: "s-idle", canceled: "s-idle",
+  open: "s-open", changes_requested: "s-changes", approved: "s-approved", merged: "s-merged", closed: "s-idle",
+  pass: "s-pass", fail: "s-fail", pending: "s-pending", untested: "s-idle", dropped: "s-idle",
+};
+const STATUS_TEXT = {
+  triage: "Triage", backlog: "Backlog", ready: "Ready", in_progress: "In progress", in_review: "In review",
+  blocked: "Blocked", done: "Done", duplicate: "Duplicate", canceled: "Canceled",
+  open: "Open", changes_requested: "Changes requested", approved: "Approved", merged: "Merged", closed: "Closed",
+};
+// WHY aliases: older data (and quick hand-written events) used tool wording as the status.
+const STATUS_ALIAS = { todo: "ready", to_do: "ready", pick_immediately: "ready", drafting: "in_progress",
+  doing: "in_progress", started: "in_progress", review: "in_review", cancelled: "canceled", wont_do: "canceled", "won't_do": "canceled" };
+function canon(s) { const k = String(s || "").trim().toLowerCase().replace(/[\s-]+/g, "_"); return STATUS_ALIAS[k] || k; }
+const DONE_S = new Set(["done"]), OUT_S = new Set(["duplicate", "canceled"]), ACTIVE_S = new Set(["in_progress", "in_review", "blocked"]);
+const STARTED_S = new Set(["in_progress", "in_review"]);
+const CELL_LABEL = { pass: "✓ pass", fail: "✗ fail", blocked: "blocked", pending: "pending", untested: "not run", dropped: "dropped" };
+const TONES = ["accent", "warn", "idle", "ok", "bad"];
+
+// Page config (db config/page, or the seed's `config`). Defaults keep an empty page usable.
+// Everything tool-specific lives here; the code below never names a tracker or code host.
+let CFG = { title: "Epic Observation", subtitle: "", lanes: null, matrix: null, eventLanes: null,
+  tracker: { name: "Tracker" }, people: {},
+  links: { item: "", change: "", commit: "", person: "" }, idPattern: "[A-Z][A-Z0-9]+-\\d+", changePrefix: "#",
+  forecast: { wipWeights: { done: 1, in_review: 0.75, in_progress: 0.4, blocked: 0.25 }, maxAheadDays: 180 } };
+
+let events = [], idx = 0, timer = null;
+const $ = (id) => document.getElementById(id);
+
+function fmt(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}Z`;
+}
+
+// Legacy effect types (ticket / pr / cell) map onto item / change / check.
+const effType = (ef) => ({ ticket: "item", pr: "change", cell: "check" })[ef.type] || ef.type;
+const cellKey = (ef) => (ef.row ?? ef.backend) + "/" + (ef.col ?? ef.case);
+
+function stateAt(i) {
+  const tickets = new Map(), prs = new Map(), cells = new Map(), changed = new Set();
+  for (let k = 0; k <= i && k < events.length; k++) {
+    for (const ef of events[k].effects || []) {
+      const t = effType(ef);
+      if (t === "item") tickets.set(ef.id, { ...(tickets.get(ef.id) || {}), ...ef, status: canon(ef.status), label: ef.label });
+      else if (t === "change") prs.set(ef.id, { ...(prs.get(ef.id) || {}), ...ef, status: canon(ef.status), label: ef.label });
+      else if (t === "check") cells.set(cellKey(ef), ef);
+      if (k === i) changed.add(t + ":" + (ef.id || cellKey(ef)));
+    }
+  }
+  return { tickets, prs, cells, changed };
+}
+
+function chip(status, label) {
+  const s = document.createElement("span");
+  const k = canon(status);
+  s.className = "chip " + (STATUS_CLASS[k] || "s-idle");
+  s.textContent = label || STATUS_TEXT[k] || status;
+  return s;
+}
+
+let meta = new Map(); // item id -> {title, lane, blockedBy, url, inScope, owner}, synced from the tracker
+
+const fill = (tpl, v) => (tpl ? tpl.replace(/\{(id|n|sha|login)\}/g, () => encodeURIComponent(v)) : "");
+const laneOf = (m) => m.lane ?? m.layer;
+const scoped = (m) => !!(m && (m.inScope ?? m.epic));
+// An item counts toward % when the effect or the tracker record says it is the epic's own child,
+// and it is not a duplicate or canceled.
+const counts = (id, t) => (scoped(t) || scoped(meta.get(id))) && !OUT_S.has(t.status);
+function hrefFor(id) {
+  if (CFG.changePrefix && id.startsWith(CFG.changePrefix)) return fill(CFG.links.change, id.slice(CFG.changePrefix.length));
+  return meta.get(id)?.url || fill(CFG.links.item, id);
+}
+function idLink(id, cls) {
+  const a = document.createElement("a");
+  a.className = cls; a.textContent = id; a.target = "_blank"; a.rel = "noopener";
+  const h = hrefFor(id); if (h) a.href = h;
+  return a;
+}
+
+// Item ids, change numbers and commit hashes inside event text become links. A hash must mix
+// digits and letters so ordinary words and plain numbers are never linked.
+let REF_RE = /$^/g;
+function buildRefRe() {
+  const esc = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const change = CFG.changePrefix ? `(${esc(CFG.changePrefix)}\\d{1,7})\\b` : "($^)";
+  REF_RE = new RegExp(`\\b(${CFG.idPattern})\\b|${change}|\\b((?=[0-9a-f]*\\d)(?=[0-9a-f]*[a-f])[0-9a-f]{7,40})\\b`, "g");
+}
+
+function linkify(text) {
+  const out = []; let last = 0;
+  for (const m of String(text || "").matchAll(REF_RE)) {
+    if (m.index > last) out.push(document.createTextNode(text.slice(last, m.index)));
+    const href = m[1] ? hrefFor(m[1]) : m[2] ? hrefFor(m[2]) : fill(CFG.links.commit, m[3]);
+    if (!href) { out.push(document.createTextNode(m[0])); last = m.index + m[0].length; continue; }
+    const a = document.createElement("a");
+    a.className = "inl"; a.target = "_blank"; a.rel = "noopener"; a.textContent = m[0]; a.href = href;
+    a.addEventListener("click", (ev) => ev.stopPropagation());
+    out.push(a); last = m.index + m[0].length;
+  }
+  if (last < String(text || "").length) out.push(document.createTextNode(text.slice(last)));
+  return out;
+}
+
+// Items and changes an event touches, shown as chips under it even when the text doesn't name them.
+function refsOf(e) {
+  const seen = new Set();
+  for (const ef of e.effects || []) if (["item", "change"].includes(effType(ef)) && ef.id) seen.add(ef.id);
+  return [...seen];
+}
+
+// People: a login (code host) or handle mapped to a display name and profile URL in config.people.
+// Unmapped logins fall back to links.person; with neither, the name is plain text.
+function personName(login) { return CFG.people[login]?.name || login; }
+function personLink(login) {
+  const p = CFG.people[login], href = p?.url || fill(CFG.links.person, login);
+  const a = document.createElement(href ? "a" : "span");
+  a.textContent = personName(login);
+  if (href) { a.href = href; a.target = "_blank"; a.rel = "noopener"; a.addEventListener("click", (ev) => ev.stopPropagation()); }
+  return a;
+}
+function byNode(login) {
+  const s = document.createElement("span"); s.className = "by"; s.append("by ", personLink(login)); return s;
+}
+// Tracker page for an event: an explicit link (decision, comment), else the first item it changes.
+function trackerLinkOf(e) {
+  if (e.link || e.linear) return e.link || e.linear;
+  const t = (e.effects || []).find((ef) => effType(ef) === "item" && ef.id);
+  return t ? hrefFor(t.id) : null;
+}
+
+const REVIEW_VERDICTS = new Set(["changes_requested", "approved"]);
+
+function rowsInto(el, map, prefix, changed) {
+  el.replaceChildren();
+  if (!map.size) { const e = document.createElement("div"); e.className = "empty"; e.textContent = "Nothing yet at this point."; el.append(e); return; }
+  for (const [id, v] of map) {
+    const r = document.createElement("div"); r.className = "row" + (changed.has(prefix + id) ? " changed" : "");
+    const b = document.createElement("span"); b.className = "name"; b.textContent = v.title || meta.get(id)?.title || "";
+    r.append(idLink(id, "id"), b, chip(v.status || "—", v.label));
+    // WHY: a review verdict names its reviewer; once the change moves on (re-opened, merged) the
+    // verdict's author no longer describes the current status, so it is shown only with it.
+    if (v.reviewer && REVIEW_VERDICTS.has(v.status)) r.append(byNode(v.reviewer));
+    el.append(r);
+  }
+}
+
+function renderMatrix(cells) {
+  const mx = CFG.matrix;
+  $("matrixCard").hidden = !(mx && mx.rows && mx.rows.length && mx.cols && mx.cols.length);
+  if ($("matrixCard").hidden) return;
+  $("matrixTitle").textContent = mx.title || "Evidence";
+  const t = $("matrix"); t.replaceChildren();
+  const head = t.insertRow();
+  [mx.rowLabel || "", ...mx.cols.map((c) => (mx.colLabels || {})[c] || c), "Why"].forEach((h) => { const th = document.createElement("th"); th.textContent = h; head.append(th); });
+  for (const r of mx.rows) {
+    const tr = t.insertRow();
+    const c0 = tr.insertCell(); c0.className = "mono"; c0.textContent = r;
+    let note = "";
+    for (const c of mx.cols) {
+      const cell = cells.get(r + "/" + c);
+      const td = tr.insertCell();
+      const res = cell ? cell.result : "untested";
+      const s = document.createElement("span"); s.className = "chip " + (STATUS_CLASS[res] || "s-idle"); s.textContent = CELL_LABEL[res] || res;
+      td.append(s);
+      if (cell && cell.note) note = cell.note;
+    }
+    const tn = tr.insertCell(); tn.className = "note"; tn.textContent = note;
+  }
+}
+
+// Event lane -> colour token. From config.eventLanes ([{name, tone}], order = stack order), else
+// lanes in order of first appearance, cycling through the tones.
+let LANE_ORDER = [], LANE_COLOR = {};
+function buildLanes() {
+  const cfg = CFG.eventLanes || [];
+  LANE_ORDER = cfg.map((l) => l.name); LANE_COLOR = {};
+  cfg.forEach((l, k) => { LANE_COLOR[l.name] = `var(--${l.tone || TONES[k % TONES.length]})`; });
+  for (const e of events) {
+    const l = e.lane || "Other";
+    if (!(l in LANE_COLOR)) { LANE_COLOR[l] = `var(--${TONES[LANE_ORDER.length % TONES.length]})`; LANE_ORDER.push(l); }
+  }
+  const lg = $("laneLegend"); lg.replaceChildren("Events per day:");
+  for (const l of LANE_ORDER) {
+    if (!events.some((e) => (e.lane || "Other") === l)) continue;
+    const s = document.createElement("span"), i = document.createElement("i");
+    i.style.background = LANE_COLOR[l]; s.append(i, l); lg.append(s);
+  }
+  const hint = document.createElement("span"); hint.textContent = "· click a day; the row below lists its events"; lg.append(hint);
+}
+
+// Scrubber: one equal-width column per day that has events (days without events collapse to a
+// thin gap, marked "wknd" when it spans a weekend), each a stacked bar of its events by lane with
+// the count. Below, the current event's day is expanded: its events as dots in time order.
+// WHY: events cluster on a few days; one dot per event on a time axis fuses into solid bars and
+// colliding date labels. Equal day columns keep every label legible.
+function renderTrack() {
+  const svg = $("track"); svg.replaceChildren();
+  if (!events.length) return;
+  const ns = "http://www.w3.org/2000/svg";
+  const W = Math.max(520, Math.round(svg.clientWidth || 1000)), H = 112;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const el = (tag, attrs, text, parent = svg) => { const n = document.createElementNS(ns, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (text != null) n.textContent = text; parent.append(n); return n; };
+  const dayOf = (e) => (e.at || "").slice(0, 10);
+  const days = [], byDay = new Map();
+  events.forEach((e, i) => { const d = dayOf(e); if (!byDay.has(d)) { byDay.set(d, []); days.push(d); } byDay.get(d).push(i); });
+  const slots = [];
+  days.forEach((d, k) => {
+    if (k) {
+      const prev = Date.parse(days[k - 1] + "T00:00:00Z"), cur = Date.parse(d + "T00:00:00Z");
+      if (cur - prev > 864e5) {
+        let wknd = false;
+        for (let t = prev + 864e5; t < cur; t += 864e5) { const wd = new Date(t).getUTCDay(); if (wd === 0 || wd === 6) wknd = true; }
+        slots.push({ gap: true, wknd });
+      }
+    }
+    slots.push({ day: d });
+  });
+  const GAP = 0.35, L = 8, R = 8;
+  const u = (W - L - R) / slots.reduce((a, s) => a + (s.gap ? GAP : 1), 0);
+  const curDay = dayOf(events[idx] || events[0]);
+  const maxN = Math.max(...days.map((d) => byDay.get(d).length));
+  const BAR_TOP = 18, BAR_H = 30, BASE = BAR_TOP + BAR_H;
+  const labelEvery = Math.max(1, Math.ceil(40 / u)); // keep date labels at least ~40px apart
+  let x = L, dayK = 0;
+  for (const s of slots) {
+    if (s.gap) {
+      const w = u * GAP;
+      el("line", { x1: x + w / 2, x2: x + w / 2, y1: BAR_TOP + 6, y2: BASE, stroke: "var(--line)", "stroke-width": 1, "stroke-dasharray": "2 3" });
+      if (s.wknd) el("text", { x: x + w / 2, y: BASE + 12, "font-size": 8.5, "text-anchor": "middle", fill: "var(--muted)", "font-family": "IBM Plex Sans, sans-serif", "letter-spacing": ".05em" }, "WKND");
+      x += w; continue;
+    }
+    const ids = byDay.get(s.day), n = ids.length, cx = x + u / 2;
+    const isCur = s.day === curDay;
+    const g = el("g", { opacity: ids[0] > idx ? 0.38 : 1 }); g.style.cursor = "pointer";
+    el("rect", { x: x + 2, y: BAR_TOP - 16, width: u - 4, height: BAR_H + 34, rx: 6, fill: isCur ? "var(--accent-soft)" : "transparent" }, null, g);
+    if (dayK % labelEvery === 0 || isCur) el("text", { x: cx, y: BAR_TOP - 5, "font-size": 11, "text-anchor": "middle", fill: isCur ? "var(--accent)" : "var(--muted)", "font-family": "IBM Plex Mono, monospace", "font-weight": isCur ? 600 : 400 }, s.day.slice(5), g);
+    const bw = Math.min(22, u * 0.5), h = Math.max(3, (n / maxN) * BAR_H);
+    const per = {}; ids.forEach((i) => { const l = events[i].lane || "Other"; per[l] = (per[l] || 0) + 1; });
+    let y = BASE;
+    for (const lane of LANE_ORDER) {
+      if (!per[lane]) continue;
+      const sh = (per[lane] / n) * h; y -= sh;
+      el("rect", { x: cx - bw / 2, y, width: bw, height: sh, fill: LANE_COLOR[lane] }, null, g);
+    }
+    el("text", { x: cx, y: BASE + 12, "font-size": 10, "text-anchor": "middle", fill: "var(--muted)", "font-family": "IBM Plex Mono, monospace" }, String(n), g);
+    el("title", {}, `${s.day}: ${n} event${n === 1 ? "" : "s"} — ` + Object.entries(per).map(([k, v]) => `${k} ${v}`).join(", "), g);
+    // Click a day: jump to its last event already reached, else its first event.
+    g.addEventListener("click", () => { const reached = ids.filter((i) => i <= idx); go(reached.length && s.day !== curDay ? reached[reached.length - 1] : (s.day === curDay ? ids[ids.length - 1] : ids[0])); });
+    x += u; dayK++;
+  }
+  // zoom row: the current day's events, evenly spaced, labelled with their times
+  const zIds = byDay.get(curDay) || [];
+  const ZY = 92, zl = L + 46, zr = W - R - 8;
+  el("text", { x: L, y: ZY + 4, "font-size": 10.5, fill: "var(--accent)", "font-family": "IBM Plex Mono, monospace", "font-weight": 600 }, curDay.slice(5));
+  el("line", { x1: zl, x2: zr, y1: ZY, y2: ZY, stroke: "var(--line)", "stroke-width": 2 });
+  const zx = (k) => zIds.length === 1 ? (zl + zr) / 2 : zl + (k / (zIds.length - 1)) * (zr - zl);
+  const timeEvery = Math.max(1, Math.ceil(44 / ((zr - zl) / Math.max(1, zIds.length - 1))));
+  zIds.forEach((i, k) => {
+    const e = events[i], cx = zx(k), past = i <= idx, col = LANE_COLOR[e.lane || "Other"] || "var(--ink)";
+    if (k % timeEvery === 0 || i === idx) el("text", { x: cx, y: ZY - 9, "font-size": 9.5, "text-anchor": "middle", fill: i === idx ? "var(--accent)" : "var(--muted)", "font-family": "IBM Plex Mono, monospace" }, (e.at || "").slice(11, 16));
+    const c = el("circle", { cx, cy: ZY, r: i === idx ? 6.5 : 4, fill: i === idx ? "var(--accent)" : past ? col : "var(--panel)", stroke: past ? col : "var(--muted)", "stroke-width": 1.5 });
+    c.style.cursor = "pointer";
+    c.addEventListener("click", () => go(i));
+    el("title", {}, fmt(e.at) + " · " + (e.lane || "") + " · " + e.title, c);
+  });
+}
+
+// --- burn-up: replays item effects once; same counting rule as the % (in-scope items, minus
+// duplicate / canceled). Steps are drawn at event times.
+function burnSeries() {
+  const t = new Map(), out = [], W8 = CFG.forecast.wipWeights || {};
+  events.forEach((e) => {
+    for (const ef of e.effects || []) if (effType(ef) === "item") t.set(ef.id, { ...(t.get(ef.id) || {}), ...ef, status: canon(ef.status) });
+    const kids = [...t].filter(([id, x]) => counts(id, x)).map(([, x]) => x);
+    out.push({ at: Date.parse(e.at), scope: kids.length, done: kids.filter((x) => DONE_S.has(x.status)).length,
+      prog: kids.filter((x) => ACTIVE_S.has(x.status)).length,
+      weighted: kids.reduce((a, x) => a + (W8[x.status] ?? 0), 0) });
+  });
+  return out;
+}
+// Forecast: least-squares fit of `key` per day over days since the first non-zero value, sampled
+// at each UTC day end. Expected pace = slope; optimistic / pessimistic = slope ± one standard
+// error. Finish line = today's scope. WHY a band, not a date: a handful of points gives a noisy
+// slope; a non-positive pessimistic pace is shown as "no end date", never invented.
+function forecast(S, key = "done") {
+  const day = 864e5, now = Date.now();
+  const first = S.findIndex((p) => p[key] > 0);
+  if (first < 0) return { ok: false, why: "no item done yet" };
+  const valAt = (ts) => { let v = S[0]; for (const p of S) { if (p.at <= ts) v = p; else break; } return v; };
+  const start = S[first].at, pts = [];
+  for (let d = Math.ceil(start / day) * day; d <= now; d += day) pts.push([(d - start) / day, valAt(d)[key]]);
+  pts.push([(now - start) / day, valAt(now)[key]]);
+  if (pts.length < 3) return { ok: false, why: "fewer than 3 days of data" };
+  const n = pts.length, mx = pts.reduce((a, q) => a + q[0], 0) / n, my = pts.reduce((a, q) => a + q[1], 0) / n;
+  const sxx = pts.reduce((a, q) => a + (q[0] - mx) ** 2, 0), sxy = pts.reduce((a, q) => a + (q[0] - mx) * (q[1] - my), 0);
+  const b = sxy / sxx, a0 = my - b * mx;
+  const sse = pts.reduce((a, q) => a + (q[1] - (a0 + b * q[0])) ** 2, 0);
+  const se = Math.sqrt(sse / Math.max(1, n - 2) / sxx);
+  const cur = valAt(now), remaining = cur.scope - cur[key];
+  const eta = (rate) => (rate > 1e-9 ? now + (remaining / rate) * day : null);
+  return { ok: true, now, done: cur[key], scope: cur.scope, rate: b, se,
+    exp: eta(b), opt: eta(b + se), pes: eta(b - se), days: n };
+}
+const fmtDay = (ts) => new Date(ts).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+const wipText = () => Object.entries(CFG.forecast.wipWeights || {}).filter(([k]) => k !== "done")
+  .map(([k, v]) => `${(STATUS_TEXT[k] || k).toLowerCase()} ${v}`).join(", ");
+
+function renderBurn() {
+  const svg = $("burn"), ns = "http://www.w3.org/2000/svg"; svg.replaceChildren();
+  const S = burnSeries(); if (!S.length) return;
+  const W = 1000, H = 190, L = 34, R = 14, T = 12, B = 26;
+  const tNow = Math.max(S[S.length - 1].at, Date.now());
+  const showFc = $("fcToggle").checked === true;
+  const useWip = $("wipToggle").checked !== false;
+  $("wipWrap").hidden = !showFc;
+  const fc = showFc ? forecast(S, useWip ? "weighted" : "done") : null;
+  const fcStrict = showFc && useWip ? forecast(S, "done") : null;
+  const MAX_AHEAD = (CFG.forecast.maxAheadDays || 180) * 864e5; // cap the axis so a tiny pace can't flatten the history
+  const fcEnd = fc && fc.ok ? Math.min(tNow + MAX_AHEAD, Math.max(...[fc.exp, fc.opt, fc.pes].filter(Boolean), tNow)) : tNow;
+  const t0 = S[0].at, t1 = showFc ? fcEnd + (fcEnd - S[0].at) * 0.03 : tNow;
+  const maxY = Math.max(1, ...S.map((p) => p.scope));
+  const x = (ts) => L + ((ts - t0) / Math.max(1, t1 - t0)) * (W - L - R);
+  const y = (v) => T + (1 - v / maxY) * (H - T - B);
+  const el = (tag, attrs, text) => { const n = document.createElementNS(ns, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (text != null) n.textContent = text; svg.append(n); return n; };
+  const day = 864e5;
+  for (let d = Math.floor(t0 / day) * day; d < t1; d += day) {
+    const wd = new Date(d).getUTCDay();
+    if (wd === 6 || wd === 0) el("rect", { class: "wk", x: x(Math.max(d, t0)), y: T, width: Math.max(0, x(Math.min(d + day, t1)) - x(Math.max(d, t0))), height: H - T - B });
+  }
+  [...new Set([0, Math.round(maxY / 2), maxY])].forEach((v) => { el("line", { class: "grid", x1: L, x2: W - R, y1: y(v), y2: y(v) }); el("text", { class: "ax", x: L - 6, y: y(v) + 4, "text-anchor": "end" }, String(v)); });
+  const every = Math.max(1, Math.ceil((t1 - t0) / day / 14));
+  for (let d = Math.ceil(t0 / day) * day, k = 0; d <= t1; d += day, k++) {
+    if (k % every) continue;
+    el("text", { class: "ax", x: x(d), y: H - 8, "text-anchor": "middle" }, new Date(d).toLocaleDateString("en", { month: "short", day: "numeric", timeZone: "UTC" }));
+  }
+  const step = (key) => {
+    let d = "";
+    S.forEach((p, i) => { const px = x(p.at), py = y(p[key]); d += i === 0 ? `M${px},${py}` : `H${px}V${py}`; });
+    return d + `H${x(key === "scope" ? t1 : tNow)}`;
+  };
+  const area = (top, bottom) => {
+    let up = "", down = [];
+    S.forEach((p, i) => { const px = x(p.at), nx = i + 1 < S.length ? x(S[i + 1].at) : x(tNow);
+      up += (i === 0 ? `M${px},${y(top(p))}` : `L${px},${y(top(p))}`) + `H${nx}`; down.unshift(`L${nx},${y(bottom(p))}H${px}`); });
+    return up + down.join("") + "Z";
+  };
+  el("path", { class: "prog", d: area((p) => p.done + p.prog, (p) => p.done) });
+  el("path", { class: "done", d: area((p) => p.done, () => 0) });
+  el("path", { class: "scope", d: step("scope") });
+  const note = $("fcNote");
+  if (showFc && fc) {
+    note.hidden = false; note.replaceChildren();
+    if (!fc.ok) note.textContent = "Forecast: not enough data (" + fc.why + ").";
+    else {
+      el("line", { class: "fc-now", x1: x(fc.now), x2: x(fc.now), y1: T, y2: H - B });
+      const lineTo = (end, cls, tag) => {
+        if (!end) return;
+        const ex = x(Math.min(end, t1)), ey = end > t1 ? y(fc.done + (fc.scope - fc.done) * ((t1 - fc.now) / (end - fc.now))) : y(fc.scope);
+        el("line", { class: cls, x1: x(fc.now), y1: y(fc.done), x2: ex, y2: ey });
+        if (end <= t1) el("text", { class: "fc-lbl", x: ex, y: y(fc.scope) - 6, "text-anchor": "middle", fill: `var(${cls === "fc-opt" ? "--ok" : cls === "fc-pes" ? "--warn" : "--accent"})` }, tag);
+      };
+      lineTo(fc.opt, "fc-opt", "opt"); lineTo(fc.pes, "fc-pes", "pes"); lineTo(fc.exp, "fc-exp", "exp");
+      const b = (t) => { const e = document.createElement("b"); e.textContent = t; return e; };
+      const d = (t) => (t ? fmtDay(t) : "no end date at this pace");
+      note.append(useWip ? `Forecast with work in progress credited (${wipText()}): ` : "Forecast, done items only: ",
+        "expected ", b(d(fc.exp)), " · optimistic ", b(fc.opt ? fmtDay(fc.opt) : "—"), " · pessimistic ", b(d(fc.pes)),
+        `. Pace ${fc.rate.toFixed(2)} ± ${fc.se.toFixed(2)} items/day over ${fc.days} days, from ${fc.done.toFixed(useWip ? 1 : 0)} of ${fc.scope}.`);
+      if (fcStrict && fcStrict.ok) note.append(" Done-only: expected ", b(d(fcStrict.exp)), ", pessimistic ", b(d(fcStrict.pes)), ".");
+      note.append(" Assumes today's scope; counts items, not effort.");
+    }
+  } else note.hidden = true;
+  const c = S[Math.min(idx, S.length - 1)], cx = x(c.at);
+  el("line", { class: "cur", x1: cx, x2: cx, y1: T, y2: H - B });
+  el("circle", { cx, cy: y(c.done), r: 4, fill: "var(--ok)" });
+  el("text", { class: "curlbl", x: cx + (cx > W - 120 ? -8 : 8), y: T + 12, "text-anchor": cx > W - 120 ? "end" : "start" }, `${c.done}/${c.scope} done`);
+  svg.onclick = (ev) => {
+    const r = svg.getBoundingClientRect(); const px = ((ev.clientX - r.left) / r.width) * W;
+    let best = 0; S.forEach((p, i) => { if (Math.abs(x(p.at) - px) < Math.abs(x(S[best].at) - px)) best = i; });
+    go(best);
+  };
+}
+
+// --- log badges: what an event changed, derived by replaying effects (never hand-written).
+// WHY: a scope change hides inside an item effect's `inScope` flag; the badge makes "an item
+// joined the epic" visible in the log without reading every effect.
+const ICON = {
+  "scope-add": '<path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  "scope-rm": '<path d="M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  done: '<circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 8.2l2 2 4-4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+  started: '<circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 8V1.5A6.5 6.5 0 0 1 14.5 8z" fill="currentColor"/>',
+  merged: '<circle cx="4" cy="3.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="4" cy="12.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="8" r="1.8" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4 5.3v5.4M4 5.3c0 2.7 2.5 2.7 6.2 2.7" fill="none" stroke="currentColor" stroke-width="1.4"/>',
+  opened: '<circle cx="4" cy="3.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="4" cy="12.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4 5.3v5.4M12 10.7V6.5c0-1.5-1-2.5-2.5-2.5H7.5" fill="none" stroke="currentColor" stroke-width="1.4"/>',
+  approved: '<path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+  changes: '<path d="M8 2l6.5 11.5h-13z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6.5v3.2M8 11.6v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+  review: '<path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>',
+  decision: '<path d="M8 1.5a4.5 4.5 0 0 0-2.6 8.2V12h5.2V9.7A4.5 4.5 0 0 0 8 1.5zM6 14h4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>',
+};
+const BADGE_LABEL = { "scope-add": "Added to scope", "scope-rm": "Left scope", done: "Done", started: "Started",
+  merged: "Merged", opened: "Change opened", approved: "Approved", changes: "Changes requested", review: "Review", decision: "Decision" };
+// An event without state changes still gets a badge from its `kind`, else from a lane named like one.
+const kindOf = (e) => e.kind || ({ design: "decision", decision: "decision", review: "review" })[String(e.lane || "").toLowerCase()];
+function eventBadges() {
+  const t = new Map(), pr = new Map(), out = [];
+  const nScope = () => [...t].filter(([id, x]) => counts(id, x)).length;
+  events.forEach((e) => {
+    const b = [], before = nScope();
+    for (const ef of e.effects || []) {
+      const ty = effType(ef);
+      if (ty === "item") {
+        const prev = t.get(ef.id), next = { ...(prev || {}), ...ef, status: canon(ef.status) };
+        t.set(ef.id, next);
+        const was = !!prev && counts(ef.id, prev), is = counts(ef.id, next);
+        if (!was && is) b.push(["scope-add", ef.id]);
+        else if (was && !is) b.push(["scope-rm", ef.id]);
+        if (is && next.status !== prev?.status) {
+          if (DONE_S.has(next.status)) b.push(["done", ef.id]);
+          else if (STARTED_S.has(next.status) && !STARTED_S.has(prev?.status)) b.push(["started", ef.id]);
+        }
+      } else if (ty === "change") {
+        const prev = pr.get(ef.id), next = { ...(prev || {}), ...ef, status: canon(ef.status) }; pr.set(ef.id, next);
+        if (next.status === prev?.status) continue;
+        const k = { merged: "merged", approved: "approved", changes_requested: "changes", open: prev ? null : "opened" }[next.status];
+        if (k) b.push([k, ef.id]);
+      }
+    }
+    const k = kindOf(e);
+    if (!b.length && (k === "decision" || k === "review")) b.push([k, null]);
+    out.push({ items: b, scope: [before, nScope()] });
+  });
+  return out;
+}
+function badgeNode(kind, ids, scope) {
+  const s = document.createElement("span"); s.className = "badge bd-" + kind;
+  s.innerHTML = `<svg viewBox="0 0 16 16" aria-hidden="true">${ICON[kind]}</svg>`;
+  let txt = BADGE_LABEL[kind];
+  if (ids.length) txt += " " + ids.join(", ");
+  if ((kind === "scope-add" || kind === "scope-rm") && scope[0] !== scope[1]) txt += ` · scope ${scope[0]} → ${scope[1]}`;
+  s.append(txt);
+  return s;
+}
+let logFilter = "all";
+const FILTERS = [["all", "All"], ["scope", "Scope changes"], ["done", "Done & merged"], ["review", "Reviews"], ["decision", "Decisions"]];
+const FILTER_KINDS = { scope: ["scope-add", "scope-rm"], done: ["done", "merged"], review: ["approved", "changes", "review", "opened"], decision: ["decision"] };
+
+function renderLog() {
+  const ol = $("log"); ol.replaceChildren();
+  const BADGES = eventBadges();
+  const fb = $("logFilter");
+  if (!fb.childElementCount) FILTERS.forEach(([k, label]) => {
+    const btn = document.createElement("button"); btn.textContent = label; btn.dataset.k = k;
+    btn.addEventListener("click", () => { logFilter = k; renderLog(); }); fb.append(btn); });
+  fb.querySelectorAll("button").forEach((btn) => btn.setAttribute("aria-pressed", String(btn.dataset.k === logFilter)));
+  const keep = (i) => logFilter === "all" || BADGES[i].items.some(([k]) => FILTER_KINDS[logFilter].includes(k));
+  // Newest first; `i` stays the chronological index the scrubber uses.
+  events.map((e, i) => [e, i]).reverse().filter(([, i]) => keep(i)).forEach(([e, i]) => {
+    const li = document.createElement("li");
+    li.className = i === idx ? "current" : i > idx ? "future" : "";
+    li.tabIndex = 0;
+    const t = document.createElement("time"); t.textContent = fmt(e.at);
+    const l = document.createElement("span"); l.className = "lane"; l.textContent = e.lane || "";
+    const body = document.createElement("span");
+    const bg = BADGES[i];
+    if (bg.items.length) {
+      const groups = new Map();
+      bg.items.forEach(([k, id]) => { if (!groups.has(k)) groups.set(k, []); if (id) groups.get(k).push(id); });
+      const row = document.createElement("div"); row.className = "badges";
+      groups.forEach((ids, k) => row.append(badgeNode(k, ids, bg.scope)));
+      body.append(row);
+    }
+    const strong = document.createElement("strong"); strong.append(...linkify(e.title));
+    body.append(strong);
+    if (e.by) body.append(byNode(e.by));
+    const tl = trackerLinkOf(e);
+    if (tl) { const a = document.createElement("a"); a.className = "evlink"; a.href = tl; a.target = "_blank"; a.rel = "noopener"; a.textContent = (CFG.tracker.name || "Tracker") + " ↗"; a.addEventListener("click", (ev) => ev.stopPropagation()); body.append(a); }
+    if (e.approx) { const a = document.createElement("span"); a.className = "approx"; a.textContent = "approx. time"; body.append(a); }
+    if (e.detail) { const d = document.createElement("div"); d.style.color = "var(--muted)"; d.append(...linkify(e.detail)); body.append(d); }
+    const refs = refsOf(e);
+    if (refs.length) {
+      const r = document.createElement("div"); r.className = "refs";
+      refs.forEach((id) => r.append(idLink(id, "ref")));
+      body.append(r);
+    }
+    li.append(t, l, body);
+    li.addEventListener("click", () => go(i));
+    li.addEventListener("keydown", (ev) => { if (ev.key === "Enter") go(i); });
+    ol.append(li);
+  });
+}
+
+function render() {
+  const n = events.length;
+  $("slider").max = Math.max(n - 1, 0); $("slider").value = idx;
+  $("count").textContent = n ? `${idx + 1} / ${n}` : "0 / 0";
+  const e = events[idx];
+  $("nowTime").textContent = e ? fmt(e.at) + (e.approx ? " (approx.)" : "") : "—";
+  $("nowLane").textContent = e ? (e.lane || "") + (e.by ? " · by " + personName(e.by) : "") : "";
+  $("nowTitle").textContent = e ? e.title : "No events yet";
+  $("nowTitle").title = e ? e.title : "";
+  $("nowDetail").replaceChildren(...(e ? linkify(e.detail || "") : [document.createTextNode("Events appear here as the epic moves.")]));
+  $("nowDetail").title = e ? e.detail || "" : "";
+  const st = stateAt(idx);
+  // INVARIANT: % counts only the epic's own children (inScope), minus duplicates and
+  // cancellations; the epic itself and related bugs are shown but never counted.
+  const kids = [...st.tickets].filter(([id, t]) => counts(id, t)).map(([, t]) => t);
+  const done = kids.filter((t) => DONE_S.has(t.status)).length;
+  const prog = kids.filter((t) => ACTIVE_S.has(t.status)).length;
+  const total = kids.length;
+  $("pct").textContent = (total ? Math.round((done / total) * 100) : 0) + "%";
+  $("barDone").style.width = (total ? (done / total) * 100 : 0) + "%";
+  $("barProg").style.width = (total ? (prog / total) * 100 : 0) + "%";
+  $("pmeta").replaceChildren();
+  const b1 = document.createElement("b"); b1.textContent = `${done} of ${total}`;
+  const b2 = document.createElement("b"); b2.textContent = String(prog);
+  $("pmeta").append(b1, " work items done, ", b2, " in progress or review. Counts items, not effort.");
+  rowsInto($("tickets"), new Map([...st.tickets].filter(([id, t]) => !(scoped(t) || scoped(meta.get(id))) || ACTIVE_S.has(t.status) || DONE_S.has(t.status) || st.changed.has("item:" + id))), "item:", st.changed);
+  rowsInto($("prs"), st.prs, "change:", st.changed);
+  renderMatrix(st.cells);
+  renderCascade(st);
+  renderTrack(); renderLog(); renderBurn();
+}
+
+// --- cascade: the tracker's blocked-by graph, columns by dependency depth, rows by lane ------
+const lanes = () => CFG.lanes && CFG.lanes.length ? CFG.lanes : [...new Set([...meta.values()].map(laneOf).filter(Boolean))];
+
+function renderCascade(st) {
+  const grid = $("cascade"), svg = $("edges");
+  grid.replaceChildren(); svg.replaceChildren();
+  const LAYERS = lanes();
+  const ids = [...meta.keys()].filter((id) => LAYERS.includes(laneOf(meta.get(id))) && st.tickets.has(id) &&
+    !OUT_S.has(st.tickets.get(id).status));
+  if (!ids.length) { const e = document.createElement("div"); e.className = "empty"; e.textContent = "The dependency graph appears once the epic has work items with lanes."; grid.append(e); return; }
+  const depth = new Map();
+  const d = (id, seen = new Set()) => {
+    if (depth.has(id)) return depth.get(id);
+    if (seen.has(id)) return 0; seen.add(id);
+    const bs = (meta.get(id)?.blockedBy || []).filter((b) => ids.includes(b));
+    const v = bs.length ? 1 + Math.max(...bs.map((b) => d(b, seen))) : 0;
+    depth.set(id, v); return v;
+  };
+  ids.forEach((id) => d(id));
+  const cols = Math.max(...depth.values()) + 1;
+  grid.style.gridTemplateColumns = `88px repeat(${cols}, minmax(150px, 1fr))`;
+  const head = document.createElement("div"); head.className = "cz-head"; grid.append(head);
+  for (let c = 0; c < cols; c++) { const h = document.createElement("div"); h.className = "cz-head"; h.textContent = c === 0 ? "Can start" : `Step ${c + 1}`; grid.append(h); }
+  const cards = new Map();
+  for (const layer of LAYERS) {
+    const inLayer = ids.filter((id) => laneOf(meta.get(id)) === layer);
+    if (!inLayer.length) continue;
+    const lab = document.createElement("div"); lab.className = "cz-lane"; lab.textContent = layer; grid.append(lab);
+    for (let c = 0; c < cols; c++) {
+      const cell = document.createElement("div"); cell.className = "cz-cell";
+      for (const id of inLayer.filter((x) => depth.get(x) === c).sort()) {
+        const status = st.tickets.get(id).status;
+        const waits = (meta.get(id).blockedBy || []).filter((b) => ids.includes(b) && !DONE_S.has(st.tickets.get(b)?.status));
+        const card = document.createElement("div");
+        card.className = "cz-card" + (DONE_S.has(status) ? " done" : ACTIVE_S.has(status) ? " active" : waits.length ? " waiting" : " ready") +
+          (st.changed.has("item:" + id) ? " changed" : "");
+        card.dataset.id = id;
+        const top = document.createElement("div"); top.className = "cz-top";
+        top.append(idLink(id, "cz-id"), chip(status, st.tickets.get(id).label));
+        const t = document.createElement("div"); t.className = "cz-title"; t.textContent = meta.get(id).title;
+        card.append(top, t);
+        if (meta.get(id).owner) { const o = document.createElement("div"); o.className = "cz-owner"; o.textContent = meta.get(id).owner; card.append(o); }
+        if (waits.length) { const w = document.createElement("div"); w.className = "cz-wait"; w.textContent = "waits on " + waits.join(", "); card.append(w); }
+        else if (!DONE_S.has(status) && !ACTIVE_S.has(status)) { const w = document.createElement("div"); w.className = "cz-ready"; w.textContent = "ready to start"; card.append(w); }
+        card.addEventListener("mouseenter", () => highlight(id, true));
+        card.addEventListener("mouseleave", () => highlight(id, false));
+        cell.append(card); cards.set(id, card);
+      }
+      grid.append(cell);
+    }
+  }
+  lastEdges = { ids, cards, st };
+  requestAnimationFrame(drawEdges);
+}
+
+let lastEdges = null;
+const NS = "http://www.w3.org/2000/svg";
+
+// Arrowheads are drawn as explicit triangles (not markers) so the tip lands exactly on the
+// target card's edge and takes the edge's own colour in both themes.
+function drawEdges() {
+  if (!lastEdges) return;
+  const { ids, cards, st } = lastEdges;
+  const svg = $("edges"), wrap = $("cascadeWrap"), box = wrap.getBoundingClientRect();
+  svg.setAttribute("width", wrap.scrollWidth); svg.setAttribute("height", wrap.scrollHeight);
+  svg.setAttribute("viewBox", `0 0 ${wrap.scrollWidth} ${wrap.scrollHeight}`);
+  svg.replaceChildren();
+  const rect = (id) => { const r = cards.get(id).getBoundingClientRect();
+    return { l: r.left - box.left, r: r.right - box.left, t: r.top - box.top, b: r.bottom - box.top, cy: r.top - box.top + r.height / 2 }; };
+  const edges = [];
+  for (const id of ids) for (const b of meta.get(id).blockedBy || []) {
+    if (cards.has(b) && cards.has(id)) edges.push({ from: b, to: id });
+  }
+  // Ports: spread the edges leaving / entering one card along its side, ordered by the other
+  // end's height, so lines into the same card never stack or cross at the card.
+  const outs = new Map(), ins = new Map();
+  for (const e of edges) { (outs.get(e.from) || outs.set(e.from, []).get(e.from)).push(e); (ins.get(e.to) || ins.set(e.to, []).get(e.to)).push(e); }
+  const place = (list, end, other) => {
+    list.sort((a, b) => rect(a[other]).cy - rect(b[other]).cy);
+    list.forEach((e, i) => { const r = rect(e[end]); const span = Math.min(r.b - r.t - 16, 14 * (list.length - 1));
+      e[end + "Y"] = r.cy - span / 2 + (list.length > 1 ? (span * i) / (list.length - 1) : 0); });
+  };
+  outs.forEach((list) => place(list, "from", "to"));
+  ins.forEach((list) => place(list, "to", "from"));
+  const layer = (cls) => { const g = document.createElementNS(NS, "g"); g.setAttribute("class", cls); svg.append(g); return g; };
+  const gDone = layer("e-done"), gWait = layer("e-wait");
+  layer("e-hot"); // filled on hover so the hovered chain draws above everything else
+  for (const e of edges) {
+    const f = rect(e.from), t = rect(e.to);
+    const x1 = f.r, y1 = e.fromY, x2 = t.l - 1, y2 = e.toY;
+    const head = 7, bx = x2 - head;
+    const dx = Math.max(bx - x1, 24), c = Math.max(28, dx * 0.5);
+    const g = DONE_S.has(st.tickets.get(e.from)?.status) ? gDone : gWait;
+    const path = document.createElementNS(NS, "path");
+    path.setAttribute("d", `M${x1},${y1} C${x1 + c},${y1} ${bx - c},${y2} ${bx},${y2}`);
+    path.setAttribute("class", "edge"); path.dataset.from = e.from; path.dataset.to = e.to;
+    const tip = document.createElementNS(NS, "path");
+    tip.setAttribute("d", `M${bx},${y2 - 4.5} L${x2},${y2} L${bx},${y2 + 4.5} Z`);
+    tip.setAttribute("class", "tip"); tip.dataset.from = e.from; tip.dataset.to = e.to;
+    const dot = document.createElementNS(NS, "circle");
+    dot.setAttribute("cx", x1); dot.setAttribute("cy", y1); dot.setAttribute("r", 2.5);
+    dot.setAttribute("class", "tip"); dot.dataset.from = e.from; dot.dataset.to = e.to;
+    g.append(path, tip, dot);
+  }
+}
+if (window.ResizeObserver) new ResizeObserver(() => requestAnimationFrame(() => { drawEdges(); renderTrack(); })).observe(document.documentElement);
+document.fonts?.ready.then(() => requestAnimationFrame(drawEdges));
+
+function highlight(id, on) {
+  const up = new Set([id]), down = new Set([id]);
+  let grew = true;
+  while (grew) { grew = false;
+    for (const [k, m] of meta) for (const b of m.blockedBy || []) {
+      if (up.has(k) && !up.has(b)) { up.add(b); grew = true; }
+      if (down.has(b) && !down.has(k)) { down.add(k); grew = true; }
+    } }
+  const chain = new Set([...up, ...down]);
+  document.querySelectorAll(".cz-card").forEach((c) => c.classList.toggle("dim", on && !chain.has(c.dataset.id)));
+  const hot = document.querySelector("#edges .e-hot");
+  document.querySelectorAll("#edges [data-from]").forEach((e) => {
+    const inChain = on && up.has(e.dataset.to) && up.has(e.dataset.from) || on && down.has(e.dataset.from) && down.has(e.dataset.to);
+    e.classList.toggle("hot", !!inChain);
+    e.classList.toggle("faint", on && !inChain);
+    if (inChain && hot) hot.append(e); // raise the chain above the other lines
+  });
+  if (!on) requestAnimationFrame(drawEdges);
+}
+
+function go(i) { idx = Math.max(0, Math.min(events.length - 1, i)); render(); }
+function stop() { clearInterval(timer); timer = null; $("play").textContent = "Play"; }
+$("slider").addEventListener("input", (ev) => { stop(); go(+ev.target.value); });
+$("prev").addEventListener("click", () => { stop(); go(idx - 1); });
+$("next").addEventListener("click", () => { stop(); go(idx + 1); });
+$("latest").addEventListener("click", () => { stop(); go(events.length - 1); });
+$("play").addEventListener("click", () => {
+  if (timer) return stop();
+  if (idx >= events.length - 1) go(0);
+  $("play").textContent = "Pause";
+  timer = setInterval(() => { if (idx >= events.length - 1) return stop(); go(idx + 1); }, 1100);
+});
+document.addEventListener("keydown", (ev) => {
+  if (ev.target.tagName === "INPUT") return;
+  if (ev.key === "ArrowLeft") { stop(); go(idx - 1); }
+  if (ev.key === "ArrowRight") { stop(); go(idx + 1); }
+});
+$("fcToggle").addEventListener("change", () => renderBurn());
+$("wipToggle").addEventListener("change", () => renderBurn());
+
+function applyConfig(c) {
+  c = c || {};
+  CFG = { ...CFG, ...c, links: { ...CFG.links, ...(c.links || {}) }, tracker: { ...CFG.tracker, ...(c.tracker || {}) },
+    people: { ...CFG.people, ...(c.people || {}) }, forecast: { ...CFG.forecast, ...(c.forecast || {}) } };
+  document.title = CFG.title || "Epic Observation";
+  $("pageTitle").textContent = CFG.title || "Epic Observation";
+  buildRefRe();
+  $("pageSub").replaceChildren(...linkify((CFG.subtitle ? CFG.subtitle + " · " : "") + "Drag the slider to replay the epic."));
+  $("czTitle").textContent = `Cascade: dependencies in ${CFG.tracker.name || "the tracker"}`;
+  buildLanes();
+}
+function setEvents(list) {
+  const atEnd = idx >= events.length - 1;
+  events = list.slice().sort((a, b) => String(a.at).localeCompare(String(b.at)));
+  // WHY: on first load and when a new event arrives while watching the end, jump to the latest.
+  if (firstLoad || atEnd) idx = Math.max(events.length - 1, 0);
+  firstLoad = false;
+  buildLanes();
+}
+let firstLoad = true;
+applyConfig({});
+render();
+
+(async () => {
+  const db = await window.claude?.use?.("db");
+  if (!db) {
+    // Static export: a page built with an inline seed renders without the db.
+    const seed = document.getElementById("seed");
+    if (seed) {
+      try {
+        const d = JSON.parse(seed.textContent);
+        meta = new Map(Object.entries(d.items || {}));
+        applyConfig(d.config); setEvents(d.events || []);
+        $("sync").textContent = `${events.length} events · snapshot`; render();
+        return;
+      } catch (err) { /* fall through to the sign-in hint */ }
+    }
+    $("sync").textContent = "Sign in to claude.ai to load the timeline."; return;
+  }
+  db.doc("config/page").onSnapshot((snap) => { if (snap.exists) { applyConfig(snap.data()); render(); } }, () => {});
+  db.collection("events").orderBy("at").onSnapshot((snap) => {
+    setEvents(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    $("sync").textContent = `${events.length} events · live`;
+    render();
+  }, (err) => { $("sync").textContent = "Could not load events (" + (err && err.code || "error") + ")."; });
+  // `items` is the current collection; `tickets` is read too so older pages keep working.
+  const merged = { items: new Map(), tickets: new Map() };
+  const onMeta = (name) => (snap) => {
+    merged[name] = new Map(snap.docs.map((d) => [d.id, d.data()]));
+    meta = new Map([...merged.tickets, ...merged.items]);
+    render();
+  };
+  db.collection("items").onSnapshot(onMeta("items"), () => {});
+  db.collection("tickets").onSnapshot(onMeta("tickets"), () => {});
+})();
+</script>

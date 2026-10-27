@@ -1,0 +1,68 @@
+{
+  "config": {
+    "title": "Checkout Redesign",
+    "subtitle": "Epic SHOP-100 · one-page checkout with saved cards",
+    "lanes": ["Design", "Backend", "Frontend", "QA"],
+    "matrix": {
+      "title": "Payment check: card & wallet",
+      "rowLabel": "Provider",
+      "rows": ["stripe", "adyen"],
+      "cols": ["card", "wallet"]
+    }
+  },
+  "items": {
+    "SHOP-101": {"title": "Checkout flow design", "lane": "Design", "blockedBy": [], "inScope": true, "owner": "Ana"},
+    "SHOP-102": {"title": "Saved-card vault API", "lane": "Backend", "blockedBy": ["SHOP-101"], "inScope": true, "owner": "Bo"},
+    "SHOP-103": {"title": "One-page checkout UI", "lane": "Frontend", "blockedBy": ["SHOP-101", "SHOP-102"], "inScope": true, "owner": "Cy"},
+    "SHOP-104": {"title": "End-to-end payment tests", "lane": "QA", "blockedBy": ["SHOP-103"], "inScope": true, "owner": "Di"},
+    "SHOP-105": {"title": "Wallet button (Apple / Google Pay)", "lane": "Frontend", "blockedBy": ["SHOP-102"], "inScope": true, "owner": "Cy"},
+    "SHOP-150": {"title": "Card form drops the postcode (bug)", "lane": "Frontend", "blockedBy": [], "inScope": false, "owner": "Triage"}
+  },
+  "events": [
+    {"at": "2026-09-07T09:00:00Z", "lane": "Planning", "title": "Epic split into four items", "by": "ana-k",
+     "detail": "SHOP-101 to SHOP-104 filed; SHOP-102 waits on the design.",
+     "effects": [
+       {"type": "item", "id": "SHOP-101", "status": "in_progress", "label": "In Progress"},
+       {"type": "item", "id": "SHOP-102", "status": "backlog", "label": "To Do"},
+       {"type": "item", "id": "SHOP-103", "status": "backlog", "label": "To Do"},
+       {"type": "item", "id": "SHOP-104", "status": "backlog", "label": "To Do"}]},
+    {"at": "2026-09-08T13:30:00Z", "lane": "Design", "title": "Decision: saved cards live in the vault, never in the checkout DB",
+     "detail": "Keeps the checkout service out of PCI scope.", "kind": "decision", "approx": true,
+     "effects": [{"type": "item", "id": "SHOP-101", "status": "in_review", "label": "In Review"}]},
+    {"at": "2026-09-10T15:20:00Z", "lane": "Tracker", "title": "Design approved; API starts",
+     "detail": "SHOP-101 done; SHOP-102 picked up.",
+     "effects": [{"type": "item", "id": "SHOP-101", "status": "done", "label": "Done"},
+                 {"type": "item", "id": "SHOP-102", "status": "in_progress", "label": "In Progress"}]},
+    {"at": "2026-09-11T11:00:00Z", "lane": "Code", "title": "!42 opened: card vault API", "by": "bo-dev",
+     "detail": "Merge request !42 for SHOP-102, first commit 9f3c2ab1d.",
+     "effects": [{"type": "change", "id": "!42", "title": "Card vault API (SHOP-102)", "status": "open"},
+                 {"type": "item", "id": "SHOP-102", "status": "in_review", "label": "In Review"}]},
+    {"at": "2026-09-11T16:40:00Z", "lane": "Review", "title": "!42: changes requested (token TTL)", "by": "di-qa",
+     "effects": [{"type": "change", "id": "!42", "status": "changes_requested", "reviewer": "di-qa"}]},
+    {"at": "2026-09-14T10:05:00Z", "lane": "Live", "title": "Stripe card payments pass in staging",
+     "detail": "Wallet not run yet on either provider.",
+     "effects": [{"type": "check", "row": "stripe", "col": "card", "result": "pass", "note": "3DS challenge passed"},
+                 {"type": "check", "row": "adyen", "col": "card", "result": "fail", "note": "sandbox key expired"}]},
+    {"at": "2026-09-14T14:10:00Z", "lane": "Review", "title": "!42 approved", "by": "di-qa",
+     "effects": [{"type": "change", "id": "!42", "status": "approved", "reviewer": "di-qa"}]},
+    {"at": "2026-09-15T08:30:00Z", "lane": "Tracker", "title": "Bug filed: postcode dropped",
+     "detail": "SHOP-150, outside the epic scope.",
+     "effects": [{"type": "item", "id": "SHOP-150", "status": "triage", "label": "Triage"}]},
+    {"at": "2026-09-15T12:00:00Z", "lane": "Code", "title": "!42 merged; vault API done", "by": "bo-dev",
+     "effects": [{"type": "change", "id": "!42", "status": "merged"},
+                 {"type": "item", "id": "SHOP-102", "status": "done", "label": "Done"},
+                 {"type": "item", "id": "SHOP-103", "status": "in_progress", "label": "In Progress"}]},
+    {"at": "2026-09-16T09:15:00Z", "lane": "Planning", "title": "Wallet button added to the epic",
+     "detail": "SHOP-105 joins the scope; it needs the vault API from SHOP-102.",
+     "effects": [{"type": "item", "id": "SHOP-105", "status": "ready", "label": "To Do"}]},
+    {"at": "2026-09-18T15:45:00Z", "lane": "Code", "title": "!47 opened: one-page checkout UI", "by": "cy-ui",
+     "effects": [{"type": "change", "id": "!47", "title": "One-page checkout (SHOP-103)", "status": "open"},
+                 {"type": "item", "id": "SHOP-103", "status": "in_review", "label": "In Review"}]},
+    {"at": "2026-09-21T10:30:00Z", "lane": "Review", "title": "!47 approved", "by": "ana-k",
+     "effects": [{"type": "change", "id": "!47", "status": "approved", "reviewer": "ana-k"}]},
+    {"at": "2026-09-21T17:00:00Z", "lane": "Code", "title": "!47 merged; checkout UI done", "by": "cy-ui",
+     "effects": [{"type": "change", "id": "!47", "status": "merged"},
+                 {"type": "item", "id": "SHOP-103", "status": "done", "label": "Done"},
+                 {"type": "item", "id": "SHOP-104", "status": "in_progress", "label": "In Progress"}]}
+  ]
+}

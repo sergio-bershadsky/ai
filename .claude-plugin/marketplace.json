@@ -85,6 +85,13 @@
       "description": "Team working agreement as a loadable skill: channel/priority ladder, response SLAs, emoji acknowledgement protocol, a morning collaboration window and a protected afternoon coding block, meeting and proposal gates, autonomy boundary, T-shirt estimates, quality bar, and absence policy — plus a checklist for reviewing drafts before they are sent.",
       "version": "1.0.0",
       "category": "productivity"
+    },
+    {
+      "name": "epic-observation",
+      "source": "./plugins/epic-observation",
+      "description": "Live, scrubbable epic progress page for any PM tool (Linear, Jira, monday.com, GitHub…): timeline replay, burn-up + forecast, dependency cascade, review verdicts, linked event log — one template, per-project tracker profile.",
+      "version": "1.0.0",
+      "category": "productivity"
     }
   ]
 }
