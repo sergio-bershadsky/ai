@@ -323,7 +323,14 @@ function chip(status, label) {
 
 let meta = new Map(); // item id -> {title, lane, blockedBy, url, inScope, owner}, synced from the tracker
 
-const fill = (tpl, v) => (tpl ? tpl.replace(/\{(id|n|sha|login)\}/g, () => encodeURIComponent(v)) : "");
+// Every href on the page passes through safeHref: item urls, event links and people urls come
+// from tracker data, and a javascript: / data: URL there would run on click. http(s) only.
+function safeHref(u) {
+  if (!u) return "";
+  try { const x = new URL(u, location.href); return x.protocol === "https:" || x.protocol === "http:" ? x.href : ""; }
+  catch { return ""; }
+}
+const fill = (tpl, v) => (tpl ? safeHref(tpl.replace(/\{(id|n|sha|login)\}/g, () => encodeURIComponent(v))) : "");
 const laneOf = (m) => m.lane ?? m.layer;
 const scoped = (m) => !!(m && (m.inScope ?? m.epic));
 // An item counts toward % when the effect or the tracker record says it is the epic's own child,
@@ -331,7 +338,7 @@ const scoped = (m) => !!(m && (m.inScope ?? m.epic));
 const counts = (id, t) => (scoped(t) || scoped(meta.get(id))) && !OUT_S.has(t.status);
 function hrefFor(id) {
   if (CFG.changePrefix && id.startsWith(CFG.changePrefix)) return fill(CFG.links.change, id.slice(CFG.changePrefix.length));
-  return meta.get(id)?.url || fill(CFG.links.item, id);
+  return safeHref(meta.get(id)?.url) || fill(CFG.links.item, id);
 }
 function idLink(id, cls) {
   const a = document.createElement("a");
@@ -375,7 +382,7 @@ function refsOf(e) {
 // Unmapped logins fall back to links.person; with neither, the name is plain text.
 function personName(login) { return CFG.people[login]?.name || login; }
 function personLink(login) {
-  const p = CFG.people[login], href = p?.url || fill(CFG.links.person, login);
+  const p = CFG.people[login], href = safeHref(p?.url) || fill(CFG.links.person, login);
   const a = document.createElement(href ? "a" : "span");
   a.textContent = personName(login);
   if (href) { a.href = href; a.target = "_blank"; a.rel = "noopener"; a.addEventListener("click", (ev) => ev.stopPropagation()); }
@@ -386,7 +393,8 @@ function byNode(login) {
 }
 // Tracker page for an event: an explicit link (decision, comment), else the first item it changes.
 function trackerLinkOf(e) {
-  if (e.link || e.linear) return e.link || e.linear;
+  const own = safeHref(e.link || e.linear);
+  if (own) return own;
   const t = (e.effects || []).find((ef) => effType(ef) === "item" && ef.id);
   return t ? hrefFor(t.id) : null;
 }
