@@ -1,6 +1,7 @@
 {
   "name": "claude-skills-hooks",
   "private": true,
+  "type": "module",
   "scripts": {
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",

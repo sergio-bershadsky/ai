@@ -5,7 +5,8 @@ Git workflow automation with conventional commits, branch protection, semantic c
 ## Installation
 
 ```bash
-claude mcp add-from-marketplace bershadsky-claude-tools/git
+/plugin marketplace add sergio-bershadsky/ai
+/plugin install git@bershadsky-claude-tools
 ```
 
 ## Features

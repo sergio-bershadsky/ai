@@ -68,7 +68,7 @@
     {
       "name": "tortoise-dev",
       "source": "./plugins/tortoise-dev",
-      "description": "Enterprise Tortoise ORM (async Python) toolkit: one-model-per-file in models/ subpackage, abstract Base interfaces for mocks/transitions, strict class layout, FastAPI lifespan, Aerich migrations, Pydantic v2, pytest patterns",
+      "description": "Enterprise Tortoise ORM (async Python) toolkit: one-model-per-file in models/ subpackage, abstract Base interfaces for mocks/transitions, strict class layout, FastAPI lifespan, built-in Tortoise migrations (Aerich-free), Pydantic v2, pytest patterns",
       "version": "1.0.0",
       "category": "development"
     },

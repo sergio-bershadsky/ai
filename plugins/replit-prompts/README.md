@@ -5,7 +5,8 @@ Generate optimized prompts, PRDs, and task plans for Replit Agent that maximize 
 ## Installation
 
 ```bash
-claude mcp add-from-marketplace bershadsky-claude-tools/replit-prompts
+/plugin marketplace add sergio-bershadsky/ai
+/plugin install replit-prompts@bershadsky-claude-tools
 ```
 
 ## Overview
@@ -136,19 +137,19 @@ Create a portfolio website for a freelance photographer with:
 
 Full PRDs include these sections:
 
-1. **Project Overview** — Name, description, goals
-2. **Tech Stack** — Framework, database, styling
-3. **Data Model** — Entities with fields and relationships
-4. **Features** — Grouped with acceptance criteria
-5. **UI/UX** — Wireframes or descriptions
-6. **API Endpoints** — Routes and payloads
-7. **Authentication** — User flows
-8. **Error Handling** — Edge cases
-9. **Testing** — Test plan
-10. **Deployment** — Environment setup
-11. **Success Metrics** — KPIs
-12. **Timeline** — Development phases
-13. **Open Questions** — Decisions needed
+1. **Executive Summary** — Name, version, one-line description, problem statement, success metrics
+2. **User Personas** — Who uses it and what they need
+3. **Technical Specifications** — Tech stack, architecture, integrations, environment variables
+4. **Data Model** — Entities, relationships, indexes
+5. **Feature Specifications** — Per-feature behaviour
+6. **UI/UX Specifications** — Design system, page layouts, navigation, breakpoints
+7. **User Flows** — Step-by-step flows
+8. **Non-Functional Requirements** — Performance, security, accessibility, browser support
+9. **Scope Boundaries** — In scope (MVP), out of scope, explicit non-goals
+10. **Acceptance Criteria** — Per feature and overall
+11. **Development Phases** — Checkpointed phases
+12. **Risks and Mitigations**
+13. **Appendix** — Wireframes, reference apps, API docs, glossary
 
 ## Development Plan Structure
 
@@ -182,4 +183,4 @@ Plans include:
 
 ## License
 
-[Unlicense](LICENSE) - Public Domain
+[Unlicense](../../LICENSE) - Public Domain

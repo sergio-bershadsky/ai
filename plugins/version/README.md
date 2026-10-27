@@ -5,7 +5,8 @@ Semantic version bumping for plugins with git tags and commits.
 ## Installation
 
 ```bash
-claude mcp add-from-marketplace bershadsky-claude-tools/version
+/plugin marketplace add sergio-bershadsky/ai
+/plugin install version@bershadsky-claude-tools
 ```
 
 ## Features

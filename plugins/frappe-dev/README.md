@@ -5,7 +5,8 @@ Professional Frappe Framework v15 development toolkit with multi-layer architect
 ## Installation
 
 ```bash
-claude mcp add-from-marketplace bershadsky-claude-tools/frappe-dev
+/plugin marketplace add sergio-bershadsky/ai
+/plugin install frappe-dev@bershadsky-claude-tools
 ```
 
 ## Overview
@@ -71,6 +72,7 @@ Create a DocType with controller, service layer, repository, and tests.
 **Generated Files:**
 - `<doctype>.json` — DocType definition
 - `<doctype>.py` — Controller with lifecycle hooks
+- `<doctype>.js` — Client-side form script
 - `<doctype>_service.py` — Business logic layer
 - `<doctype>_repository.py` — Data access layer
 - `test_<doctype>.py` — Test coverage
@@ -149,20 +151,20 @@ Create comprehensive test suites with fixtures and factories.
 
 ```
 ┌─────────────────────────────────────────────────┐
-│                   Controller                     │
-│         (DocType hooks, HTTP handlers)          │
+│                    Controller                   │
+│          (DocType hooks, HTTP handlers)         │
 └────────────────────────┬────────────────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────┐
-│                    Service                       │
-│    (Business logic, validation, orchestration)  │
+│                     Service                     │
+│   (Business logic, validation, orchestration)   │
 └────────────────────────┬────────────────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────┐
-│                   Repository                     │
-│        (Database queries, data access)          │
+│                    Repository                   │
+│         (Database queries, data access)         │
 └─────────────────────────────────────────────────┘
 ```
 

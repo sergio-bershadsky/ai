@@ -5,7 +5,8 @@ Opinionated Django development toolkit with Ninja API, Unfold admin, pytest, and
 ## Installation
 
 ```bash
-claude mcp add-from-marketplace bershadsky-claude-tools/django-dev
+/plugin marketplace add sergio-bershadsky/ai
+/plugin install django-dev@bershadsky-claude-tools
 ```
 
 ## Overview
@@ -221,4 +222,4 @@ touch apps/myapp/{models,forms,managers,api,admin}/__init__.py
 
 ## License
 
-[Unlicense](LICENSE) - Public Domain
+[Unlicense](../../LICENSE) - Public Domain

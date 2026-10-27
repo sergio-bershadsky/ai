@@ -56,6 +56,7 @@ For existing projects:
 | Status | `--status=<status>` | `--status=active` |
 | Tag | `--tag=<tag>` | `--tag=kubernetes` |
 | Limit | `--limit=<n>` | `--limit=10` |
+| Format | `--format=<fmt>` | `--format=json` |
 
 #### Examples
 

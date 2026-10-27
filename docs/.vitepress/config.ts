@@ -93,6 +93,30 @@ export default defineConfig({
         ]
       },
       {
+        text: 'Diagramming Plugin',
+        items: [
+          { text: 'Overview', link: '/diagramming/' },
+        ]
+      },
+      {
+        text: 'Django Dev Plugin',
+        items: [
+          { text: 'Overview', link: '/django-dev/' },
+        ]
+      },
+      {
+        text: 'Tortoise Dev Plugin',
+        items: [
+          { text: 'Overview', link: '/tortoise-dev/' },
+        ]
+      },
+      {
+        text: 'Marketplace Validator Plugin',
+        items: [
+          { text: 'Overview', link: '/marketplace-validator/' },
+        ]
+      },
+      {
         text: 'Content Distribution',
         items: [
           { text: 'Правила постинга', link: '/distribution/' },
