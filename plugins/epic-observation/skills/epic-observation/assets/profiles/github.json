@@ -1,0 +1,18 @@
+{
+  "tracker": {"name": "GitHub"},
+  "codeHost": {"name": "GitHub"},
+  "idPattern": "[a-z0-9-]+#\\d+",
+  "changePrefix": "#",
+  "links": {
+    "change": "https://github.com/<org>/<repo>/pull/{n}",
+    "commit": "https://github.com/<org>/<repo>/commit/{sha}",
+    "person": "https://github.com/{login}"
+  },
+  "statusMap": {
+    "item": {"Todo": "ready", "In Progress": "in_progress", "In Review": "in_review", "Done": "done",
+             "closed (completed)": "done", "closed (not planned)": "canceled", "closed (duplicate)": "duplicate"},
+    "change": {"open": "open", "draft": "open", "merged": "merged", "closed": "closed",
+               "APPROVED": "approved", "CHANGES_REQUESTED": "changes_requested"}
+  },
+  "notes": "Issues and PRs share '#'. Keep '#' for changes; give issue items ids like 'web#12' and an explicit url."
+}

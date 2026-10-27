@@ -38,6 +38,12 @@ Personal plugin marketplace for Claude Code — skills, hooks, and agents for wo
 | [**secondbrain**](plugins/secondbrain/) | Knowledge base scaffolding with microdatabases, VitePress portal, semantic search, review stamps, meeting transcription | 11 skills | freshness, sidebar, search-index, session-context, transcription-check |
 | [**replit-prompts**](plugins/replit-prompts/) | Optimized prompts, PRDs, and task plans for Replit Agent | 3 skills | — |
 
+### Project Management
+
+| Plugin | Description | Skills |
+|--------|-------------|--------|
+| [**epic-observation**](plugins/epic-observation/) | Live, scrubbable epic progress page for any PM tool (Linear, Jira, monday.com, GitHub…): timeline replay, burn-up + forecast, dependency cascade, review verdicts | epic-observation |
+
 ### Internal
 
 | Plugin | Description |
@@ -127,6 +133,18 @@ Structured prompts for Replit Agent based on Replit's 10 official guidelines. Ge
 ```
 
 **Skills:** replit-prompt, replit-prd, replit-plan
+
+---
+
+### [epic-observation](plugins/epic-observation/)
+
+A live "Epic Observation" page: drag back to any moment to see the epic as it stood then — % done, burn-up with a forecast band, blocked-by dependency cascade, PR/MR review verdicts, evidence grid, linked event log. One tool-agnostic template; tool specifics live in a per-project tracker profile (`.claude/epic-observation.json`).
+
+```bash
+/plugin install epic-observation@bershadsky-claude-tools
+```
+
+**Skills:** epic-observation
 
 ---
 

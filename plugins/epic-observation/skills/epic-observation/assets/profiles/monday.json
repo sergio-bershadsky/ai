@@ -1,0 +1,18 @@
+{
+  "tracker": {"name": "monday.com"},
+  "codeHost": {"name": "GitHub"},
+  "idPattern": "($^)",
+  "changePrefix": "#",
+  "links": {
+    "item": "https://<account>.monday.com/boards/<board_id>/pulses/{id}",
+    "change": "https://github.com/<org>/<repo>/pull/{n}",
+    "commit": "https://github.com/<org>/<repo>/commit/{sha}"
+  },
+  "statusMap": {
+    "item": {"": "backlog", "Not Started": "ready", "Working on it": "in_progress", "Stuck": "blocked",
+             "Done": "done"},
+    "change": {"open": "open", "merged": "merged", "closed": "closed",
+               "APPROVED": "approved", "CHANGES_REQUESTED": "changes_requested"}
+  },
+  "notes": "Item ids are numeric, so idPattern matches nothing (plain numbers must not auto-link); give every item an explicit url. Status labels are per board — replace this map with the board's own labels."
+}

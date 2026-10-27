@@ -1,0 +1,19 @@
+{
+  "tracker": {"name": "Linear"},
+  "codeHost": {"name": "GitHub"},
+  "idPattern": "ENG-\\d+",
+  "changePrefix": "#",
+  "links": {
+    "item": "https://linear.app/<workspace>/issue/{id}",
+    "change": "https://github.com/<org>/<repo>/pull/{n}",
+    "commit": "https://github.com/<org>/<repo>/commit/{sha}",
+    "person": "https://github.com/{login}"
+  },
+  "statusMap": {
+    "item": {"Triage": "triage", "Backlog": "backlog", "Todo": "ready", "In Progress": "in_progress",
+             "In Review": "in_review", "Done": "done", "Canceled": "canceled", "Duplicate": "duplicate"},
+    "change": {"open": "open", "draft": "open", "merged": "merged", "closed": "closed",
+               "APPROVED": "approved", "CHANGES_REQUESTED": "changes_requested"}
+  },
+  "people": {"<github-login>": {"name": "<Display Name>", "url": "https://linear.app/<workspace>/profiles/<handle>"}}
+}

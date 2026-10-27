@@ -13,6 +13,7 @@ export default defineConfig({
       { text: 'Secondbrain', link: '/secondbrain/' },
       { text: 'Settings Sync', link: '/settings-sync/' },
       { text: 'Replit Prompts', link: '/replit-prompts/' },
+      { text: 'Epic Observation', link: '/epic-observation/' },
       { text: 'Working With Sergey', link: '/working-with-sergey/' },
       { text: 'Distribution', link: '/distribution/' },
     ],
@@ -76,6 +77,12 @@ export default defineConfig({
         text: 'Working With Sergey Plugin',
         items: [
           { text: 'Overview', link: '/working-with-sergey/' },
+        ]
+      },
+      {
+        text: 'Epic Observation Plugin',
+        items: [
+          { text: 'Overview', link: '/epic-observation/' },
         ]
       },
       {
