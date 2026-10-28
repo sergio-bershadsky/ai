@@ -1,0 +1,36 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Спринт</title>
+<style>
+  :root { --bg: #f5f6f8; --panel: #fff; --ink: #1b2230; --muted: #5d6676; --line: #dde1e8; --accent: #2f5bd3; --ok: #1d7a4d; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #11151c; --panel: #181e27; --ink: #e5e9f0; --muted: #98a2b3; --line: #2a3240; --accent: #7d9cff; --ok: #5fd39a; } }
+  body { margin: 0; padding: 24px 16px; background: var(--bg); color: var(--ink); font: 16px/1.45 "IBM Plex Sans", system-ui, sans-serif; }
+  h1 { font-size: 28px; margin: 0 0 4px; } .sub { color: var(--muted); margin: 0 0 20px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
+  .pct { font-size: 56px; font-weight: 600; } .bar { height: 10px; background: var(--line); border-radius: 6px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--ok); transition: none; }
+  ul { list-style: none; padding: 0; margin: 0; } li { display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--line); }
+  li:first-child { border-top: 0; } .st { font-size: 13px; color: var(--muted); } .done .st { color: var(--ok); }
+  button { font: inherit; padding: 10px 16px; border-radius: 10px; border: 0; background: var(--accent); color: #fff; }
+</style>
+<h1>Спринт 42</h1>
+<p class="sub">Демо-страница для примера promo-video</p>
+<section class="card" id="progress"><div class="pct" id="pct">0%</div><div class="bar"><i id="bar" style="width:0"></i></div>
+  <p class="sub" id="note">0 из 4 задач готово</p><button id="next">Завершить задачу</button></section>
+<section class="card" id="tasks"><ul id="list"></ul></section>
+<script>
+  const tasks = ["Дизайн экрана оплаты", "API сохранённых карт", "Экран оформления заказа", "Сквозные тесты"];
+  let done = 0;
+  function render() {
+    const p = Math.round(done / tasks.length * 100);
+    document.getElementById("pct").textContent = p + "%";
+    document.getElementById("bar").style.width = p + "%";
+    document.getElementById("note").textContent = `${done} из ${tasks.length} задач готово`;
+    document.getElementById("list").innerHTML = tasks.map((t, i) =>
+      `<li class="${i < done ? "done" : ""}"><span>${t}</span><span class="st">${i < done ? "готово" : "в работе"}</span></li>`).join("");
+  }
+  window.setDone = (n) => { done = n; render(); };
+  document.getElementById("next").onclick = () => setDone(Math.min(tasks.length, done + 1));
+  render();
+</script>
