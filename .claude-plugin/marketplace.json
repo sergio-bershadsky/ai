@@ -92,6 +92,13 @@
       "description": "Live, scrubbable epic progress page for any PM tool (Linear, Jira, monday.com, GitHub…): timeline replay, burn-up + forecast, dependency cascade, review verdicts, linked event log — one template, per-project tracker profile.",
       "version": "1.0.0",
       "category": "productivity"
+    },
+    {
+      "name": "promo-video",
+      "source": "./plugins/promo-video",
+      "description": "Narrated promo videos for Telegram and Instagram (RU/EN) from one prompt: real UI via Playwright, ElevenLabs voice-over with word timing and measured take selection, captions, platform-safe 9:16/4:5/1:1 layouts, MP4 + post text.",
+      "version": "1.0.0",
+      "category": "productivity"
     }
   ]
 }

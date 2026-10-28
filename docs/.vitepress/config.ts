@@ -14,6 +14,7 @@ export default defineConfig({
       { text: 'Settings Sync', link: '/settings-sync/' },
       { text: 'Replit Prompts', link: '/replit-prompts/' },
       { text: 'Epic Observation', link: '/epic-observation/' },
+      { text: 'Promo Video', link: '/promo-video/' },
       { text: 'Working With Sergey', link: '/working-with-sergey/' },
       { text: 'Distribution', link: '/distribution/' },
     ],
@@ -83,6 +84,12 @@ export default defineConfig({
         text: 'Epic Observation Plugin',
         items: [
           { text: 'Overview', link: '/epic-observation/' },
+        ]
+      },
+      {
+        text: 'Promo Video Plugin',
+        items: [
+          { text: 'Overview', link: '/promo-video/' },
         ]
       },
       {

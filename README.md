@@ -44,6 +44,12 @@ Personal plugin marketplace for Claude Code — skills, hooks, and agents for wo
 |--------|-------------|--------|
 | [**epic-observation**](plugins/epic-observation/) | Live, scrubbable epic progress page for any PM tool (Linear, Jira, monday.com, GitHub…): timeline replay, burn-up + forecast, dependency cascade, review verdicts | epic-observation |
 
+### Content & Media
+
+| Plugin | Description | Skills |
+|--------|-------------|--------|
+| [**promo-video**](plugins/promo-video/) | Narrated promo videos for Telegram and Instagram (RU/EN) from one prompt: real UI captures, ElevenLabs voice-over, captions, platform-safe layouts | promo-video |
+
 ### Internal
 
 | Plugin | Description |
@@ -145,6 +151,18 @@ A live "Epic Observation" page: drag back to any moment to see the epic as it st
 ```
 
 **Skills:** epic-observation
+
+---
+
+### [promo-video](plugins/promo-video/)
+
+One prompt → a narrated vertical video about a feature, in Russian or English: real UI captured with Playwright, an ElevenLabs voice-over with word timing (takes compared by Scribe error rate and pitch range), scenes cut on the narration, word-highlighted captions, Telegram / Instagram safe layouts in 9:16, 4:5 and 1:1, MP4 plus post text.
+
+```bash
+/plugin install promo-video@bershadsky-claude-tools
+```
+
+**Skills:** promo-video
 
 ---
 

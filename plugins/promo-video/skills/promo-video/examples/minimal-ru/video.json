@@ -1,0 +1,33 @@
+{
+  "title": "Демо-ролик на русском",
+  "lang": "ru",
+  "targets": [
+    {"platform": "instagram", "format": "9:16"},
+    {"platform": "telegram", "format": "1:1"}
+  ],
+  "voice": {"voice": "Daniel", "models": ["eleven_v4"], "stability": 0.4},
+  "captures": [
+    {"name": "progress", "url": "demo.html", "viewport": [540, 960], "scale": 2,
+     "sequence": {"count": 5, "eval": "setDone({i})"},
+     "measure": {"btn_x": "(r => r.x + r.width / 2)(document.getElementById('next').getBoundingClientRect())",
+                 "btn_y": "(r => r.y + r.height / 2)(document.getElementById('next').getBoundingClientRect())"}},
+    {"name": "tasks", "url": "demo.html", "viewport": [540, 960], "scale": 3,
+     "steps": [{"eval": "setDone(2)"}], "selector": "#tasks"}
+  ],
+  "scenes": [
+    {"id": "hook", "type": "reveal",
+     "say": "Задачи живут в Jira, в Linear, в GitHub. А вопрос всегда один: где мы сейчас?",
+     "lead": "Задачи живут в",
+     "items": [{"text": "Jira", "at": "Jira"}, {"text": "Linear", "at": "Linear"}, {"text": "GitHub", "at": "GitHub"}],
+     "punch": {"text": "Где мы сейчас?", "at": "где"}},
+    {"id": "page", "type": "screen",
+     "say": "Одна страница показывает прогресс спринта. Нажмите кнопку, и каждая готовая задача сразу видна.",
+     "frames": "@progress", "sequence": {"from": "Нажмите"},
+     "tap": {"x": {"measure": "progress.btn_x", "scale": 2}, "y": {"measure": "progress.btn_y", "scale": 2}, "at": "Нажмите"}},
+    {"id": "tasks", "type": "spotlight", "say": "Список задач с живыми статусами.",
+     "kicker": "Задачи", "title": "Живые статусы", "image": "@tasks"},
+    {"id": "cta", "type": "title", "say": "Соберите такой ролик одной командой.",
+     "kicker": "Плагин для Claude Code", "lines": ["promo-video"], "sub": "Ролики для Telegram и Instagram",
+     "code": {"lines": ["/plugin install promo-video@bershadsky-claude-tools"], "at": "одной"}}
+  ]
+}
