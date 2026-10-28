@@ -5,7 +5,8 @@ Validates marketplace.json schema after every edit in this repository.
 ## Installation
 
 ```bash
-claude mcp add-from-marketplace bershadsky-claude-tools/marketplace-validator
+/plugin marketplace add sergio-bershadsky/ai
+/plugin install marketplace-validator@bershadsky-claude-tools
 ```
 
 ## Overview
@@ -18,7 +19,7 @@ This plugin automatically validates the `.claude-plugin/marketplace.json` file a
 Write/Edit Tool → PostToolUse Hook → Validate Schema
                                            ↓
                                Pass: Continue silently
-                               Fail: Block with error details
+                               Fail: Report errors to Claude
 ```
 
 ## Hooks
@@ -27,11 +28,11 @@ Write/Edit Tool → PostToolUse Hook → Validate Schema
 
 - **Trigger:** After Write|Edit tool use
 - **Action:** Validates marketplace.json against required schema
-- **Behavior:** Blocks operation if validation fails
+- **Behavior:** Runs after the write has happened, so it cannot undo it. On failure it prints the errors to stderr and exits 2; Claude Code feeds them back to Claude, which then fixes the file.
 
 **Exit Codes:**
 - `0` — Validation passed or file doesn't exist
-- `2` — Validation failed, operation blocked
+- `2` — Validation failed; errors on stderr are shown to Claude
 
 ## Validation Rules
 
@@ -104,9 +105,8 @@ marketplace.json validation failed:
 ## Use Cases
 
 - **Plugin Development** — Validate changes while developing new plugins
-- **CI Integration** — Ensure marketplace consistency before commits
 - **Multi-developer Repos** — Catch schema errors early
 
 ## License
 
-[Unlicense](LICENSE) - Public Domain
+[Unlicense](../../LICENSE) - Public Domain

@@ -6,7 +6,7 @@ An original design language and toolchain for blueprint-style technical diagrams
 
 ## Demo gallery
 
-Five patterns the skill produces, rendered to SVG with the canonical design system. All five render in any GitHub view — sources live in [`examples/`](./examples/).
+Five patterns the skill produces, rendered to SVG with the canonical design system. All five render in any GitHub view — the rendered SVGs live in [`examples/`](./examples/).
 
 ### 1. Three-tier request flow
 
@@ -96,17 +96,23 @@ Different output mode again: a **sequence diagram** produced by the sibling `seq
 
 ## What you get
 
-- **Two skills** — same design system, two output formats. Pick by where the diagram needs to live:
+- **Four skills** — same design system. Two architecture-diagram output formats (pick by where the diagram needs to live), plus two other diagram types:
 
   - **`architecture-diagram`** — generates a **standalone self-contained `.html` file** from a natural-language description.
     *Use when:* you want a single artifact you can open in a browser, share via email/Slack, attach to a design spec, export as PDF/PNG for an investor deck, drop into a GitHub gist, or include alongside a spec in a docs repo. Output is portable, has zero runtime dependencies, and ships with its own export toolbar.
-    *Trigger phrases:* "draw an architecture diagram", "generate a system diagram as HTML", "make me a network topology diagram I can share".
+    *Trigger phrases:* "draw an architecture diagram", "show me how X system is structured", "make a diagram of the data flow", "visualize the network topology".
 
-  - **`architecture-diagram-react`** — emits the same diagram as an **`arch-diagram` fenced markdown block** (inline SVG + `<lucide-icon>` placeholders) intended for direct embedding in React/Vite/Next.js sites and MDX-aware documentation platforms (Docusaurus, Nextra, VitePress, MkDocs with the right plugin).
+  - **`architecture-diagram-react`** — emits the same diagram as an **`arch-diagram` fenced markdown block** (inline SVG + `<lucide-icon>` placeholders) intended for direct embedding in a React-rendered site. **The renderer is not shipped with the plugin:** the consuming site must provide it (`ArchDiagram.tsx`, `archDiagramIcons.ts`, and a `CodeBlock.tsx` hook for `language-arch-diagram` — see the skill's "Consumer contract" section).
     *Use when:* the diagram is going inside a content page rendered by a React/MDX pipeline — a docs site, marketing site section, internal portal, or a tech-blog post in a content repo. Lucide icons render as live React components rather than baked-in SVG, letting the consuming app theme and animate them.
-    *Trigger phrases:* "embed an architecture diagram in our docs site", "add a system diagram to the React app", "MDX-friendly architecture diagram", "diagram with Lucide icons".
+    *Trigger phrases:* "embed this diagram inside the blog post", "generate the SVG for an `arch-diagram` block", "make a React-embedded version of the architecture diagram", "now put this on the site".
 
-  Same skill mechanics underneath — design system, label placement rules, audit and shifter scripts apply to both. The choice is purely about output format.
+  - **`mindmap`** — radial mindmap as self-contained HTML+SVG: central root, branches in auto-computed angular sectors.
+    *Trigger phrases:* "draw a mindmap of X", "map out the themes around Y", "mindmap the differentiators of Z".
+
+  - **`sequence-diagram`** — actors across the top, lifelines, messages in temporal order, as self-contained HTML+SVG.
+    *Trigger phrases:* "draw the OAuth flow", "show the request lifecycle", "diagram the protocol over time", "sequence diagram for X".
+
+  Same mechanics underneath — design system, label placement rules, audit and shifter scripts apply to all of them. Between the two architecture skills the choice is purely about output format.
 - **Resources**:
   - `template.html` — canonical starting point, complete with halos, toolbar, capture script
   - `design-system.md` — colors, fonts, shapes, spacing, semantic line styles

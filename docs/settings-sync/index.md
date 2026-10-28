@@ -5,6 +5,7 @@ Backup and restore Claude settings across ephemeral VMs.
 ## Installation
 
 ```bash
+/plugin marketplace add sergio-bershadsky/ai
 /plugin install settings-sync@bershadsky-claude-tools
 ```
 
@@ -12,7 +13,7 @@ Backup and restore Claude settings across ephemeral VMs.
 
 ### Auto Backup
 
-On every session stop, automatically backs up `~/.claude/` to `.claude-backup/` in your repo:
+After every Claude turn (`Stop` hook), copies `~/.claude/` into `.claude-backup/` in the current repo. Committing and pushing it is up to you:
 
 - `settings.json` — Claude configuration
 - `plugins/` — Installed plugins
@@ -30,11 +31,13 @@ Restore settings on a new VM:
 curl -fsSL https://raw.githubusercontent.com/sergio-bershadsky/ai/main/plugins/settings-sync/scripts/bootstrap.sh | bash
 ```
 
+`bootstrap.sh` hard-codes `REPO_URL` to this marketplace repo; to restore your own backup, download it and set `REPO_URL` to your repository.
+
 ## Hooks
 
 | Hook | Event | Description |
 |------|-------|-------------|
-| backup-settings | Stop | Backs up ~/.claude to .claude-backup/ |
+| backup-settings | Stop (every turn) | Copies ~/.claude to .claude-backup/ (no commit) |
 
 ## Use Case
 

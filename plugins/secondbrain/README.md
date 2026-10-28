@@ -93,14 +93,14 @@ What follows is one concrete implementation — a Claude Code plugin that scaffo
 | Feature | Details |
 |---------|---------|
 | Numbering | Category-based ranges: infrastructure (0001-0999), feature (2000-2999), process (3000-3999) |
-| Status workflow | draft → proposed → admitted → applied → implemented → tested → rejected → canceled |
-| Output | Markdown page in `docs/adrs/` + YAML record in `.claude/data/adrs/records.yaml` |
+| Status workflow | draft → proposed → admitted → applied → implemented → tested; `rejected` / `canceled` exit from any step |
+| Output | Markdown page in `docs/adrs/` + YAML record in the monthly shard `.claude/data/adrs/YYYY-MM.yaml` (`meta.yaml` holds `last_number` + shard list) |
 
 ### secondbrain-note
 
 **Capture knowledge that doesn't fit a formal category.** A debugging insight you don't want to rediscover the hard way. A pattern you noticed across three different projects. A summary of a paper or talk. The most flexible entity type — use it when nothing else fits.
 
-**Triggers:** "Create note", "Add to notes", "Document knowledge"
+**Triggers:** "Create note", "Capture thought", "Save this", "Jot down", "Remember this"
 
 | Feature | Details |
 |---------|---------|
@@ -125,11 +125,11 @@ What follows is one concrete implementation — a Claude Code plugin that scaffo
 
 **Document a meeting or conversation.** After any discussion that produced outcomes — decisions made, action items assigned, open questions raised — capture it before the details evaporate. Monthly-partitioned records prevent any single YAML file from growing unwieldy.
 
-**Triggers:** "Document discussion", "Add meeting notes", "Record conversation"
+**Triggers:** "Document discussion", "Save meeting notes", "Record conversation", "Capture meeting"
 
 | Feature | Details |
 |---------|---------|
-| ID format | Monthly: DISC-202603-1, DISC-202603-2 |
+| File / ID | No separate ID — the page `docs/discussions/YYYY-MM-DD-<participant>-<slug>.md` identifies it |
 | Captures | Participants, topics, decisions, action items, open questions |
 | Source tracking | manual / meeting / slack |
 
@@ -149,13 +149,13 @@ What follows is one concrete implementation — a Claude Code plugin that scaffo
 
 **Define a new entity type.** When ADRs, Notes, Tasks, and Discussions aren't enough — create custom entities with their own schema, ID format, optional status workflow, and VitePress data loaders. Examples: RFCs, runbooks, retrospectives, vendor evaluations, incident postmortems.
 
-**Triggers:** "Add entity type", "Create custom entity"
+**Triggers:** "Add entity", "Create custom entity", "New entity type", "Define entity"
 
 | Feature | Details |
 |---------|---------|
 | Field types | string, integer, date, boolean, enum, array |
 | ID formats | sequential, date-based, UUID |
-| Output | schema.yaml + records.yaml + VitePress data loader + index page |
+| Output | schema.yaml + a single `records.yaml` (custom entities are not sharded) + VitePress data loader + index page |
 
 ### secondbrain-search
 
@@ -179,9 +179,9 @@ What follows is one concrete implementation — a Claude Code plugin that scaffo
 
 ### secondbrain-search-init
 
-**Add semantic search to an existing project.** One-time setup. Downloads embedding models (~1.5GB on first run), generates qmd config, optionally installs a PostToolUse hook for automatic incremental indexing after every document edit.
+**Add semantic search to an existing project.** One-time setup. Downloads embedding models (~1.5GB on first run) and generates qmd config. Incremental indexing after every edit is already handled by the plugin's own `search-index-update` hook; the skill's optional step that adds the same hook to `.claude/settings.local.json` makes it run twice, so skip it.
 
-**Triggers:** "Enable search", "Add qmd", "Add semantic search"
+**Triggers:** "Initialize search", "Set up semantic search", "Enable qmd", "Add search to secondbrain"
 
 ### secondbrain-review
 
@@ -238,8 +238,10 @@ Use when the knowledge base has accumulated enough content that manual cleanup i
 | `freshness-check` | UserPromptSubmit | Reports the 10 most stale items at the start of each session (throttled to once per hour). You see what needs attention before you start working. |
 | `session-context` | SessionStart | Injects a project overview — entity counts, search status, recent activity, available skills. Gives Claude full context about your knowledge base without you having to explain it every time. |
 | `transcription-check` | SessionStart | Lists undocumented meetings from your transcription provider. Reminds you to run `/secondbrain-transcribe` for meetings that haven't been captured yet. |
-| `sidebar-check` | PostToolUse (Write\|Edit) | Warns when a new markdown file isn't linked in the VitePress sidebar. Prevents orphaned documents that exist but are invisible in the portal. |
+| `sidebar-check` | PostToolUse (Write\|Edit) | Warns when a new markdown file isn't linked in the VitePress sidebar. Skips only `index.md`, so it also warns on ADR / note / task / discussion pages — those are listed by `EntityTable` and are intentionally kept out of the sidebar; ignore the warning for them. |
 | `search-index-update` | PostToolUse (Write\|Edit) | Runs incremental qmd indexing in the background after any document is created or edited. Keeps search results current without manual rebuilds. |
+
+**Known gap (sharded storage):** `freshness-check` and `session-context` read monthly shards only when an entity's config sets `partitioned: monthly`, which the scaffold does not write yet — so for ADRs, notes, tasks and discussions they currently fall back to `records.yaml` and report nothing. The same applies to the VitePress data loader behind `EntityTable` and to `secondbrain-search` record lookups, which read only `records.yaml`. Fix tracked separately.
 
 ---
 
@@ -295,7 +297,7 @@ This is not a hypothetical. It is the inevitable outcome of any flat-file databa
 
 ### The Solution: Monthly Shards
 
-Every entity type stores records in monthly shard files (`YYYY-MM.yaml`) instead of a single `records.yaml`. A lightweight `meta.yaml` holds only the metadata needed for cross-shard operations (sequential counters, shard list).
+The built-in entity types (ADRs, notes, tasks, discussions) store records in monthly shard files (`YYYY-MM.yaml`) instead of a single `records.yaml`; custom entities from `/secondbrain-entity` still use one `records.yaml`. Not every reader is shard-aware yet — see the known gap under Hooks. A lightweight `meta.yaml` holds only the metadata needed for cross-shard operations (sequential counters, shard list).
 
 ```
 .claude/data/adrs/
@@ -405,10 +407,10 @@ Query → qmd
 
 | Entity | ID Format | Key Features |
 |--------|-----------|--------------|
-| ADRs | `ADR-NNNN` | Category-based numbering, 8-step status workflow |
+| ADRs | `ADR-NNNN` | Category-based numbering, 6-step workflow + rejected / canceled |
 | Notes | `YYYY-MM-DD-slug` | Date-based, tags, active/archived |
 | Tasks | `TASK-NNNN` | Sequential, priority levels, due dates |
-| Discussions | `DISC-YYYYMM-N` | Monthly-sharded, participants, decisions |
+| Discussions | `YYYY-MM-DD-<participant>-<slug>` (file name) | Monthly-sharded, participants, decisions |
 
 ### Custom
 
@@ -441,4 +443,4 @@ shards: ["2025-01", "2025-03", "2026-03"]
 
 ## License
 
-[Unlicense](LICENSE) — Public Domain
+[Unlicense](../../LICENSE) — Public Domain

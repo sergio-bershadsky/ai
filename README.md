@@ -20,7 +20,8 @@ Personal plugin marketplace for Claude Code — skills, hooks, and agents for wo
 
 | Plugin | Description | Skills | Hooks |
 |--------|-------------|--------|-------|
-| [**git**](plugins/git/) | Git workflow automation: conventional commits, auto-staging, uncommitted changes protection | /commit, /version | auto-stage, pre-stop-commit |
+| [**git**](plugins/git/) | Conventional commits with branch protection and ticket detection | /commit | — |
+| [**version**](plugins/version/) | Semantic version bumping for plugins with git tags and commits | /version | — |
 | [**settings-sync**](plugins/settings-sync/) | Sync Claude settings across ephemeral VMs via Git backup | — | backup-settings |
 | [**working-with-sergey**](plugins/working-with-sergey/) | Team working agreement as a loadable skill: channel ladder, response SLAs, meeting and proposal gates, autonomy boundary, plus a 13-check review of drafts before they are sent | working-with-sergey | — |
 
@@ -30,6 +31,7 @@ Personal plugin marketplace for Claude Code — skills, hooks, and agents for wo
 |--------|-------------|--------|--------|
 | [**django-dev**](plugins/django-dev/) | Opinionated Django toolkit with Ninja API, Unfold admin, pytest, Dynaconf | 4 skills | django-review |
 | [**frappe-dev**](plugins/frappe-dev/) | Frappe Framework v15 toolkit with multi-layer architecture | 5 skills | — |
+| [**tortoise-dev**](plugins/tortoise-dev/) | Enterprise Tortoise ORM (async Python): one-model-per-file, built-in migrations (no Aerich), FastAPI lifespan, pytest | 1 skill | — |
 
 ### Knowledge Management
 
@@ -49,6 +51,12 @@ Personal plugin marketplace for Claude Code — skills, hooks, and agents for wo
 | Plugin | Description | Skills |
 |--------|-------------|--------|
 | [**promo-video**](plugins/promo-video/) | Narrated promo videos for Telegram and Instagram (RU/EN) from one prompt: real UI captures, ElevenLabs voice-over, captions, platform-safe layouts | promo-video |
+
+### Visualisation
+
+| Plugin | Description | Skills |
+|--------|-------------|--------|
+| [**diagramming**](plugins/diagramming/) | Dark-themed blueprint diagrams as self-contained HTML+SVG — architecture (plus an inline-SVG variant for React sites), mindmaps, sequence diagrams | architecture-diagram, architecture-diagram-react, mindmap, sequence-diagram |
 
 ### Internal
 
@@ -72,19 +80,31 @@ Knowledge base scaffolding with YAML microdatabases, configurable entity types (
 
 ### [git](plugins/git/)
 
-Conventional commits with branch safety checks and ticket detection (GitHub, GitLab, Jira, Linear). Semantic version bumping with git tags. Auto-stages files after edits. Blocks session exit if uncommitted changes exist.
+Conventional commits with branch safety checks and ticket detection (GitHub, GitLab, Jira, Linear). Always confirms before committing; never pushes.
 
 ```bash
 /plugin install git@bershadsky-claude-tools
 ```
 
-**Skills:** `/commit`, `/version` | **Hooks:** auto-stage, pre-stop-commit
+**Skills:** `/commit`
+
+---
+
+### [version](plugins/version/)
+
+Semantic version bumping (MAJOR.MINOR.PATCH) for plugins: updates `plugin.json` and `marketplace.json`, commits, and creates an annotated `v<version>-<plugin>` tag.
+
+```bash
+/plugin install version@bershadsky-claude-tools
+```
+
+**Skills:** `/version`
 
 ---
 
 ### [settings-sync](plugins/settings-sync/)
 
-Backs up `~/.claude/` to the repo before session ends, excluding sensitive files. Bootstrap script restores settings on new VMs (Codespaces, Gitpod, cloud).
+After every Claude turn (`Stop` hook), copies `~/.claude/` into `.claude-backup/` in the current repo, excluding sensitive files; committing it is up to you. Bootstrap script restores settings on new VMs (Codespaces, Gitpod, cloud) — it clones this repo by default, so point `REPO_URL` at your own.
 
 ```bash
 /plugin install settings-sync@bershadsky-claude-tools
@@ -166,9 +186,33 @@ One prompt → a narrated vertical video about a feature, in Russian or English:
 
 ---
 
+### [tortoise-dev](plugins/tortoise-dev/)
+
+Enterprise Tortoise ORM patterns: one model per file in a `models/` subpackage, abstract base interfaces for mocks, strict class layout, FastAPI lifespan wiring, built-in Tortoise migrations (`tortoise migrate`, never Aerich), Pydantic v2 schemas, pytest patterns.
+
+```bash
+/plugin install tortoise-dev@bershadsky-claude-tools
+```
+
+**Skills:** tortoise-dev
+
+---
+
+### [diagramming](plugins/diagramming/)
+
+Polished dark-themed architecture diagrams with Bezier-correct label placement, text halos and leader lines, plus audit and coordinate-shifter scripts. `architecture-diagram` writes a standalone HTML file with an export toolbar; `architecture-diagram-react` emits an `arch-diagram` block for a React site that provides its own renderer. `mindmap` and `sequence-diagram` produce radial mindmaps and sequence diagrams in the same style.
+
+```bash
+/plugin install diagramming@bershadsky-claude-tools
+```
+
+**Skills:** architecture-diagram, architecture-diagram-react, mindmap, sequence-diagram
+
+---
+
 ### [marketplace-validator](plugins/marketplace-validator/)
 
-Internal. Validates marketplace.json schema after every Write/Edit. Blocks the session if validation fails.
+Internal. Validates marketplace.json schema after every Write/Edit; on failure it reports the errors to Claude (the write itself has already happened).
 
 ---
 

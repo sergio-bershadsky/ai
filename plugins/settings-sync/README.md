@@ -5,24 +5,25 @@ Sync Claude settings across ephemeral VMs via Git backup.
 ## Installation
 
 ```bash
-claude mcp add-from-marketplace bershadsky-claude-tools/settings-sync
+/plugin marketplace add sergio-bershadsky/ai
+/plugin install settings-sync@bershadsky-claude-tools
 ```
 
 ## Overview
 
-This plugin automatically backs up your Claude settings to Git when sessions end, and provides a bootstrap script to restore them on new machines.
+This plugin copies your Claude settings into the current repository after every Claude turn (the `Stop` hook), and provides a bootstrap script to restore them on a new machine. It does not commit or push — committing `.claude-backup/` is up to you.
 
 ## How It Works
 
 ```
-Session End → Backup Hook → Git Commit
-                    ↓
+Claude turn ends → Backup Hook → .claude-backup/ (you commit + push)
+                                        ↓
 New VM → Bootstrap Script → Restore Settings
 ```
 
 ## Features
 
-### Automatic Backup (on session end)
+### Automatic Backup (after every turn)
 
 Backs up from `~/.claude/`:
 - `settings.json`
@@ -53,11 +54,15 @@ This will:
 1. Clone the repository (shallow, sparse checkout)
 2. Restore backed-up settings to `~/.claude/`
 
+**Limitation:** `bootstrap.sh` hard-codes `REPO_URL=https://github.com/sergio-bershadsky/ai.git`, so the
+one-liner above restores from this marketplace repo. To restore your own backup, download the script and
+change `REPO_URL` to your repository first.
+
 ## Hooks
 
 ### Backup Settings (Stop)
 
-- **Trigger:** Session end
+- **Trigger:** `Stop` — every time Claude finishes a turn
 - **Action:** Copies settings to `.claude-backup/`
 - **Behavior:** Non-blocking (always allows exit)
 

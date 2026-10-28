@@ -44,7 +44,7 @@ Use `${CLAUDE_PLUGIN_ROOT}` for paths in hooks.json — resolves to plugin direc
 
 | Event | Trigger | Block Session |
 |-------|---------|---------------|
-| `Stop` | Before session ends | Exit code 2 |
+| `Stop` | After every Claude turn (not only at session end) | Exit code 2 |
 | `PostToolUse` | After tool execution | — |
 
 **Matcher:** Regex pattern matching tool names (e.g., `Write|Edit|Bash`)

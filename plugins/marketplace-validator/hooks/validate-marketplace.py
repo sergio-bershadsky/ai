@@ -91,11 +91,8 @@ def main():
         with open(marketplace_path, "r") as f:
             data = json.load(f)
     except json.JSONDecodeError as e:
-        output = {
-            "decision": "block",
-            "reason": f"marketplace.json is not valid JSON: {e}"
-        }
-        print(json.dumps(output))
+        # WHY stderr: on exit 2 Claude Code feeds stderr back to Claude and ignores stdout.
+        print(f"marketplace.json is not valid JSON: {e}", file=sys.stderr)
         sys.exit(2)
     except Exception:
         # Can't read file, skip
@@ -105,11 +102,7 @@ def main():
 
     if errors:
         error_list = "\n".join(f"  - {e}" for e in errors)
-        output = {
-            "decision": "block",
-            "reason": f"marketplace.json validation failed:\n{error_list}\n\nPlease fix these issues before continuing."
-        }
-        print(json.dumps(output))
+        print(f"marketplace.json validation failed:\n{error_list}\n\nPlease fix these issues before continuing.", file=sys.stderr)
         sys.exit(2)
 
     # Validation passed
