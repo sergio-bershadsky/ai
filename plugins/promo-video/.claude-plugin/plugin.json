@@ -1,6 +1,6 @@
 {
   "name": "promo-video",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Narrated promo / feature-announcement videos for Telegram and Instagram in Russian or English from one prompt: real UI captured with Playwright, ElevenLabs voice-over with word timing and objective take selection (Scribe error rate + pitch range), scenes cut on the narration, word-highlighted captions, platform-safe 9:16 / 4:5 / 1:1 layouts, fade-through transitions, MP4 + post text.",
   "author": {
     "name": "Sergey Bershadsky",

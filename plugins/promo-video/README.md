@@ -28,7 +28,7 @@ promo.py capture video.json          # real UI → build/video/captures/
 promo.py voice   video.json          # one ElevenLabs take per model, with word timing
 promo.py analyze video.json --pick   # Scribe STT error rate + pitch range → best take
 promo.py stills  video.json          # contact sheets + overlap check at every cut
-promo.py render  video.json          # one MP4 per target
+promo.py render  video.json          # one mastered MP4 + cover per target (redraws only what changed)
 ```
 
 ## What you get
@@ -42,6 +42,10 @@ promo.py render  video.json          # one MP4 per target
 | Captions | Word-highlighted, wrapped to width (long Russian words fit), clipped to their own scene |
 | Transitions | Cuts sit in the pause between lines. A shot fades to the background before the next one fades in, so two shots never overlap. |
 | Music | Optional, looped under the voice with sidechain ducking |
+| Sound | Every render is mastered to −14 LUFS, true peak ≤ −1 dBTP. A file that fails the check is kept as `.rejected.mp4` and the command exits non-zero. |
+| Cover | Frame 0 is a settled frame instead of an empty background, also saved as `.cover.jpg` |
+| Readability | `stills`, `check` and `render` flag on-screen text that is up for less than 0.8 s, or 0.3 s per word |
+| Re-render | Encoded in 2 s chunks. A text fix redraws only its own chunks; `render --full` redraws all. |
 
 ## Requirements
 
