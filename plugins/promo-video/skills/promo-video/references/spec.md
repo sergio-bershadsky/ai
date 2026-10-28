@@ -20,7 +20,8 @@ goes to `build/<spec stem>/` next to it.
 | `theme.colors` | — | Override any of `bg panel ink muted line accent ok code_bg caption_bg` (hex). |
 | `theme.fonts` | IBM Plex Sans / Mono | `{"sans": "Family", "mono": "Family"}` or `.ttf` paths. Needs Cyrillic for `ru`. |
 | `music` | — | `{"file": "track.mp3", "volume": 0.15}` — loops, ducks under the voice, fades out. |
-| `tail` | `1.8` | Seconds after the last word (the final card holds, then fades). |
+| `tail` | `1.8` | Seconds after the last word (the final card holds, then fades). Raise it when the reading-time check fails on the last scene. |
+| `cover` | `{}` | Frame 0 and `<name>.cover.jpg`. `{}` = the first scene, settled; `{"scene": id, "at": word}` = 0.6 s after that word; `{"t": seconds}`. Add `"embed": true` to also store it as cover art in the MP4. `false` = no cover. |
 | `fps` | `30` | Frame rate. |
 
 ## `captures[]` — real UI with Playwright

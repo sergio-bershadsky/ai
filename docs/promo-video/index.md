@@ -28,7 +28,7 @@ promo.py capture video.json          # real UI → build/video/captures/
 promo.py voice   video.json          # one ElevenLabs take per model, with word timing
 promo.py analyze video.json --pick   # Scribe STT error rate + pitch range → best take
 promo.py stills  video.json          # contact sheets + overlap check at every cut
-promo.py render  video.json          # one MP4 per target
+promo.py render  video.json          # one mastered MP4 + cover per target (redraws only what changed)
 ```
 
 ## What you get

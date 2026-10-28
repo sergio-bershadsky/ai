@@ -7,6 +7,7 @@ next fades in, so two shots are never on screen together. Captions are clipped t
 from __future__ import annotations
 
 import glob
+import hashlib
 import json
 import multiprocessing as mp
 import os
@@ -16,9 +17,11 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
+import pv_master as M
 import pv_spec as S
 
-FADE_IN, FADE_OUT = .30, .22
+FADE_IN, FADE_OUT = S.FADE_IN, S.FADE_OUT
+CHUNK = 2.0  # seconds per encoded chunk; a re-render redraws only the chunks whose inputs changed
 THEMES = {
     "dark": {"bg": "#11151c", "panel": "#181e27", "ink": "#e5e9f0", "muted": "#98a2b3", "line": "#2a3240",
              "accent": "#7d9cff", "ok": "#5fd39a", "code_bg": "#0b0e13", "caption_bg": "#090c11"},
@@ -119,10 +122,8 @@ class Ctx:
         self.cap_y = lay["caption_y"] * self.H
         self.cap_x = (lay["caption_x"][0] * self.W, lay["caption_x"][1] * self.W)
         self.timing = {t["id"]: t for t in timing}
-        order = [sc["id"] for sc in spec["scenes"]]
-        self.end = timing[-1]["end"] + spec["tail"]
-        self.bounds = [0.0] + [min(self.timing[b]["start"] - .1, (self.timing[a]["end"] + self.timing[b]["start"]) / 2)
-                               for a, b in zip(order, order[1:])] + [self.end]
+        self.bounds = S.bounds(spec, timing)
+        self.end = self.bounds[-1]
         self.bg = self._background()
         self.measure = {}
         mf = spec["_build"] / "captures" / "measure.json"
@@ -521,10 +522,36 @@ class Film:
         self.captions = Captions(ctx)
         self.bg_rgb = ctx.bg.convert("RGB")
         self.timing = timing
+        self.rendered: list[int] = []
+        cov = spec.get("cover", {})
+        self.cover = None if cov is False else (cov if isinstance(cov, dict) else {})
+        self.cover_t = self._cover_time() if self.cover is not None else None
+
+    def _shot_of(self, t: float) -> int:
+        return max(j for j in range(len(self.shots)) if self.ctx.bounds[j] <= t)
+
+    def _settled(self, i: int) -> float:
+        """Last moment shot i is fully on screen: every element has landed, the fade-out has not begun."""
+        b = self.ctx.bounds
+        return max(b[i], b[i + 1] - (S.END_FADE if i == len(self.shots) - 1 else FADE_OUT) - .05)
+
+    def _cover_time(self) -> float:
+        """Frame 0 shows a settled frame instead of the empty background the first shot starts from.
+        cover: {"t": seconds} | {"scene": id, "at": word} | {} (the first scene, settled) | false."""
+        cov, ids = self.cover or {}, [sc["id"] for sc in self.ctx.spec["scenes"]]
+        if "t" in cov:
+            return max(0.0, min(float(cov["t"]), self.ctx.end - S.END_FADE))
+        i = ids.index(cov["scene"]) if cov.get("scene") else 0
+        if cov.get("at"):
+            return min(self.shots[i].at(cov["at"]) + .6, self._settled(i))
+        return self._settled(i)
+
+    def frame_at(self, k: int, fps: int) -> Image.Image:
+        return self.frame(self.cover_t) if k == 0 and self.cover_t is not None else self.frame(k / fps)
 
     def frame(self, t: float) -> Image.Image:
         ctx = self.ctx
-        i = max(j for j in range(len(self.shots)) if ctx.bounds[j] <= t)
+        i = self._shot_of(t)
         shot = self.shots[i]
         lt, d = t - shot.b0, shot.b1 - shot.b0
         img = ctx.bg.copy()
@@ -532,7 +559,7 @@ class Film:
         self.captions.draw(img, t)
         vis = min(1.0 if i == 0 else ease_out(lt / FADE_IN),
                   1.0 if i == len(self.shots) - 1 else 1 - ease((lt - (d - FADE_OUT)) / FADE_OUT),
-                  1 - max(0.0, (t - (ctx.end - .5)) / .5))
+                  1 - max(0.0, (t - (ctx.end - S.END_FADE)) / S.END_FADE))
         rgb = img.convert("RGB")
         return rgb if vis >= 1 else Image.blend(self.bg_rgb, rgb, vis)
 
@@ -551,41 +578,131 @@ class Film:
         out.save(path)
         return path
 
-    def encode(self, vo: Path, out: Path, fps: int = 30, crf: int = 18, workers: int | None = None) -> Path:
+    def cover_jpg(self, path: Path) -> Path:
+        self.frame(self.cover_t if self.cover_t is not None else 0).save(path, quality=92)
+        return path
+
+    # ------------------------------------------------------------ chunked, incremental encoding
+    def chunks(self, fps: int) -> list[tuple[int, int]]:
+        """[first frame, end frame) of every chunk."""
+        n, step = int(self.ctx.end * fps), round(CHUNK * fps)
+        return [(k, min(k + step, n)) for k in range(0, n, step)]
+
+    def _fingerprints(self, fps: int, crf: int) -> list[str]:
+        """A hash of everything a chunk's frames depend on. Unchanged hash = the old chunk is reused."""
         ctx, spec = self.ctx, self.ctx.spec
-        W, H, end = ctx.W, ctx.H, ctx.end
-        cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(fps), "-i", "-",
-               "-i", str(vo)]
+        here = Path(__file__).resolve().parent
+        caps = spec["_build"] / "captures"
+        def stat(p: Path):
+            st = p.stat(); return [p.name, st.st_size, st.st_mtime_ns]
+        def files_in(v, acc):
+            if isinstance(v, dict): [files_in(x, acc) for x in v.values()]
+            elif isinstance(v, list): [files_in(x, acc) for x in v]
+            elif isinstance(v, str) and not v.startswith("@") and (spec["_dir"] / v).is_file():
+                acc.append(stat(spec["_dir"] / v))
+            return acc
+        base = {"code": [hashlib.sha256((here / f).read_bytes()).hexdigest() for f in ("pv_render.py", "pv_spec.py")],
+                "out": [ctx.platform, ctx.fmt, fps, crf], "theme": spec.get("theme"), "bounds": ctx.bounds,
+                "captures": sorted(stat(p) for p in caps.glob("*")) if caps.exists() else []}
+        out = []
+        for k0, k1 in self.chunks(fps):
+            shots = set(range(self._shot_of(k0 / fps), self._shot_of((k1 - 1) / fps) + 1))
+            if k0 == 0 and self.cover_t is not None:
+                shots.add(self._shot_of(self.cover_t))
+            scenes = [spec["scenes"][i] for i in sorted(shots)]
+            dep = {**base, "k": [k0, k1], "cover": self.cover_t if k0 == 0 else None, "scenes": scenes,
+                   "timing": [ctx.timing[sc["id"]] for sc in scenes], "files": files_in(scenes, [])}
+            out.append(hashlib.sha256(json.dumps(dep, sort_keys=True, default=str).encode()).hexdigest())
+        return out
+
+    def _encode_chunk(self, frames, path: Path, fps: int, crf: int) -> None:
+        W, H = self.ctx.W, self.ctx.H
+        ff = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
+                               "-r", str(fps), "-i", "-", "-an", "-c:v", "libx264", "-preset", "medium", "-crf", str(crf),
+                               "-pix_fmt", "yuv420p", "-profile:v", "high", str(path)], stdin=subprocess.PIPE)
+        assert ff.stdin is not None
+        for buf in frames:
+            ff.stdin.write(buf)
+        ff.stdin.close()
+        if ff.wait() != 0:
+            raise RuntimeError(f"ffmpeg failed on {path.name}")
+
+    def _mix(self, vo: Path, dst: Path, dur: float) -> Path:
+        spec = self.ctx.spec
+        cmd = ["ffmpeg", "-y", "-loglevel", "error", "-i", str(vo)]
         music = spec.get("music")
         if music:
             # music loops under the voice and ducks while it speaks (sidechain), fading out at the end
             cmd += ["-stream_loop", "-1", "-i", str(S.resolve(spec, music["file"]))]
-            fl = (f"[1:a]apad,asplit=2[v1][v2];[2:a]volume={music.get('volume', .15)},"
-                  f"afade=t=out:st={max(0, end - 1.5):.2f}:d=1.5[m];"
+            fl = (f"[0:a]apad,asplit=2[v1][v2];[1:a]volume={music.get('volume', .15)},"
+                  f"afade=t=out:st={max(0, dur - 1.5):.2f}:d=1.5[m];"
                   f"[m][v1]sidechaincompress=threshold=0.02:ratio=8:attack=20:release=400[md];"
                   f"[v2][md]amix=inputs=2:normalize=0[a]")
         else:
-            fl = "[1:a]apad[a]"
-        cmd += ["-filter_complex", fl, "-map", "0:v", "-map", "[a]", "-t", f"{end:.3f}", "-c:v", "libx264", "-preset", "medium",
-                "-crf", str(crf), "-pix_fmt", "yuv420p", "-profile:v", "high", "-c:a", "aac", "-b:a", "192k",
-                "-movflags", "+faststart", str(out)]
-        ff = subprocess.Popen(cmd, stdin=subprocess.PIPE)
-        assert ff.stdin is not None
-        n = int(end * fps)
+            fl = "[0:a]apad[a]"
+        # float WAV: a voice + music sum above 0 dBFS survives until mastering brings it down
+        subprocess.run(cmd + ["-filter_complex", fl, "-map", "[a]", "-t", f"{dur:.3f}", "-ar", "48000", "-c:a", "pcm_f32le", str(dst)],
+                       check=True)
+        return dst
+
+    def encode(self, vo: Path, out: Path, fps: int = 30, crf: int = 18, workers: int | None = None, full: bool = False) -> Path:
+        """Render the dirty chunks, master the audio, mux, and run the acceptance check.
+        A master that fails the check is left as <out>.rejected.mp4 and raises MasterRejected."""
+        ctx = self.ctx
+        spans = self.chunks(fps)
+        dur = spans[-1][1] / fps
+        cdir = out.parent / "chunks" / out.stem
+        cdir.mkdir(parents=True, exist_ok=True)
+        index_p = cdir / "index.json"
+        old = {} if full or not index_p.exists() else json.loads(index_p.read_text())
+        prints = self._fingerprints(fps, crf)
+        self.rendered = [i for i, fp in enumerate(prints) if old.get(str(i)) != fp or not (cdir / f"{i:04d}.mp4").exists()]
+
         workers = workers or max(1, min(8, (os.cpu_count() or 2) - 1))
-        if workers == 1:
-            for k in range(n):
-                ff.stdin.write(self.frame(k / fps).tobytes())
-        else:
-            # frames are independent: draw them in worker processes, write them in order
-            args = (ctx.spec["_path"], self.timing, ctx.platform, ctx.fmt)
-            with mp.get_context("spawn").Pool(workers, _worker_init, args) as pool:
-                for buf in pool.imap(_worker_frame, (k / fps for k in range(n)), chunksize=8):
-                    ff.stdin.write(buf)
-        ff.stdin.close()
-        if ff.wait() != 0:
-            raise RuntimeError("ffmpeg failed")
+        pool = None
+        try:
+            if self.rendered and workers > 1:
+                # frames are independent: draw them in worker processes, write them in order
+                pool = mp.get_context("spawn").Pool(workers, _worker_init, (ctx.spec["_path"], self.timing, ctx.platform, ctx.fmt))
+            for i in self.rendered:
+                k0, k1 = spans[i]
+                frames = (pool.imap(_worker_frame, ((k, fps) for k in range(k0, k1)), chunksize=8) if pool
+                          else (self.frame_at(k, fps).tobytes() for k in range(k0, k1)))
+                self._encode_chunk(frames, cdir / f"{i:04d}.mp4", fps, crf)
+                old[str(i)] = prints[i]
+                index_p.write_text(json.dumps(old))  # after each chunk, so an interrupted render resumes
+        finally:
+            if pool: pool.close(); pool.join()
+        index_p.write_text(json.dumps({str(i): fp for i, fp in enumerate(prints)}))
+
+        listing = cdir / "concat.txt"
+        listing.write_text("".join(f"file '{i:04d}.mp4'\n" for i in range(len(spans))))
+        mix = self._mix(vo, cdir / "mix.wav", dur)
+        master = cdir / "master.wav"
+        M.master_wav(mix, master)
+
+        cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(listing), "-i", str(master)]
+        maps = ["-map", "0:v", "-map", "1:a", "-c:v:0", "copy"]
+        if self.cover is not None:
+            jpg = self.cover_jpg(out.with_suffix(".cover.jpg"))
+            if self.cover.get("embed"):
+                cmd += ["-i", str(jpg)]
+                maps += ["-map", "2:v", "-c:v:1", "mjpeg", "-disposition:v:1", "attached_pic"]
+        part = out.with_suffix(".part.mp4")
+        subprocess.run(cmd + maps + ["-c:a", "aac", "-b:a", "192k", "-t", f"{dur:.3f}", "-movflags", "+faststart", str(part)], check=True)
+        problems = M.check(part)
+        if problems:
+            rejected = out.with_suffix(".rejected.mp4")
+            os.replace(part, rejected)
+            raise MasterRejected(rejected, problems)
+        os.replace(part, out)
         return out
+
+
+class MasterRejected(RuntimeError):
+    def __init__(self, path: Path, problems: list[str]):
+        super().__init__(f"{path.name} failed the acceptance check:\n- " + "\n- ".join(problems))
+        self.path, self.problems = path, problems
 
 
 _FILM: Film | None = None
@@ -596,6 +713,6 @@ def _worker_init(spec_path, timing, platform, fmt):
     _FILM = Film(S.load(spec_path), timing, platform, fmt)
 
 
-def _worker_frame(t: float) -> bytes:
+def _worker_frame(kf: tuple[int, int]) -> bytes:
     assert _FILM is not None
-    return _FILM.frame(t).tobytes()
+    return _FILM.frame_at(*kf).tobytes()

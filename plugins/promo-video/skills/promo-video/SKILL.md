@@ -89,9 +89,33 @@ Cost ≈ script characters × takes (+ the same for Scribe); report it.
 text cut off, captions covering the key number, an image too small to read, Instagram content
 in the bottom quarter or under the right-hand button rail.
 
+`stills` also prints the **reading-time check**: every piece of on-screen text (heading, reveal
+item, punch, code block, footer, mapping row) must stay up for 0.8 s, or 0.3 s per word for a
+phrase, from the moment it appears until its shot fades (a reveal item only until the punch dims
+it). Captions are exempt. `render` refuses while any line fails; fix by shortening the text,
+anchoring it to an earlier word, or raising `tail` for the last scene. `--force` is for a
+deliberate flash.
+
 ### 8. Render, verify, deliver
-`promo.py render SPEC` → one MP4 per target (H.264 + AAC, `+faststart`, 30 fps). Verify with
-`ffprobe` (duration ≈ narration + tail, both streams). Send the files, then give post text in the
+`promo.py render SPEC` → one MP4 per target (H.264 + AAC, `+faststart`, 30 fps) plus
+`<name>.cover.jpg`. After drawing, the render does three things:
+- **Mastering, always.** Voice (+ music) is mixed to a float WAV, brought to −14 LUFS
+  integrated / true peak ≤ −1 dBTP by two-pass loudnorm, then encoded to AAC once. The
+  acceptance check measures the delivered file (−14 ±0.7 LUFS, peak ≤ −1 dBTP, audio and video
+  the same length). A failure leaves `<name>.rejected.mp4` and exits non-zero. **Never post it.**
+- **Cover in frame 0.** The first shot starts from an empty background, so frame 0 (the preview
+  a feed shows before playback) is replaced by a settled frame of the first scene. Pick another
+  moment with `cover: {"scene": id, "at": word}` or `{"t": s}`; `cover: false` turns it off.
+  The same frame is saved as `cover.jpg` for the platform's cover upload. `"embed": true` also
+  stores it as cover art inside the MP4 (an `attached_pic` stream). How each platform treats that
+  stream is not verified, so it is off by default.
+- **Incremental.** Frames are encoded in 2-second chunks under `build/<stem>/chunks/`, each with
+  a fingerprint of everything it depends on (its scenes, word timing, theme, captures, renderer
+  source). A re-render redraws only chunks whose fingerprint changed, so a late text fix costs
+  its own scene, not the whole film. A new take retimes everything and redraws every chunk.
+  `--full` ignores the cache.
+
+The render prints loudness, peak and how many chunks it redrew. Send the files, then give post text in the
 video's language: Telegram caption ≤ 1024 characters with the install command / link; Instagram
 caption + 3–5 hashtags. Say what you could not verify (you cannot hear the voice — ask the user to
 listen).
@@ -114,7 +138,8 @@ after the spec is stable.
 - **Privacy:** never put the owner's personal email or the API key in a spec, caption, frame or post.
 
 ## Files
-- `scripts/promo.py` — CLI. `pv_spec.py` spec + layouts, `pv_capture.py` Playwright,
-  `pv_voice.py` ElevenLabs takes + analysis, `pv_render.py` scenes, captions, transitions, encode.
+- `scripts/promo.py` — CLI. `pv_spec.py` spec, layouts, cut points, reading-time check,
+  `pv_capture.py` Playwright, `pv_voice.py` ElevenLabs takes + analysis, `pv_render.py` scenes,
+  captions, transitions, cover, chunked encode, `pv_master.py` loudness mastering + acceptance.
 - `references/spec.md` — every spec field and scene type.
 - `examples/` — two working specs. `tests/` — `python3 -m unittest discover -s tests`.

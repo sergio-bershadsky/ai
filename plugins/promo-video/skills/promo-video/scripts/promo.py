@@ -8,8 +8,9 @@
     promo.py voice    SPEC [--models a,b] [--voice NAME]   one take per model → build/<stem>/takes/
     promo.py analyze  SPEC [--pick]            STT error rate + pitch range per take; --pick selects the best
     promo.py pick     SPEC TAKE                use that take (file stem in takes/) as the voice-over
-    promo.py stills   SPEC                     contact sheets (scenes + cuts) and the cut-overlap check
-    promo.py render   SPEC                     one MP4 per target
+    promo.py stills   SPEC                     contact sheets (scenes + cuts), cut-overlap and reading-time checks
+    promo.py render   SPEC [--full] [--force]  one mastered MP4 + cover JPEG per target; redraws only changed chunks
+                                               (--full: redraw everything; --force: render despite reading problems)
     promo.py all      SPEC [--models a,b]      capture → voice → analyze/pick → stills → render
 
 Everything lands in <spec dir>/build/<spec stem>/. See references/spec.md for the spec format.
@@ -94,8 +95,16 @@ def timing(spec: dict) -> list[dict]:
     return json.loads(p.read_text())["scenes"]
 
 
+def reading(spec: dict) -> list[str]:
+    problems = S.reading_problems(spec, timing(spec))
+    for p in problems:
+        print(f"reading: {p}")
+    return problems
+
+
 def stills(spec: dict) -> None:
     import pv_render
+    reading(spec)
     for t in spec["targets"]:
         film = pv_render.Film(spec, timing(spec), t["platform"], t["format"])
         tag = f"{t['platform']}-{t['format'].replace(':', 'x')}"
@@ -108,16 +117,25 @@ def stills(spec: dict) -> None:
         print(f"{tag}: scenes-{tag}.png, cuts-{tag}.png; max |frame−background| at cuts = {worst:.2f} (0 = clean)")
 
 
-def render(spec: dict) -> list[Path]:
+def render(spec: dict, full: bool = False, force: bool = False) -> list[Path]:
+    import pv_master
     import pv_render
+    if reading(spec) and not force:
+        sys.exit("on-screen text above is not up long enough to read: shorten it, move its word earlier, "
+                 "or raise `tail`; --force renders anyway")
     outs = []
     for t in spec["targets"]:
         film = pv_render.Film(spec, timing(spec), t["platform"], t["format"])
         out = spec["_build"] / f"{spec['_path'].stem}-{t['platform']}-{t['format'].replace(':', 'x')}.mp4"
-        film.encode(spec["_build"] / "vo.mp3", out, spec.get("fps", 30))
-        dur = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(out)],
-                             capture_output=True, text=True).stdout.strip()
-        print(f"wrote {out} ({float(dur):.1f}s, {out.stat().st_size / 1e6:.1f} MB)")
+        fps = spec.get("fps", 30)
+        try:
+            film.encode(spec["_build"] / "vo.mp3", out, fps, full=full)
+        except pv_render.MasterRejected as e:
+            sys.exit(str(e) + "\ndo not post it; fix the mix (music volume, voice take) and render again")
+        m = pv_master.measure(out)
+        print(f"wrote {out} ({out.stat().st_size / 1e6:.1f} MB): {m['I']:.1f} LUFS, true peak {m['TP']:.1f} dBTP, "
+              f"redrew {len(film.rendered)}/{len(film.chunks(fps))} chunks"
+              + (f", cover {out.with_suffix('.cover.jpg').name} from {film.cover_t:.2f}s" if film.cover_t is not None else ""))
         outs.append(out)
     return outs
 
@@ -129,6 +147,8 @@ def main(argv=None) -> int:
     ap.add_argument("rest", nargs="*")
     ap.add_argument("--models", default=None, help="comma-separated ElevenLabs model ids")
     ap.add_argument("--pick", action="store_true")
+    ap.add_argument("--full", action="store_true", help="render: redraw every chunk, ignore the cache")
+    ap.add_argument("--force", action="store_true", help="render: go ahead despite reading-time problems")
     ap.add_argument("--lang", default=None)
     ap.add_argument("--env-file", default=None)
     ap.add_argument("--voice", default=None, help="voice name or id (overrides the spec)")
@@ -146,6 +166,8 @@ def main(argv=None) -> int:
 
     if a.cmd == "check":
         problems = S.validate(spec)
+        if not problems and (spec["_build"] / "timing.json").exists():
+            problems = S.reading_problems(spec, timing(spec))  # needs the voice-over's word timing
         print("ok" if not problems else "problems:\n- " + "\n- ".join(problems))
         return 1 if problems else 0
     if a.cmd == "voices":
@@ -178,7 +200,7 @@ def main(argv=None) -> int:
     if a.cmd in ("stills", "all"):
         stills(spec)
     if a.cmd in ("render", "all"):
-        render(spec)
+        render(spec, full=a.full, force=a.force)
     return 0
 
 

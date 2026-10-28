@@ -28,6 +28,13 @@ DEFAULT_LAYOUT = {"box": (.06, .07, .94, .80), "caption_y": .875, "caption_x": (
 
 PUNCT = ".,:;!?…\"'«»“”„()[]—–"
 
+FADE_IN, FADE_OUT = .30, .22  # every shot fades in from / out to the background
+END_FADE = .5                 # the whole film fades out over its last half second
+
+# Reading-time floor for on-screen text, from the reading-time rule of the it-reelsmaker skill:
+# a short line needs 0.8 s, a phrase 0.3 s per word. Captions follow the speech and are exempt.
+READ_MIN, READ_PER_WORD = .8, .3
+
 
 def layout(platform: str, fmt: str) -> dict:
     return LAYOUTS.get((platform, fmt), DEFAULT_LAYOUT)
@@ -118,3 +125,71 @@ def validate(spec: dict) -> list[str]:
 
 def script_text(spec: dict) -> str:
     return " ".join(sc["say"].strip() for sc in spec["scenes"])
+
+
+def bounds(spec: dict, timing: list[dict]) -> list[float]:
+    """Shot boundaries in seconds: 0, a cut in the silence between every two lines, the end of the film."""
+    tm = {t["id"]: t for t in timing}
+    order = [sc["id"] for sc in spec["scenes"]]
+    cuts = [min(tm[b]["start"] - .1, (tm[a]["end"] + tm[b]["start"]) / 2) for a, b in zip(order, order[1:])]
+    return [0.0] + cuts + [timing[-1]["end"] + spec["tail"]]
+
+
+def reading_need(text: str) -> float:
+    n = sum(1 for w in words(text) if any(ch.isalnum() for ch in w))  # "·", "…", "→" are not read as words
+    return max(READ_MIN, READ_PER_WORD * n) if n else 0.0
+
+
+def _on_screen(sc: dict, b0: float, word_t) -> list[tuple[str, str, float, float | None]]:
+    """(label, text, appears, dimmed_at) for every piece of text a scene shows; mirrors pv_render's scenes."""
+    t, out = sc.get("type"), []
+    def static(*keys):
+        for k in keys:
+            if sc.get(k): out.append((k, sc[k], b0, None))
+    if t == "reveal":
+        static("lead")
+        punch = sc.get("punch")
+        tp = word_t(punch.get("at")) if punch else None
+        for i, it in enumerate(sc.get("items", [])):
+            out.append((f"items[{i}]", it["text"], word_t(it.get("at")), tp))  # the punch dims the items
+        if punch: out.append(("punch", punch["text"], tp, None))
+    elif t == "title":
+        static("kicker")
+        for i, s in enumerate(sc.get("lines", [])): out.append((f"lines[{i}]", s, b0, None))
+        static("sub")
+        for k in ("code", "footer"):
+            if sc.get(k): out.append((k, " ".join(sc[k].get("lines", [])), word_t(sc[k].get("at")), None))
+    elif t in ("spotlight", "cards", "mapping"):
+        static("kicker", "title", "sub")
+        for i, r in enumerate(sc.get("rows", [])):  # rows slide in .45 s apart after .4 s
+            out.append((f"rows[{i}]", " ".join(r.get(k, "") for k in ("tag", "left", "right")), b0 + .4 + i * .45, None))
+    return out
+
+
+def reading_problems(spec: dict, timing: list[dict]) -> list[str]:
+    """On-screen text that is not up long enough to read, given the narration's word timing."""
+    tm = {x["id"]: x for x in timing}
+    b = bounds(spec, timing)
+    last = len(spec["scenes"]) - 1
+    problems = []
+    for i, sc in enumerate(spec["scenes"]):
+        words_t = tm[sc["id"]]["words"]
+        def word_t(ref, _sc=sc, _w=words_t):
+            if ref is None: return b[i]
+            if isinstance(ref, (int, float)): return _w[0][1] + ref
+            return _w[find_word(_sc["say"], ref)][1]
+        gone = b[i + 1] - (END_FADE if i == last else FADE_OUT)
+        pieces = _on_screen(sc, b[i], word_t)
+        # text that is there from the first frame is read one piece after another
+        upfront = [p for p in pieces if p[2] <= b[i] + 1e-6 and p[3] is None]
+        need = sum(reading_need(p[1]) for p in upfront)
+        if upfront and gone - b[i] < need:
+            problems.append(f"{sc['id']}: {', '.join(p[0] for p in upfront)} need {need:.1f}s to read, "
+                            f"on screen {gone - b[i]:.1f}s")
+        for label, text, t0, dimmed in pieces:
+            if (label, text, t0, dimmed) in upfront: continue
+            have = min(gone, dimmed if dimmed is not None else gone) - t0
+            if have < reading_need(text):
+                problems.append(f"{sc['id']}: {label} {text!r} needs {reading_need(text):.1f}s to read, "
+                                f"on screen {max(0.0, have):.1f}s")
+    return problems
