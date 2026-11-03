@@ -1,6 +1,6 @@
 ---
 name: promo-video
-description: Author a narrated promo / feature-announcement video for Telegram or Instagram (Reels, feed, stories) in Russian or English from one prompt — real UI captured with Playwright, an ElevenLabs voice-over with word-level timing, scenes cut on the narration, word-highlighted captions, platform-safe layouts (9:16, 4:5, 1:1), fade-through transitions, MP4 ready to post plus the post text. Use it whenever someone wants a video, reel, teaser, demo clip, launch video or "advertisement" for a feature, plugin, PR, release, product page or artifact — "сделай видео / ролик / рилс / промо / анонс фичи для телеграма или инстаграма", "make a reel about this PR", "feature promo with voice-over" — even if they don't say "promo-video".
+description: Author a narrated promo / feature-announcement video for Telegram or Instagram (Reels, feed, stories) in Russian or English from one prompt — real UI captured with Playwright, an ElevenLabs voice-over with word-level timing, scenes cut on the narration, word-highlighted captions, platform-safe layouts (9:16, 4:5, 1:1), fade-through transitions, MP4 ready to post plus the post text. Also the tutorial-reel path: a photoreal AI talking-head PiP (Higgsfield keyframes + Seedance clips on green) over animated terminal slides, whole-track speech-to-speech into the owner's cloned voice, SFX, a looped audio/picture QA and a storyboard artifact (references/presenter-reel.md). Use it whenever someone wants a video, reel, teaser, demo clip, launch video or "advertisement" for a feature, plugin, PR, release, product page or artifact — "сделай видео / ролик / рилс / промо / анонс фичи для телеграма или инстаграма", "make a reel about this PR", "feature promo with voice-over" — even if they don't say "promo-video".
 ---
 
 # Promo Video
@@ -29,8 +29,9 @@ Infer first, ask once (one `AskUserQuestion` call) only for what you cannot infe
 | Language | Language of the user's prompt (`ru` / `en`) |
 | Platforms → targets | Telegram 9:16 **and** Instagram 9:16 (Reels). Feed post → 4:5; square → 1:1 |
 | Length | 40–55 s (≈ 90–110 words; see the word budget) |
-| Voice | Stock voice from the account; for `ru` prefer a voice whose `voices --lang ru` row lists `ru` |
+| Voice | The owner's voice ids from the project's `.claude/promo-video.local.md` when it exists (never substitute a stock voice then); otherwise a stock voice, for `ru` one whose `voices --lang ru` row lists `ru` |
 | Footage | Real UI of the subject. Never mock a UI, never use third-party logos (tool names as text are fine) |
+| Presenter | None. A talking-head PiP tutorial follows `references/presenter-reel.md` instead of steps 4–8 |
 
 ### 1. Check the machine
 `python3 scripts/promo.py doctor SPEC` — ffmpeg + libx264, Pillow, numpy, Playwright + Chromium,
@@ -87,7 +88,9 @@ Cost ≈ script characters × takes (+ the same for Scribe); report it.
 `cuts-<target>.png` (frames around every cut), and prints the overlap check at the cuts
 (`0.00` = no two shots on screen). **Read both PNGs** and fix before rendering:
 text cut off, captions covering the key number, an image too small to read, Instagram content
-in the bottom quarter or under the right-hand button rail.
+in the bottom 35 %, the top 14 % or under the right-hand button rail. Then measure the render:
+`python3 scripts/pv_safezone.py OUT.mp4` exits 1 on any frame whose content leaves x 65–960,
+y 270–1248 — the safe zone is checked on **every** vertical delivery, never assumed.
 
 `stills` also prints the **reading-time check**: every piece of on-screen text (heading, reveal
 item, punch, code block, footer, mapping row) must stay up for 0.8 s, or 0.3 s per word for a
@@ -124,10 +127,12 @@ listen).
 after the spec is stable.
 
 ## Judgment calls
-- **Telegram vs Instagram:** layouts differ only in safe areas. Instagram 9:16 keeps text inside
-  13–63 % of the height and clear of the right rail; captions sit at ~68 %. Telegram 9:16 uses the
-  whole frame, captions at ~91 %. Figures follow third-party guides (Meta publishes ad safe zones
-  only) — tell the user to preview on a phone.
+- **Telegram vs Instagram:** layouts differ only in safe areas. The Reels UI covers the top 14 %,
+  the bottom 35 %, the left 6 % and a 120 px right rail (revalidated 2026-11-03; most-cited Meta ad
+  figures — Meta publishes none for organic Reels). Instagram 9:16 keeps text in 14.5–56.5 % of the
+  height, x 6.2–83 %, captions centred at 62 % so the pill ends above y 1248. Telegram 9:16 uses the
+  whole frame, captions at ~91 %. One file posted to both → lay it out for Instagram. Tell the user
+  to preview on a phone.
 - **Captions:** on for `screen` / `spotlight` / `cards` / `mapping` (muted autoplay), off for
   `reveal` / `title` where the big text already says the line.
 - **Render time:** frames draw in parallel worker processes. Measured: the RU example (21 s,
@@ -137,9 +142,20 @@ after the spec is stable.
   only tracks the user owns or that are licensed for this use.
 - **Privacy:** never put the owner's personal email or the API key in a spec, caption, frame or post.
 
+## Presenter tutorial reels
+A tutorial with the owner's AI talking head (corner PiP over animated terminal slides) uses a
+different pipeline — identity-approved keyframes on green, per-second-billed clips, chroma keying,
+whole-track speech-to-speech with a seed loop and silence gate, SFX, limiter + two-pass loudnorm,
+a repeat-until-clean QA loop, SRT captions aligned on the final master, a cost ledger from the
+provider's transaction log, and a storyboard artifact republished after every change. Read
+`references/presenter-reel.md` before starting one; owner-specific ids live in the consuming
+project's `.claude/promo-video.local.md` (template at the end of that reference), never in the skill.
+
 ## Files
 - `scripts/promo.py` — CLI. `pv_spec.py` spec, layouts, cut points, reading-time check,
   `pv_capture.py` Playwright, `pv_voice.py` ElevenLabs takes + analysis, `pv_render.py` scenes,
   captions, transitions, cover, chunked encode, `pv_master.py` loudness mastering + acceptance.
 - `references/spec.md` — every spec field and scene type.
+- `references/presenter-reel.md` — presenter-PiP tutorial pipeline, sizing, voice/STS, SFX, QA, canvas, costs.
+- `scripts/pv_safezone.py` — measures a render against the Reels safe box; exit 1 on violation.
 - `examples/` — two working specs. `tests/` — `python3 -m unittest discover -s tests`.

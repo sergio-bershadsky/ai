@@ -65,10 +65,26 @@ class Spec(unittest.TestCase):
             self.assertEqual(S.validate(S.load(p)), [], p.parent.name)
 
     def test_instagram_keeps_text_out_of_the_reels_ui(self):
+        # Reels UI on 1080x1920: top 14 % (270 px), bottom 35 % (y > 1248), left 6 %, right 120 px rail.
         lay = S.layout("instagram", "9:16")
-        self.assertLessEqual(lay["box"][3], .65)
-        self.assertLessEqual(lay["caption_y"], .75)
-        self.assertLessEqual(lay["caption_x"][1], .85, "right rail of buttons")
+        x0, y0, x1, y1 = lay["box"]
+        self.assertGreaterEqual(y0 * 1920, 270, "header")
+        self.assertLessEqual(y1 * 1920, 1248, "caption / username block")
+        self.assertGreaterEqual(x0 * 1080, 65)
+        self.assertLessEqual(x1 * 1080, 960, "right rail of buttons")
+        cap = lay["caption_y"] * 1920   # the pill spans cap - 62 .. cap + 44 (pv_render.Captions.draw)
+        self.assertLessEqual(cap + 44, 1248, "caption pill must end above the Reels caption block")
+        self.assertGreaterEqual(cap - 62, y1 * 1920 - 100, "content stops 100 px above the caption centre")
+        self.assertLessEqual(lay["caption_x"][1] * 1080, 960, "right rail of buttons")
+
+    def test_safezone_box_check(self):
+        import pv_safezone as Z  # pyright: ignore[reportMissingImports]
+        self.assertFalse(Z.outside((92, 290, 930, 1230), Z.SAFE_BOX))
+        self.assertTrue(Z.outside((92, 89, 930, 1000), Z.SAFE_BOX), "under the header")
+        self.assertTrue(Z.outside((92, 300, 1037, 1000), Z.SAFE_BOX), "under the button rail")
+        import numpy as np
+        img = np.zeros((40, 30, 3), int); img[10:20, 5:8] = 255
+        self.assertEqual(Z.content_box(img, img[0, 0], 40), (5, 10, 7, 19))
 
     def test_reading_need_is_a_floor_for_short_lines_and_scales_with_words(self):
         self.assertAlmostEqual(S.reading_need("Где мы?"), .8)

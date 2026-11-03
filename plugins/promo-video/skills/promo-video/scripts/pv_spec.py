@@ -17,11 +17,13 @@ CAPTIONS_DEFAULT = {"reveal": False, "title": False}  # their big on-screen text
 STT_LANG = {"en": "eng", "ru": "rus"}
 
 # Content box and caption band as fractions of the frame: (left, top, right, bottom), caption centre y.
-# WHY Instagram 9:16 differs: the Reels UI covers the top ~13 %, the bottom ~25 % (caption, audio,
-# username) and a ~17 % rail of buttons on the right. Figures follow third-party creator guides
-# (Meta publishes safe zones for ads only) — preview on a phone before posting.
+# WHY Instagram 9:16 differs: the Reels UI covers the top 14 % (y < 270), the bottom 35 % (y > 1248:
+# caption, audio, username), the left 6 % and a 120 px button rail on the right — the most-cited Meta
+# ad figures (Meta publishes none for organic Reels; revalidated 2026-11-03). The caption pill
+# (cap-62 .. cap+44 px) must end above y 1248, so it centres at .62, and content stops 100 px above it.
+# The old .685 caption centre sat inside the Reels caption block. Preview on a phone before posting.
 LAYOUTS = {
-    ("instagram", "9:16"): {"box": (.06, .13, .83, .63), "caption_y": .685, "caption_x": (.06, .83)},
+    ("instagram", "9:16"): {"box": (.062, .145, .83, .565), "caption_y": .62, "caption_x": (.062, .83)},
     ("telegram", "9:16"): {"box": (.046, .10, .954, .84), "caption_y": .91, "caption_x": (.06, .94)},
 }
 DEFAULT_LAYOUT = {"box": (.06, .07, .94, .80), "caption_y": .875, "caption_x": (.06, .94)}
