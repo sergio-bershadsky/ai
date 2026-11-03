@@ -91,9 +91,10 @@ value), optional `media: {"image", "at"}` below when there is room above the cap
 
 | Target | Content box (x0, y0, x1, y1 as fractions) | Caption centre |
 |---|---|---|
-| Instagram 9:16 | .06, .13, .83, .63 — clear of the Reels header, caption/audio block and the right button rail | .685 |
+| Instagram 9:16 | .062, .145, .83, .565 — clear of the Reels header (top 14 %), caption/audio block (bottom 35 %) and the right button rail (120 px) | .62 (pill ends at y 1234 < 1248) |
 | Telegram 9:16 | .046, .10, .954, .84 | .91 |
 | Any 4:5 / 1:1 | .06, .07, .94, .80 | .875 |
 
-Instagram figures follow third-party creator guides; Meta publishes safe zones only for ads.
-Preview the export on a phone.
+Instagram figures are the most-cited Meta ad guidance (14 % top, 35 % bottom, 6 % sides, 120 px right
+rail), revalidated 2026-11-03; Meta publishes none for organic Reels. Check renders with
+`scripts/pv_safezone.py` and preview the export on a phone.
