@@ -37,6 +37,8 @@ promo.py render  video.json          # one mastered MP4 + cover per target (redr
 |---|---|
 | Formats | `9:16` 1080×1920, `4:5` 1080×1350, `1:1` 1080×1080, H.264 + AAC, `+faststart` |
 | Platforms | `telegram`, `instagram`. Instagram keeps text and captions out of the Reels UI: top 14 %, bottom 35 %, left 6 %, 120 px right rail. `scripts/pv_safezone.py` measures any render against that box. |
+| Mandatory rules | Every video opens on a 2 s designed cover naming the main topic (fading into the first shot), ends on a verified QR card, uses real footage only and the owner's voice, passes the safe-area check, and is storyboarded and approved before posting. See `SKILL.md`. |
+| Long-form tutorials | ≤ 5-min 16:9 YouTube tutorials aligned with an article: hybrid presenter (full-frame intro/outro, PiP over real footage), storyboard schema and `scripts/pv_storyboard.py` validator. See `references/youtube-tutorial.md`. |
 | Presenter reels | A tutorial path with an AI talking-head PiP over terminal slides: identity-approved keyframes on green, chroma keying, whole-track speech-to-speech in the owner's voice, SFX, a QA loop, captions and a cost ledger. See `references/presenter-reel.md`. Owner-specific ids stay in a gitignored `.claude/promo-video.local.md`. |
 | Scenes | `reveal` (hook), `title` (intro / CTA with install commands), `screen` (full-frame UI, replayed states, tap ripple, scroll), `spotlight` (one capture in a panning panel), `cards`, `mapping` |
 | Voice | ElevenLabs `eleven_v4` and `eleven_multilingual_v2` takes. Each take is transcribed with Scribe, and words it heard wrong are listed (e.g. `bershadsky → bachinski`). |

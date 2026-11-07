@@ -1,6 +1,6 @@
 ---
 name: promo-video
-description: Author a narrated promo / feature-announcement video for Telegram or Instagram (Reels, feed, stories) in Russian or English from one prompt — real UI captured with Playwright, an ElevenLabs voice-over with word-level timing, scenes cut on the narration, word-highlighted captions, platform-safe layouts (9:16, 4:5, 1:1), fade-through transitions, MP4 ready to post plus the post text. Also the tutorial-reel path, a photoreal AI talking-head PiP (Higgsfield keyframes + Seedance clips on green) over animated terminal slides, whole-track speech-to-speech into the owner's cloned voice, SFX, a looped audio/picture QA and a storyboard artifact (references/presenter-reel.md). Use it whenever someone wants a video, reel, teaser, demo clip, launch video or "advertisement" for a feature, plugin, PR, release, product page or artifact — "сделай видео / ролик / рилс / промо / анонс фичи для телеграма или инстаграма", "make a reel about this PR", "feature promo with voice-over" — even if they don't say "promo-video".
+description: Author a narrated promo / feature-announcement video for Telegram or Instagram (Reels, feed, stories) in Russian or English from one prompt — real UI captured with Playwright, an ElevenLabs voice-over with word-level timing, scenes cut on the narration, word-highlighted captions, platform-safe layouts (9:16, 4:5, 1:1), fade-through transitions, MP4 ready to post plus the post text. Also long-form ≤ 5-min YouTube tutorials aligned with an article (references/youtube-tutorial.md) and the tutorial-reel path, a photoreal AI talking-head PiP (Higgsfield keyframes + Seedance clips on green) over animated terminal slides, whole-track speech-to-speech into the owner's cloned voice, SFX, a looped audio/picture QA and a storyboard artifact (references/presenter-reel.md). Use it whenever someone wants a video, reel, teaser, demo clip, launch video or "advertisement" for a feature, plugin, PR, release, product page or artifact — "сделай видео / ролик / рилс / промо / анонс фичи для телеграма или инстаграма", "make a reel about this PR", "feature promo with voice-over" — even if they don't say "promo-video".
 ---
 
 # Promo Video
@@ -18,6 +18,31 @@ render (PIL frames → ffmpeg) ──▶ <stem>-<platform>-<format>.mp4 + contac
 ```
 
 Paths below are relative to this skill's directory (`${CLAUDE_PLUGIN_ROOT}/skills/promo-video`).
+
+## Mandatory rules — every video, every format (no exceptions)
+
+These hold for reels, promos and long-form tutorials alike. A video that breaks one is not delivered.
+
+1. **Opening cover, 0.0–2.0 s.** The first 2 seconds are a designed cover card naming the video's
+   main topic in 2–5 words (plus an optional kicker such as series and part). No narration under it.
+   It fades out between 1.6 and 2.0 s into the first shot. Doubles as the thumbnail/cover frame.
+2. **QR end card.** The last 8–12 s show a QR code to the promoted article or post, verified by
+   decoding it, plus "Next: …" when the video is part of a series. The narration names the destination.
+3. **Real footage only.** Real UI, real terminal runs, real catalog/app pages. No AI B-roll, no mocked
+   UI, no third-party logos (tool names as text are fine). A slide stands in only where a change
+   can't be shown, and the storyboard marks it as a slide.
+4. **The owner's voice.** When the project has `.claude/promo-video.local.md`, narration uses the
+   voice ids listed there (whole-track speech-to-speech for presenter clips), never a stock voice.
+5. **Safe areas, measured.** 9:16 renders pass `scripts/pv_safezone.py`, and the frames are looked at
+   with the platform UI drawn over them. 16:9 keeps text and faces inside the inner 90 % title-safe
+   area, and leaves the last 20 s of the right half free for YouTube end-screen elements.
+6. **Storyboard first, approval before posting.** Every video has a storyboard (script verbatim,
+   beats with timings, footage source per beat, presenter mode, cost estimate), reviewed by the owner
+   before generation and republished after every change. Nothing is posted without the owner's approval.
+7. **Long-form is article-aligned.** A long-form tutorial video (YouTube, 16:9) is ≤ 5:00 and matches
+   one published article: same claims, examples and caveats. An article may have several videos.
+   Structure and storyboard schema: `references/youtube-tutorial.md`, validated by
+   `scripts/pv_storyboard.py` (exit 1 on any rule above that a storyboard can break).
 
 ## Workflow
 
@@ -158,4 +183,6 @@ project's `.claude/promo-video.local.md` (template at the end of that reference)
 - `references/spec.md` — every spec field and scene type.
 - `references/presenter-reel.md` — presenter-PiP tutorial pipeline, sizing, voice/STS, SFX, QA, canvas, costs.
 - `scripts/pv_safezone.py` — measures a render against the Reels safe box; exit 1 on violation.
+- `references/youtube-tutorial.md` — long-form 16:9 tutorial: hybrid presenter, beats, storyboard schema.
+- `scripts/pv_storyboard.py` — validates a long-form storyboard against the mandatory rules; exit 1 on violation.
 - `examples/` — two working specs. `tests/` — `python3 -m unittest discover -s tests`.
